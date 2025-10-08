@@ -1,0 +1,76 @@
+#### Patch files
+####-*.patch
+
+# Python bytecode and caches
+*.pyc
+__pycache__/
+*.pyo
+
+# Virtual environments
+env/
+py39-venv/
+
+# Build artifacts
+build/
+dist/
+*.egg/
+ElectrumSV.egg-info/
+build-hashes.txt
+
+# ElectrumSV files to ignore
+/electrum.py
+/contrib/pyinstaller/
+/contrib/build-windows/downloads/
+/contrib/build-windows/amd64/
+/contrib/build-windows/win32/
+/electrumsv/locale/
+.devlocaltmp/
+*_trial_temp
+packages
+.tox/
+.buildozer/
+bin/
+/app.fil
+tmp/
+electrumsv/data/html
+
+# Documentation output
+docs/website/output
+docs/standalone/_build
+
+# Test files
+contrib/functional_tests/stresstesting/.benchmarks/*
+electrum-sv-regtest.py
+electrum_sv_data/regtest/*
+instance_*
+
+# IDE/editor files
+*.idea*
+.vscode/
+.vs*
+
+# macOS
+.DS_Store
+icons/.DS_Store/
+xcuserdata/
+
+# Windows
+libusb-1.0.dll
+libiconv-2.dll
+libzbar-0.dll
+
+# Mypy
+.mypy*
+
+# Pipenv/pyenv
+Pipfile
+Pipfile.lock
+.python-version
+
+# Optional AppImage artifacts
+*.AppImage
+*.desktop
+
+# Log files
+*.log
+

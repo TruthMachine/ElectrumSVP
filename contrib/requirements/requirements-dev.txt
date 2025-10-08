@@ -1,0 +1,20 @@
+mypy
+# 2023-05-01 RT: This requires click>8 and trezor requires click<8, so we just remove this. Install
+#     it yourself. It's only needed for freezing the dependencies.
+# pip-tools
+pylint
+pytest
+# RT: Pinned to what we had in CI to avoid this.
+# There are incompatible versions in the resolved dependencies:
+#   aiohttp<=3.7.3,>=3.6.2 (from -r contrib/requirements/requirements.txt (line 1))
+#   aiohttp>=3.8.1 (from pytest-aiohttp==1.0.4->-r contrib/requirements/requirements-dev.txt (line 5))
+pytest-aiohttp==0.3.0
+pytest-asyncio
+pytest-cov
+pytest-mock
+pytest-timeout
+types-certifi
+types-pkg_resources
+types-python-dateutil
+types-requests
+types-setuptools

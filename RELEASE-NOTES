@@ -1,0 +1,502 @@
+ElectrumSV is a fork of the open source Electrum Bitcoin wallet (www.electrum.org) for
+Bitcoin SV.  It continues on from the Electron Cash fork from the Electrum 2.9.0 codebase,
+which continues to work with Bitcoin Cash, which like Bitcoin Core retains the Bitcoin
+name while no longer following the Bitcoin design from the whitepaper.  Bitcoin SV is the
+only real Bitcoin following the whitepaper.
+
+The ElectrumSV software is NOT affiliated, associated, or endorsed by Electrum,
+electrum.org or the Electrum developers.  Likeswise neither with Electron Cash.
+
+If you are concerned about running ElectrumSV binaries you can always install and/or run
+it from the Github source directly.  However, all binaries are GPG signed, and SHA256
+hashes are provided, with both hashes and signatures being checked into the Github
+repository -- published through separate means and on separate web sites from the
+binaries.  The Windows builds are also created deterministically and it should be possible
+for users to verify that the source they should have been created from, is exactly the
+source they were created from.  So, there are several tools in a users hands that allow
+them to ascertain they can trust the builds and binaries provided.
+
+
+Usage
+-----
+
+When you first run ElectrumSV it will use a different configuration directory to Electrum
+or Electron Cash.  On Unix it is "~/.electrum-sv", and on Windows/MacOS it is "ElectrumSV".
+Initially transactions will show up as unverified because ElectrumSV is downloading the blockchain
+headers to verify the transactions.  This can take a few minutes, but is only done once.
+
+Ensure you are running ElectrumSV and not Electrum or Electron Cash by checking for
+"ElectrumSV" in the title bar wording. And be very sure you downloaded ElectrumSV through the
+electrumsv.io web site, and not from any other web site.
+
+We STRONGLY recommend you get comfortable and only send a small amount of Bitcoin SV coins
+at first, to yourself, to confirm the network is processing your transactions as expected.
+
+
+
+
+
+
+ElectrumSPV-beta
+-----------
+ # Release beta
+   * Release guide:  https://crypto-rebel.medium.com/electrum-svp-beta-release-desktop-bitcoin-wallet-401030f93443
+
+   * Dependencies: Upgraded major dependencies, including Bitcoinx 0.9.0. Code was refactored 
+     to accommodate API changes and new features in the latest libraries. 
+     BEEF SPV verification: Added SPV proof functions for transactions/UTXOs and addresses,   
+     enhancing on-chain and off-chain verification. 
+   * BIP39 seeds: BIP39 seed support has been added as the default for wallet creation. 
+   * Sweep function: Added a new sweep function to import private keys. Supports BIP38  
+     decryption, compressed and uncompressed keys, BEEF UTXO import. 
+   * Destinations tab: The previous "Keys" tab has been revamped and renamed "Destinations", 
+     now displaying addresses along with their derivation paths. 
+   * Coin control: Added freeze/unfreeze controls for addresses in the address tab. Fixed a 
+     bug where frozen coins persisted incorrectly between sessions. 
+   * Block headers: Introduced a new Block Headers file format compatible with Bitcoinx 0.9.0, 
+     including meta data. The headers file is synced to a recent tip and preloaded for faster 
+     startup. 
+   * Hardware wallets: Bundled hardware wallet dependencies. Feature is present but not fully 
+     functional in this beta. 
+   * User interface: Coinsplit tab hidden by default.Other tabs reorganized with improved UI 
+     layout. 
+   * New units available: "Bitcoin", "BSV", "BSV blockchain tokens", "millibitcoin". 
+   * Explorers & Servers: Updated block explorers and removed outdated ones. Default server 
+     list updated for reliability. 
+   * AppImage improvements: Improved Linux compatibility. No longer requires libfuse2 on some 
+     systems, maintaining full compatibility with TAILS. 
+   * Testing notes: As this is a beta release, please be cautious with hardware wallets, and 
+     report any issues     encountered during usage. Your feedback is valuable for the 
+     upcoming official release. 
+
+
+
+
+
+
+
+ElectrumSV
+-----------
+
+# Release 1.3.16
+  * Release guide: https://electrumsv.io/articles/2023/electrumsv-1_3_16.html
+  * Security: Due to the packages we depend on, we bundle the root certificates that are used
+    to verify that when we connect to a web site it is the legitimate web site. One of these
+    certificates was revoked, and we need to do a release to provide a version of the wallet
+    that does not contain that revoked certificate. The version of the `certifi` package we
+    include has been updated.
+  * User interface: There seems to be a bug where restoring a wallet would leave the history
+    tab list of transactions not correctly updated. Specifically, the dates would still show
+    "Unknown" despite the transaction having been verified as in a block with the merkle proof.
+    It should have been updated with the date of the block. A workaround was added to force
+    an update, but the whole model seems to need a rewrite however the current focus is on the
+    1.4 release.
+  * User friendliness: We do not include all the past blockchain headers with the wallet, and
+    before the wallet can work properly it used to download all the headers. Nowadays we have
+    built-in checkpointing so that we can fetch the headers we need on demand, and not require
+    that long startup time. In order to make this release more user-friendly, we have updated
+    the mainnet and testnet header checkpoints.
+  * Reliability: There is an occasional bug where the file headers are stored in does not get
+    written correctly. This mainly happens on Windows, but has been observed on Linux. We have
+    included a fix that flushes and closes the file storage on exit, and should hopefully fix
+    this rare but continuing problem.
+  * Documentation: The documentation covering how to verify your download with our PGP signatures
+    referred to a different file suffix ".sig" for the file signatures rather than ".asc" which
+    the tooling appears to have switched to, causing user confusion. This has now been aligned
+    with the tooling, and uses ".asc".
+  * Exchange rates: Removed Bitfinex as source of exchange rates.
+  * Servers: Updated the hard-coded servers list. There were a lot of stale servers that no longer
+    exist. satoshi.vision.cash appears to be pruned and does not have the transactions for wallet
+    restoration.
+  * Python: Update build version of Python to 3.9.16. On MacOS we had to upgrade to 3.9.16 for
+    builds to ensure that we include the latest fixes that allow builds made on later versions of
+    MacOS (13.3+) to run on earlier versions (11.1+). Most users should be running a build, so
+    this should only affect those running from source. However the last version of 3.9 suitable
+    for local development on Windows due to installers being available is 3.9.13, so this is the
+    enforced minimum version.
+
+# Release 1.3.15
+  * Release guide: https://electrumsv.io/articles/2022/electrumsv-1_3_15.html
+  * Official security update release for the Electrum Core exploit that could be used to lock up a
+    users wallet, or potentially access it on a local area network.
+  * If a wallet update is detected by the UI on startup a notification is displayed the user
+    strongly recommending that they update ElectrumSV.
+  * On creation of a new wallet a notification is displayed to the user giving them clearer
+    direction on how to create a new account.
+
+# Release 1.3.14
+  * Release guide: https://electrumsv.io/articles/2022/electrumsv-1_3_14.html
+  * Python: Update build (and minimum allowed) version to 3.7.9 in order to take advantage of a
+    more stable and secure version.
+
+# Release 1.3.13
+  * Release guide: https://electrumsv.io/articles/2021/electrumsv-1_3_13.html
+  * Reliability: Fixed a long time bug in the transaction caching which would in very rare
+    circumstances cause errors when transactions were evicted from the cache to make room for
+    more recently loaded ones.
+  * Transaction loading: The loading from file dialog filtered for the '.txn' extension and
+    now it offers a range of filters including '*.json', '*.txt' and the open '*.*'.
+  * Scaling testnet: The checkpoint for the scaling testnet was out of date and prevented using
+    existing builds for that blockchain. Now the checkpoint has been removed, and any build
+    from this one on should never have this problem again.
+  * Documentation: Extended the 'verify your download' guide with information on how to verify
+    the GPG signatures on MacOS.
+  * Web site: An article on how to access the scaling testnet (STN) with ElectrumSV has
+    been added.
+
+# Release 1.3.12
+  * Release guide: https://medium.com/@roger-taylor/electrumsv-1-3-12-a4002e6dbdf6
+  * Documentation: Added information about the "Unverified inputs" screens Ledger shows users
+    before it lets them sign, if they have later firmware updates.
+  * Memory leaks: If a user opened multiple wallets at the same time in ElectrumSV, closing the
+    window for one wallet would not result in it being garbage collected. The wallet itself and
+    the accounts however, would have been closed properly.
+  * Payments: The default value for the "use change" setting was lost, and instead of
+    being "True" defaulted to "False". This would only happen for new wallets created since
+    this regression happened in the 1.3.11 release.
+  * Wallet reliability: It is no longer possible to open wallets created with a later version
+    of ElectrumSV than you are using. Rather than potentially erroring or introducing corruption
+    a user friendly error message is shown.
+
+# Release 1.3.11
+  * Release guide: https://medium.com/@roger-taylor/electrumsv-1-3-11-6f09f2aaed94
+  * Ledger hardware devices: The latest Ledger software has been updated in a way that is not
+    backwards compatible. This means that anyone who updates their device needs to get the changes
+    in this release that update ElectrumSV to work with these latest Ledger updates.
+  * Hardware wallet accounts: The derivation path is now visible in the account information
+    dialog.
+  * Account-less: Loading transactions in a wallet with no accounts no longer errors due to an
+    unnecessary dependency on accounts in this functionality.
+  * Invoices: Importing invoices into an account would error displaying the open file dialog.
+
+# Release 1.3.10
+  * Release guide: https://medium.com/@roger-taylor/electrumsv-1-3-10-f0a60d031d81
+  * Trezor passphrases: Support for Trezor passphrase entry, which applies to all
+    devices that have the passphrase setting enabled, was broken in 1.3.8.
+  * Trezor on device passphrase entry: The Trezor Model T device allows on device passphrase entry.
+    Now ElectrumSV supports users opting to use this instead of entering the passphrase in
+    ElectrumSV.
+  * Trezor/Keepkey passphrase confirmation: When creating an account for a Trezor
+    or Keepkey hardware wallet, now it shows the proper confirmation dialog for
+    passphrase entry, rather than the simple entry dialog.
+  * Coin-splitting UI: When a wallet was loaded and the window opened, where the user had hidden
+    the coin-splitting tab, text would leak from the hidden tab and be shown over the "Add Account"
+    button.
+
+# Release 1.3.9
+  * Release guide: https://medium.com/@roger-taylor/electrumsv-1-3-9-50c39bc7ef68
+  * MacOS compatibility: When used in conjunction, both PyQt5 and PyInstaller which are used to
+    provide our user interface and builds respectively, do not work on MacOS Big Sur. This is
+    something to do with versions of PyQt5 later than 5.13.1, and so we have rolled back our
+    required version of PyQt5 to 5.13.1.
+  * Transaction export: The copy and save options in the transaction dialog, have been fixed and
+    extended. There are now different options for both incomplete transactions and fully signed
+    transactions, allowing export of transaction byte data, hex, and hex with proof data. At this
+    time proof data is limited to parent transactions.
+  * Waiting dialog: This UI element shown when doing actions that may take some time, has been
+    extended to optionally show a progress bar and remain open after the task has been completed
+    for a given number of seconds unless the user manually dismisses it. This is used for
+    transaction broadcast, transaction signing and copy/saving transactions with proof.
+
+# Release 1.3.8
+  * Release guide: https://medium.com/@roger-taylor/electrumsv-1-3-8-e07700fb9058
+  * Account script types: It is no longer possible to change the script type for an
+    account, and only the safe default script type is usable for each kind of account.
+    This prevents adventurous users from enabling advanced options.
+  * Trezor firmware: It should now be possible to sign transactions if a hardware wallet
+    has been updated to the latest Trezor firmware. Trezor do not support Bitcoin SV,
+    but we still want our users to be able to easily use them if they are already.
+  * Linux databases: There are limits built into our database solution SQLite that differ depending
+    on the platform the database is running on. On Linux these are significantly higher, and the
+    different database limits conflict with each other and caused errors when viewing transactions
+    that spend more than 1000 coins. All limits has been hard-limited to 1000 for now to prevent
+    this.
+  * Transactions tab: Due to the ordering of event processing, transactions that had been
+    dispatched (broadcast to the network) might remain in the Transactions tab when they should
+    not. Now ordering is correctly observed, and if they should be removed, they will be removed.
+  * QR codes: In some obscure situations QR code scanning was erroring, and would cause exceptions.
+
+# Release 1.3.7
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-7-8b3833343bd3
+  * Payment dangers: The place where users enter where their payment goes to allows
+    freeform entry of Bitcoin script assembly language. There was the possibility that
+    users could paste in malformed addresses and have their payment go to an unexpected
+    location. This should now be prevented.
+  * Transaction dialog: Some small interactive changes have been made to the
+    transaction dialog. This allows a user to more easily inspect their wallet data
+    and relate what coins were spent in one transaction to those received in another.
+  * REST API: The example REST API has received some changes and extensions to
+    hopefully help those who want to use ElectrumSV as an automated wallet
+    do so.
+
+# Release 1.3.6
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-6-a1f429bb1391
+  * Invoices: Fixed a bug where importing an invoice through a BIP270 payment request
+    URL failed when it was done using a QR code.
+  * Coin-splitting: Added support for a different kind of coin-splitting that does not
+    require the use of a faucet. It is recommended over the faucet splitting, and
+    should prevent future problems where the faucet being drained or unavailable
+    leaves users unable to split their coins.
+  * Accounts: The account information dialog would error when displayed for accounts
+    that have no keystore. This just affected the watch-only imported address accounts.
+  * Networking: Broadcasting a transaction when there was no current connection or the
+    wallet had not realised the connection was down, which would either block
+    indefinitely when aborted or when ElectrumSV exited. It should handle an aborted
+    or failed transaction broadcast under these circumstances a lot better now.
+  * User interface: The transaction dialog now colours change outputs correctly again
+    rather than colouring them the same as receiving outputs. Transaction outputs
+    that are not to addresses are now displayed as scripting "assembly language" again.
+  * Wallet wizard: Opening certain kinds of invalid wallet files now displays a user
+    friendly error message to the wallet operator, rather than catching an exception.
+
+# Release 1.3.5
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-5-99e4a3287368
+  * MacOS: The user interface framework has bugs that only exist on MacOS. We cannot fix these,
+    but if your wallet locks up with a drop down modal message box that you can't dismiss, we
+    have however provided a way for you to disable drop down message boxes.
+  * Local requests: The requests list is now always visible, and works. You can define an incoming
+    payment for an address you give out and it will change from unpaid to paid when a payment
+    transaction is received and processed.
+  * BIP270: ElectrumSV has long had BIP270 support. Now there are merchant services that can
+    dispense and process payment requests on behalf of users or businesses, we have fleshed it out,
+    hooked it up and tested it thoroughly.
+  * The account menu: The menu for an account was accessed by "right clicking" on the account entry
+    in the accounts list. Now it can also be accessed by a window-level Account menu.
+  * Transaction dialog: The transaction dialog has been polished a little. It is a little better
+    at providing full information, although there is obvious work left to be done on it.
+  * Table filtering and refreshing: Filter and refresh buttons have been added to almost all
+    tables. This functionality has always been available through hotkeys (Control+R and Control+F)
+    but it is very likely that users were not very aware of it.
+  * Transactions tab: The transactions tab provides a useful aid in keeping track of signed but
+    not known to the network transactions. However, it's purpose and contents are non-obvious.
+    We now show a summary of how many coins are allocated in signed transactions in the
+    transactions tab at the top of the history tab. And a placeholder noting it's purpose when it
+    is empty.
+  * Unmatured coins: Coinbase coins are not spendable until they have been confirmed many times.
+    We were not correctly marking these coins as coinbase, and this meant that it was possible for
+    the user or API user to have them accidentally included in a transaction they were making.
+  * Account synchronisation: When ElectrumSV connects to the main server it uses, it makes
+    subscriptions on that server for all the things it wants to get notified about related
+    transactions for. Unfortunately, on disconnection from one server and switching to another
+    it would not do the subscription process for the new server and would not respond to blockchain
+    events until it was restarted.
+  * Wallet backup menu: The "File" menu offers a "Save Copy" option. However now that we now store
+    wallet data in a database, just naively copying the wallet file no longer works. There are ways
+    to live backup the open wallet database, but we haven't implemented them yet and until we have
+    this menu option is disabled.
+  * Wallet consistency: It was possible to open the same wallet twice due to unexpected design
+    decisions made by the user interface framework we use. This meant that identifying if a wallet
+    was active failed because the framework wallet path did not match the one we were using to
+    access the wallet file.
+
+# Release 1.3.4
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-4-9408b74fd397
+  * Payment destinations: New export feature for bulk access to types of payment destinations
+    like addresses, for accounts.
+  * Transaction broadcasting: Broadcasting external transactions in a wallet would error. The
+    broadcast would succeed, but the user would see an unhelpful error after the fact.
+
+# Release 1.3.3
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-3-79a202be658e
+  * Multi-signature: Bugs were present in the signing of multi-signature transactions, depending
+    on which cosigners were signing off on a transaction.
+  * Wizards: The wallet and account wizards were using the wrong approach to setting up their
+    state when a user viewed a page, and cleaning it up when they left. This created unreliable
+    behaviour.
+
+# Release 1.3.2
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-2-9893a10d8987
+  * Wallet migration: Pre-1.3 wallets with coinbase transactions, likely only occuring for miners
+    or people being paid by miners, would error when migrating.
+  * Notifications: The notification center displayed notifications incorrectly on Linux.
+
+# Release 1.3.0
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-0-227ce8ddbb8a
+  * Wallet storage: A wallet is now stored in a database, and not a text file.
+  * Wallet creation: A new wallet wizard streamlines opening or creating wallets.
+  * Wallet accounts: The groundwork is in place for wallets to have multiple accounts,
+    although they can currently only have one. A new account wizard streamlines adding
+    new accounts to a wallet.
+  * Multi-signature: The multi-signature account creation process has been streamlined
+    and polished. New multi-signature accounts send funds in the form of a "bare
+    multi-signature" transaction, replacing the now non-functional "P2SH multi-signature"
+    transaction that no longer works after the Genesis upgrade to the Bitcoin SV protocol.
+  * Notifications: A new notification center and notification display have been added
+    to the wallet UI. These will be used to highlight important events and information
+    for the wallet owner. Initially only one notification is posted, relating to reminding
+    the user to back up their wallet.
+  * Memory usage: Wallets now have a configurable limit on how much transaction data they
+    will hold in memory, which defaults to 32 MiB.
+  * Translations: Updated the translations from Crowdin, thanks to all people who
+    contributed translations.
+
+
+# Release 1.3.0b5
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-0b5-b8ec2ee0ef73
+  * Hardware wallets: Signing was no longer working for Ledger and Digital Bitbox.
+  * Memory usage: Wallets now have a configurable limit on how much transaction data they
+    will hold in memory, which defaults to 32 MiB.
+  * Networking: UI network status was not always updated correctly.
+  * Networking: A long standing rare error when the networking code was looking to switch main
+    servers was fixed.
+  * Testing: Python programming language type checking was enabled for more of the code base
+    ensuring that there were no bugs due to sloppy programming and bad typing.
+  * Translations: Updated the translations from Crowdin, thanks to all people who contributed
+    translations.
+  * User interface: Many of the user interfaces were doing their own style thing, and now
+    use a common base widget and it's style for form layouts.
+  * Wallet export: This was still attempting to export something that was no longer exportable
+    and was erroring.
+  * Wallet migration: Failing to import an existing pre-1.3.0 wallet could look like a successful
+    migration, at least in the migration UI.
+  * Wallet password: Changing the password of an open wallet was broken.
+
+# Release 1.3.0b4
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-0b4-d9940b75c0f1
+  * Wallet wizard: The wallet wizard has been polished and should now provide a more
+    stream-lined experience.
+  * Account wizard: The multi-signature account creation process has now been implemented.
+    Additionally the account wizard process has been streamlined.
+  * Synchronisation: The server data processing has been optimised from O(n2) to O(n).
+  * Storage: The database support has been switched to use SQLite's write-ahead log as it's
+    journaling mode. This provides a reliable experience under load, and prevents
+    "deadlock" errors both reading from and writing to the database.
+
+# Release 1.3.0b3-multisig
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-0b3-multisig-51b97311caae
+  * Error reporting: The system used to give users the option to report errors they encounter
+    as bugs on Github, was broken in some circumstances. This has been fixed and all such
+    errors are now able to be reported.
+  * REST API: The old JSON-RPC API has been removed and replaced with a new asynchronous REST-based
+    API. This provides a much more stable, responsive base for our future APIs. An example
+    application is provided to show people how they can run their own wallet application based
+    on ElectrumSV. Developed by AustEcon.
+  * Block explorers: Now that the Genesis upgrade has removed the false limit that transactions
+    must be "standard", there is no guarantee that a payment will be made to an address.
+    WhatsOnChain and satoshi.io have added support for viewing transactions that use specific
+    scripts, which allows these address-less payments to be viewed.
+  * Transaction fees: Users of other wallets are paying 500 satoshis/kB, which is half the old
+    ElectrumSV default fee of 1000 satoshis/kB. These lower fee transactions still get mined.
+    As such ElectrumSV's new default fee is 500 satoshis/kB.
+  * Proxy settings: A long standing bug in the UI to edit proxy settings, for those who have
+    already configured and enabled the proxy, has been fixed. Issue #189.
+
+# Release 1.3.0b2-multisig
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-0b2-multisig-d216604d0d9e
+  * Coin selection and privacy: A bug was introduced in 1.3.0b1 in the coin selection and
+    change-making for transactions, where all coins in the wallet were combined as part of
+    the change-making process. Reported and fixed by AustEcon.
+
+# Release 1.3.0b1-multisig
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-0b1-multisig-931f5562cc1d
+  * Database upgrade: Wallets are now a database. Only private key and signing data is
+    encrypted.
+  * Accounts: Wallets can in theory have multiple accounts of different types, but for now
+    are limited to one.
+  * Multi-signature: P2SH which is the way multi-signature wallets receive payments, is being
+    sunsetted with the Genesis upgrade. Multi-signature wallets now have the option to set
+    the type of payments they receive to "bare multisig", which is valid in a limited fashion
+    up to Genesis and in an unlimited fashion after Genesis. See the guide for more detail.
+
+# Release 1.3.0a1
+  * Release guide: https://medium.com/@roger.taylor/electrumsv-1-3-0a1-unstable-2f24c104979e
+    It is advised you read the linked guide for a definitive source of information about what
+    has changed in this release. Entries in this list are added by developers who make changes
+    and are more intended as an overview, for use in the more approachable release guide.
+  * Wallets: The wallet format has changed and when you open your wallet it will be backed up
+    and upgraded. This is an alpha level change that will change further before final release.
+    Wallets will migrate from a JSON-based file, to an sqlite-based database.
+  * Keys: Wallets can now have multiple sets of keys, and multiple sub-wallets. Sub-wallets
+    can in theory share parent keys, and derive distinct spaces using them for their own use.
+  * User interface: The user interface has had minor changes to facilitate access and usage of
+    sub-wallets. We currently only create one sub-wallet, so the changes are superficial so far.
+
+# Release 1.2.1
+  * Windows: Previously running the ElectrumSV application on Windows would not allow easy access
+    to the logging information. In the worst case, the user would just get an error about not being
+    able to run the 'electrum-sv' script. With this release it should now be possible to run from
+    the command prompt and provide the '--v=debug' option to see why ElectrumSV could not start up.
+  * Block explorers: An existing feature we have is that users can select a transaction and choose
+    to view it on a block explorer, and can select what block explorer to use in their settings.
+    Now you can also choose the 'satoshi.io' explorer in addition to the ones we already offer.
+
+# Release 1.2.0
+  * UI: Correctly set the application icon so that it is displayed for all windows. This is possibly
+    irrelevant on some operating systems, but on Windows it ensures that the application icon
+    featured in the top left-hand corner of the window is not blandly undefined but rather the
+    glorious new icon that we have.
+  * Wallet creation/restoration: Switch to cointype 0 (Bitcoin) for BIP44-derivations by default.
+    145 (BCH) and 236 (BSV) might need to be tried when restoring a wallet.
+  * Update checker: The release announcements are now expected to be signed and will only be
+    shown to the user if they are, and the signature is that of kyuupichan or rt121212121.
+  * Hardware wallets: A warning dialog has been added for hardware device usage highlighting
+    the support/quality issues with these devices.
+  * Hardware wallets: Trezor and Keepkey have had various UI-related bugs fixed.
+  * Hardware wallets: KeepKey users should update their device firmware.
+  * Hardware wallets: Digital Bitbox transaction signing now works again and has probably been
+    broken since our first release.
+  * Hardware wallets: Ledger Nano X has been added as a recognised device. It has not been tested
+    as we do not have one, but at least it will now be found.
+  * Exchange rates: BSV fiat values can now be obtained via Coinbase.
+  * Code quality: Rewrite of the networking code to use asynchronous logic. This allows the code to
+    be written in a clearer and more straightforward fashion, and both helps us ensure that it
+    works correctly and reduces the chance of bugs.
+  * Code quality: Rewrite of the SPV support functionality to work with the new asynchronous
+    networking. This includes both the synchronisation of address usage in blockchain transactions
+    and verification that located transactions are real and were included in blocks using merkle
+    proofs.
+  * Code quality: Several cleanups and improvements to internals that increase robustness and
+    stability.
+
+# Release 1.1.2
+  * When run in portable mode, ElectrumSV would fail to correctly locate the Electron Cash
+    wallets directory, and would show the portable mode ElectrumSV wallets as the Electron Cash
+    wallets. The Electron Cash portable mode wallet directory is now correctly located.
+
+# Release 1.1.1
+  * Do not display raw errors from the server when the user uses the 'Tools / Load Transaction /
+    From the blockchain' menu. They are now presented in a way where it is highlighted that
+    the actual message can be maliciously replaced by the server, and the user needs to use their
+    own good judgement to determine whether the error message is relevant or correct.
+  * Added a popup help dialog for the 'Existing Electron Cash wallets detected' message, shown
+    on the wallet selection page of the wizard.
+  * Added a popup help dialog for the 'I already have a seed' page, shown during the wallet
+    creation process in the wizard. This goes into detail about the repercussions of importing
+    seeds created in Centbee, Handcash or Moneybutton/Yours, where that seed is still being
+    used in those wallets. The gist is that it is not supported, and you're best to check with
+    those wallets before doing it.
+  * Added a popup dialog confirming how many Electron Cash wallets were imported by the user,
+    which will give the user feedback that something actually happened.
+  * Include the new logos and icons kindly provided by the Bitcoin Association. Thanks again to
+    MrScatman (https://twitter.com/bsmith12251960) for the original icon.
+  * Fix a bug where importing or sweeping a private key would error
+    (https://github.com/electrumsv/electrumsv/issues/45).
+  * Fix a bug in encrypting messages where the user entered a bad public key
+    (https://github.com/electrumsv/electrumsv/issues/46).
+
+# Release 1.1.0
+  * Check for updated versions on startup, and indicates updates in the wallet UI.
+  * Various hardware wallet fixes.  Note hardware wallets may display Bitcoin Cash
+    addresses instead of Bitcoin addresses; this is out of our control and pending
+    firmware updates.  For similar reasons they may also warn about addresses being
+    incorrect for the coin type; these warnings may be ignored.
+  * New blockchain parsing and fork handling code, replacing the historically unstable code.
+  * Tentative support for file attachments in OP_RETURN pushdatas when sending a transaction.
+  * Support for new ?sv style urls, which are also used in QR codes.
+  * Console tab improvements and warning.
+  * Addition of a preliminary log viewer.
+  * Address converter tab removed.  ElectrumSV still accepts Bitcoin Cash "cashaddr"
+    addresses but only displays Bitcoin addresses.  A future release will remove support for
+    cashaddr entirely.
+  * Removal of all plugins.  Two plugins become extensions: cosigner pool, and labelsync.
+    Audio modem support has been removed.  Virtual keyboard support is now in all password
+    fields.
+  * Testnet: testnet now uses the correct tpub, tprv derivations and not mainnet's xpub, xprv
+    derivations.
+  * Many fixes and internals improvements.
+
+# Release 1.0.0
+  * Coin splitting support.
+  * Checkpoints locking the blockchain to the Bitcoin SV fork.
+  * Bitcoin SV related block explorers.
+  * Bitcoin SV related exchange rate services.
