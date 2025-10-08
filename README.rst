@@ -5,6 +5,62 @@ Beta Release Notice
 This is a beta release of ElectrumSVP (v0.0.1-beta). Use with caution.  
 Do not store large amounts of BSV in this version.
 
+Read more about the beta release here:  https://crypto-rebel.medium.com/electrum-svp-beta-release-desktop-bitcoin-wallet-401030f93443
+
+
+Beta Warning: This is a pre-release beta version of the wallet. It may contain bugs, incomplete 
+features, or other issues. Using this wallet could result in loss of coins or other unexpected 
+behavior. Use at your own risk and do not store significant funds here. 
+
+Welcome to the Beta release of our custom ElectrumSV wallet build. This version is intended for 
+testing and feedback before the official release. We encourage users to explore the new features 
+and report any bugs or issues encountered. 
+For a full overview of changes and development notes, please visit our beta release article. 
+
+Dependencies: Upgraded major dependencies, including Bitcoinx 0.9.0. Code was refactored to 
+accommodate API changes and new features in the latest libraries. 
+
+BEEF SPV verification: Added SPV proof functions for transactions/UTXOs and addresses, enhancing 
+on-chain and off-chain verification. 
+
+BIP39 seeds: BIP39 seed support has been added as the default for wallet creation. 
+
+Sweep function: Added a new sweep function to import private keys. Supports BIP38 decryption, 
+compressed and uncompressed keys, BEEF UTXO import. 
+
+Destinations tab: The previous "Keys" tab has been revamped and renamed "Destinations", now 
+displaying addresses along with their derivation paths. 
+
+Coin control: Added freeze/unfreeze controls for addresses in the address tab. Fixed a bug where 
+frozen coins persisted incorrectly between sessions. 
+
+Block headers: Introduced a new Block Headers file format compatible with Bitcoinx 0.9.0, 
+including meta data. The headers file is synced to a recent tip and preloaded for faster startup. 
+
+Hardware wallets: Bundled hardware wallet dependencies. Feature is present but not fully 
+functional in this beta. 
+
+User interface: 
+
+Coinsplit tab hidden by default. 
+
+Other tabs reorganized with improved UI layout. 
+
+New units available: "Bitcoin", "BSV", "BSV blockchain tokens", "millibitcoin". 
+
+Explorers & Servers: Updated block explorers and removed outdated ones. Default server list 
+updated for reliability. 
+
+AppImage improvements: Improved Linux compatibility. No longer requires libfuse2 on some systems, 
+maintaining full compatibility with TAILS. 
+
+Testing notes: As this is a beta release, please be cautious with hardware wallets, and report any 
+issues encountered during usage. Your feedback is valuable for the upcoming official release. 
+
+Thank you for testing this beta release and helping us improve the wallet! 
+
+
+
 
 
 
