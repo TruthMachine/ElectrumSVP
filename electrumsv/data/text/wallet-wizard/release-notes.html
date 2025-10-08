@@ -1,0 +1,66 @@
+<html>
+    <body>
+        <p style="color:red; font-weight:bold;">
+            <b>Beta Warning:</b> This is a pre-release beta version of the wallet. It may contain bugs, incomplete features, or other issues. 
+            Using this wallet could result in <b>loss of coins</b> or other unexpected behavior. Use at your own risk and do not store significant funds here.
+        </p>
+
+        <p>
+            Welcome to the <b>Beta release</b> of our custom ElectrumSV wallet build. This version is intended for testing and feedback before the official release. 
+            We encourage users to explore the new features and report any bugs or issues encountered.
+        </p>
+
+        <p>
+            For a full overview of changes and development notes, please visit our <a href="https://crypto-rebel.medium.com/electrum-svp-beta-release-desktop-bitcoin-wallet-401030f93443">beta release article</a>.
+        </p>
+
+        <ul>
+            <li><p>
+                <b>Dependencies</b>: Upgraded major dependencies, including <b>Bitcoinx 0.9.0</b>. Code was refactored to accommodate API changes and new features in the latest libraries.
+            </p></li>
+            <li><p>
+                <b>BEEF SPV verification</b>: Added SPV proof functions for transactions/UTXOs and addresses, enhancing on-chain and off-chain verification.
+            </p></li>
+            <li><p>
+                <b>BIP39 seeds</b>: BIP39 seed support has been added as the default for wallet creation.
+            </p></li>
+            <li><p>
+                <b>Sweep function</b>: Added a new sweep function to import private keys. Supports BIP38 decryption, compressed and uncompressed keys, BEEF UTXO import.
+            </p></li>
+            <li><p>
+                <b>Destinations tab</b>: The previous "Keys" tab has been revamped and renamed "Destinations", now displaying addresses along with their derivation paths.
+            </p></li>
+            <li><p>
+                <b>Coin control</b>: Added freeze/unfreeze controls for addresses in the address tab. Fixed a bug where frozen coins persisted incorrectly between sessions.
+            </p></li>
+            <li><p>
+                <b>Block headers</b>: Introduced a new Block Headers file format compatible with Bitcoinx 0.9.0, including meta data. The headers file is synced to a recent tip and preloaded for faster startup.
+            </p></li>
+            <li><p>
+                <b>Hardware wallets</b>: Bundled hardware wallet dependencies. Feature is present but not fully functional in this beta.
+            </p></li>
+            <li><p>
+                <b>User interface</b>: 
+                <ul>
+                    <li>Coinsplit tab hidden by default.</li>
+                    <li>Other tabs reorganized with improved UI layout.</li>
+                    <li>New units available: "Bitcoin", "BSV", "BSV blockchain tokens", "millibitcoin".</li>
+                </ul>
+            </p></li>
+            <li><p>
+                <b>Explorers & Servers</b>: Updated block explorers and removed outdated ones. Default server list updated for reliability.
+            </p></li>
+            <li><p>
+                <b>AppImage improvements</b>: Improved Linux compatibility. No longer requires <code>libfuse2</code> on some systems, maintaining full compatibility with TAILS.
+            </p></li>
+            <li><p>
+                <b>Testing notes</b>: As this is a beta release, please be cautious with hardware wallets, and report any issues encountered during usage. Your feedback is valuable for the upcoming official release.
+            </p></li>
+        </ul>
+
+        <p>
+            Thank you for testing this beta release and helping us improve the wallet!
+        </p>
+    </body>
+</html>
+
