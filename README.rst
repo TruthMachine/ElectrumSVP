@@ -1,3 +1,10 @@
+Note: beta is now over, download official first release here:  https://github.com/TruthMachine/ElectrumSVP/releases/tag/v0.1.0
+
+
+
+
+
+
 
 Beta Release Notice
 ==================
