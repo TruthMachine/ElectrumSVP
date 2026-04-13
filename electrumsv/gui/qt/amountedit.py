@@ -125,7 +125,7 @@ class BTCSatsByteEdit(AmountEdit):
         return 2
 
     def base_unit(self):
-        return 'sats/B'
+        return 'sats/kB'
 
     def get_amount(self):
         try:

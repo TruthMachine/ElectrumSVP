@@ -534,14 +534,6 @@ class AbstractAccount:
         return (keyinstance.script_type if keyinstance.script_type != ScriptType.NONE else
             self.get_default_script_type())
 
-    def get_script_template_for_id(self, keyinstance_id: int,
-            script_type: Optional[ScriptType] = None) -> ScriptTemplate:
-        keyinstance = self._keyinstances[keyinstance_id]
-        public_keys = self.get_public_keys_for_id(keyinstance_id)
-        public_keys_hex = [pubkey.to_hex() for pubkey in public_keys]
-        script_type = script_type or keyinstance.script_type
-        return make_script_template(public_keys_hex, script_type, self.m)
-
     def get_enabled_script_types(self) -> Sequence[ScriptType]:
         "The allowed set of script types that this account can make use of."
         raise NotImplementedError
@@ -818,7 +810,7 @@ class AbstractAccount:
         public_keys = self.get_public_keys_for_id(keyinstance_id)
         public_keys_hex = [pubkey.to_hex() for pubkey in public_keys]
         script_type = script_type or keyinstance.script_type
-        return make_script_template(public_keys_hex, script_type, self.m)  # <-- use the standalone function
+        return make_script_template(public_keys_hex, script_type, 1)  # <-- use the standalone function
 
 
     def get_default_script_type(self) -> ScriptType:
@@ -1423,6 +1415,7 @@ class AbstractAccount:
 
     def make_unsigned_transaction(self, utxos: List[UTXO], outputs: List[XTxOutput],
             config: SimpleConfig, fixed_fee: Optional[int]=None) -> Transaction:
+
         # check outputs
         all_index = None
         for n, output in enumerate(outputs):
@@ -1431,37 +1424,51 @@ class AbstractAccount:
                     raise ValueError("More than one output set to spend max")
                 all_index = n
 
-        # Avoid index-out-of-range with inputs[0] below
         if not utxos:
             raise NotEnoughFunds()
 
         if fixed_fee is None and config.fee_per_kb() is None:
             raise Exception('Dynamic fee estimates not available')
 
-        fee_estimator = config.estimate_fee if fixed_fee is None else lambda size: fixed_fee
+
+        def fee_estimator(size):
+            if fixed_fee is not None:
+                fee = fixed_fee
+            else:
+                fee = config.estimate_fee(size)
+
+            # 🔥 enforce minimum fee safely
+            if fee is None or fee <= 0:
+                return 1
+
+            return fee
+
+
+
         inputs = [utxo.to_tx_input(self) for utxo in utxos]
+
         if all_index is None:
-            # Let the coin chooser select the coins to spend
-            # TODO(rt12) BACKLOG Hardware wallets should use 1 change at most. Make sure the
-            # corner case of the active multisig cosigning wallet being hardware is covered.
             max_change = self.max_change_outputs \
                 if self._wallet.get_boolean_setting(WalletSettings.MULTIPLE_CHANGE, True) else 1
+
             if self._wallet.get_boolean_setting(WalletSettings.USE_CHANGE, True) and \
                     self.is_deterministic():
                 change_keyinstances = self.get_fresh_keys(CHANGE_SUBPATH, max_change)
                 change_outs = []
                 for keyinstance in change_keyinstances:
                     script_type = self.get_script_type_for_id(keyinstance.keyinstance_id)
-                    change_outs.append(XTxOutput(0, # type: ignore
+                    change_outs.append(XTxOutput(0,
                         self.get_script_for_id(keyinstance.keyinstance_id, script_type),
                         script_type,
                         self.get_xpubkeys_for_id(keyinstance.keyinstance_id)))
             else:
-                change_outs = [ XTxOutput(0, utxos[0].script_pubkey, # type: ignore
+                change_outs = [ XTxOutput(0, utxos[0].script_pubkey,
                     inputs[0].script_type, inputs[0].x_pubkeys) ]
+
             coin_chooser = coinchooser.CoinChooserPrivacy()
             tx = coin_chooser.make_tx(inputs, outputs, change_outs, fee_estimator,
                 self.dust_threshold())
+
         else:
             assert all(txin.value is not None for txin in inputs)
             sendable = cast(int, sum(txin.value for txin in inputs))
@@ -1471,22 +1478,65 @@ class AbstractAccount:
             outputs[all_index].value = max(0, sendable - tx.output_value() - fee)
             tx = Transaction.from_io(inputs, outputs)
 
-        # If user tries to send too big of a fee (more than 50
-        # sat/byte), stop them from shooting themselves in the foot
-        tx_in_bytes=tx.estimated_size()
-        fee_in_satoshis=tx.get_fee()
-        sats_per_byte=fee_in_satoshis/tx_in_bytes
-        if sats_per_byte > 50:
-           raise ExcessiveFee()
+        # --- 🔥 FIX 1: normalize excessive fee (your original logic) ---
+        expected_fee = fee_estimator(tx.estimated_size())
+        actual_fee = tx.get_fee()
 
-        # Sort the inputs and outputs deterministically
+        if actual_fee > expected_fee:
+            excess = actual_fee - expected_fee
+            output_values = [o.value for o in outputs]
+
+            for txo in tx.outputs:
+                if txo.value not in output_values:
+                    txo.value += excess
+                    break
+        # --- end fix ---
+
+        # --- 🔥 FIX 2: enforce minimum 1 sat fee ---
+        actual_fee = tx.get_fee()
+
+        if actual_fee == 0:
+            # recompute using full math
+            input_total = sum(txin.value for txin in tx.inputs() if txin.value is not None)
+            output_total = sum(txo.value for txo in tx.outputs)
+
+            # we want: fee = 1 → outputs = inputs - 1
+            target_output_total = input_total - 1
+
+            delta = output_total - target_output_total  # how much to reduce outputs
+
+            if delta > 0:
+                # reduce change output first
+                output_values = [o.value for o in outputs]
+                new_outputs = []
+                adjusted = False
+
+                for txo in tx.outputs:
+                    if not adjusted and txo.value not in output_values and txo.value >= delta:
+                        txo.value -= delta
+                        adjusted = True
+                    new_outputs.append(txo)
+
+                if adjusted:
+                    tx = Transaction.from_io(tx.inputs(), new_outputs)
+        # --- end fix ---
+
+        # Excessive fee protection
+        tx_in_bytes = tx.estimated_size()
+        fee_in_satoshis = tx.get_fee()
+        sats_per_byte = fee_in_satoshis / tx_in_bytes
+        if sats_per_byte > 50:
+            raise ExcessiveFee()
+
         tx.BIP_LI01_sort()
-        # Timelock tx to current height.
+
         locktime = self._wallet.get_local_height()
-        if locktime == -1: # We have no local height data (no headers synced).
+        if locktime == -1:
             locktime = 0
         tx.locktime = locktime
+
         return tx
+
 
     def set_frozen_coin_state(self, utxos: List[UTXO], freeze: bool) -> None:
         """

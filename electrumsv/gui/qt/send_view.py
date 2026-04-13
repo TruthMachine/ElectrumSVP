@@ -356,6 +356,16 @@ class SendView(QWidget):
         self._main_window.update_status_bar()
         self.update_widgets()
 
+    def set_paytomany_text(self, text: str) -> None:
+        # Enable pay-to-many mode
+        self._payto_e.paytomany()
+
+        # Set the text
+        self._payto_e.setText(text)
+
+        # Trigger fee recalculation
+        self.update_fee()
+
     def update_fee(self) -> None:
         self._require_fee_update = time.monotonic()
 
@@ -521,9 +531,9 @@ class SendView(QWidget):
         fee = tx.get_fee()
 
         msg = []
-        if fee < round(tx.estimated_size() * 0.5):
+        if fee < round(tx.estimated_size() * 0.0999):
             msg.append(_('Warning') + ': ' +
-                _('The fee is less than 500 sats/kb. It may take a very long time to confirm.'))
+                _('The fee is less than 100 sats/kb. Some miners may reject the tx, and it could take longer to confirm.'))
         msg.append("")
         msg.append(_("Enter your password to proceed"))
 

@@ -19,3 +19,5 @@ urllib3>=1.26.15
 yarl>=1.8.2
 websocket-client>=1.5.1
 
+PySocks
+bip38

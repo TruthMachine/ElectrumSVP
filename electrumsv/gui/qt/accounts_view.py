@@ -7,7 +7,7 @@ import time
 from typing import List, Optional, Sequence
 import weakref
 
-from PyQt5.QtCore import QEvent, QItemSelectionModel, QModelIndex, pyqtSignal, QSize, Qt
+from PyQt5.QtCore import QEvent, QItemSelectionModel, QModelIndex, pyqtSignal, QSize, QTimer, Qt
 from PyQt5.QtGui import QPainter, QPaintEvent
 from PyQt5.QtWidgets import (QLabel, QListWidget, QListWidgetItem, QMenu, QSplitter, QTabWidget,
     QTextEdit, QVBoxLayout)
@@ -32,6 +32,7 @@ class AccountsView(QSplitter):
         super().__init__(main_window)
 
         self._logger = logs.get_logger("accounts-view")
+        self._main_window_ref = main_window 
         self._main_window = weakref.proxy(main_window)
         self._wallet = wallet
 
@@ -191,7 +192,7 @@ class AccountsView(QSplitter):
         menu.addAction(_("&Information"),
             partial(self._show_account_information, account_id))
         seed_menu = menu.addAction(_("View &Secured Data (Seed Phrase)"),
-            partial(self._view_secured_data, main_window=main_window, account_id=account_id))
+            partial(self._view_secured_data, main_window=self._main_window_ref, account_id=account_id))
         seed_menu.setEnabled(self._can_view_secured_data(account))
         menu.addAction(_("&Rename"),
             partial(self._rename_account, account_id))
@@ -253,7 +254,11 @@ class AccountsView(QSplitter):
 
     def _show_account_information(self, account_id: int) -> None:
         dialog = AccountDialog(self._main_window, self._wallet, account_id, self)
-        dialog.exec_()
+        # Non-modal to prevent blocking
+        dialog.setWindowModality(Qt.NonModal)
+        dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
 
     def _generate_destinations(self, account_id) -> None:
         from . import payment_destinations_dialog
@@ -268,22 +273,36 @@ class AccountsView(QSplitter):
             and not account.involves_hardware_wallet() \
             and account.type() != AccountType.IMPORTED_PRIVATE_KEY
 
+
     @protected
     def _view_secured_data(self, main_window: ElectrumWindow, account_id: int=-1,
             password: Optional[str]=None) -> None:
-        # account_id is a keyword argument so that 'protected' can identity the correct wallet
-        # window to do the password request in the context of.
         account = self._wallet.get_account(account_id)
-        if self._can_view_secured_data(account):
-            keystore = account.get_keystore()
-            from .secured_data_dialog import SecuredDataDialog
-            d = SecuredDataDialog(self._main_window, self, keystore, password)
-            d.exec_()
-        elif isinstance(account, MultisigAccount):
-            self._show_account_information(account_id)
-        else:
-            MessageBox.show_message(_("This type of account has no secured data. You are advised "
-                "to manually back up this wallet."), self._main_window.reference())
+
+        def show_dialog():
+            if self._can_view_secured_data(account):
+                keystore = account.get_keystore()
+                from .secured_data_dialog import SecuredDataDialog
+                # Use the strong reference as parent
+                d = SecuredDataDialog(self._main_window_ref, self._main_window_ref, keystore, password)
+                d.setWindowModality(Qt.ApplicationModal)
+                d.show()
+                d.raise_()
+                d.activateWindow()
+            elif isinstance(account, MultisigAccount):
+                self._show_account_information(account_id)
+            else:
+                from .util import MessageBox
+                MessageBox.show_message(
+                    _("This type of account has no secured data. You are advised "
+                      "to manually back up this wallet."),
+                    self._main_window_ref.reference()
+                )
+
+        # Schedule dialog opening on the main event loop
+        QTimer.singleShot(0, show_dialog)
+
+
 
     @protected
     def _import_privkey(self, main_window: ElectrumWindow, account_id: int=-1,
@@ -416,4 +435,6 @@ class AccountsView(QSplitter):
                     transaction.writerow([key_text, pk])
             else:
                 f.write(json.dumps(pklist, indent = 4))
+
+
 

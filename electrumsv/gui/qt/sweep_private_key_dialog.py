@@ -34,19 +34,6 @@ def wallet_has_accounts(wallet) -> bool:
     return False
 
 
-class SweepWarningDialog(QDialog):
-    def __init__(self, parent=None, message: str = ""):
-        super().__init__(parent)
-        self.setWindowTitle("Sweep Warning")
-        layout = QVBoxLayout(self)
-        label = QLabel(message)
-        label.setWordWrap(True)
-        layout.addWidget(label)
-        ok_button = QPushButton("OK")
-        ok_button.clicked.connect(self.accept)
-        layout.addWidget(ok_button)
-
-
 class SweepPrivateKeyDialog(QDialog):
     def __init__(self, main_window: "ElectrumWindow") -> None:
         super().__init__(main_window)
@@ -56,7 +43,6 @@ class SweepPrivateKeyDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
-        # Private key input
         layout.addWidget(QLabel("Private key (WIF or BIP38):"))
         pk_row = QHBoxLayout()
         self.pk_input = QLineEdit()
@@ -69,22 +55,18 @@ class SweepPrivateKeyDialog(QDialog):
         pk_row.addWidget(self.pk_qr_btn)
         layout.addLayout(pk_row)
 
-        # BIP38 passphrase
         self.bip38_label = QLabel("BIP38 Passphrase:")
         layout.addWidget(self.bip38_label)
         self.bip38_input = QLineEdit()
-        self.bip38_input.setMinimumWidth(420)
         self.bip38_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.bip38_input)
         self.bip38_label.setVisible(False)
         self.bip38_input.setVisible(False)
 
-        # Uncompressed checkbox
         self.uncompressed_checkbox = QCheckBox("Use uncompressed key (for BIP38)")
         self.uncompressed_checkbox.setVisible(False)
         layout.addWidget(self.uncompressed_checkbox)
 
-        # Destination address input
         layout.addWidget(QLabel("Destination address (required):"))
         addr_row = QHBoxLayout()
         self.addr_input = QLineEdit()
@@ -96,38 +78,28 @@ class SweepPrivateKeyDialog(QDialog):
         addr_row.addWidget(self.addr_qr_btn)
         layout.addLayout(addr_row)
 
-        # Optional BEEF JSON
-        self.beef_checkbox = QCheckBox("Use optional BEEF JSON")
+        self.beef_checkbox = QCheckBox("Use optional BREAD/BEEF JSON")
         self.beef_checkbox.stateChanged.connect(self.toggle_beef_input)
         layout.addWidget(self.beef_checkbox)
 
         self.beef_input = QTextEdit()
-        self.beef_input.setPlaceholderText("Paste BEEF JSON here...")
-        self.beef_input.setMinimumWidth(420)
-        self.beef_input.setMinimumHeight(120)
+        self.beef_input.setPlaceholderText("Paste BREAD/BEEF JSON here...")
         self.beef_input.setVisible(False)
         layout.addWidget(self.beef_input)
 
-        # Custom fee checkbox
-        self.custom_fee_checkbox = QCheckBox("Use custom fee (sat/byte)")
+        self.custom_fee_checkbox = QCheckBox("Use custom fee (sat/kB)")
         self.custom_fee_checkbox.stateChanged.connect(self.toggle_fee_input)
         layout.addWidget(self.custom_fee_checkbox)
 
-        # Fee input, hidden by default
         self.fee_input = QLineEdit()
-        self.fee_input.setPlaceholderText("Enter fee in sat/byte (e.g., 1.5)")
-        self.fee_input.setMinimumWidth(200)
+        self.fee_input.setPlaceholderText("Enter fee in sat/kB (e.g., 100)")
         self.fee_input.setVisible(False)
         layout.addWidget(self.fee_input)
 
-        # Sweep button
         self.sweep_button = QPushButton("Sweep")
         self.sweep_button.clicked.connect(self._on_sweep_clicked)
-        self.sweep_button.setDefault(True)
-        self.sweep_button.setAutoDefault(True)
         layout.addWidget(self.sweep_button)
 
-        # Make Enter trigger the sweep button
         for widget in [self.pk_input, self.addr_input, self.bip38_input, self.fee_input]:
             widget.returnPressed.connect(self.sweep_button.click)
 
@@ -159,71 +131,94 @@ class SweepPrivateKeyDialog(QDialog):
             self.addr_input.setText(data)
 
     def _wipe_sensitive_data(self, *args) -> None:
-        """Overwrite sensitive input fields to reduce memory exposure."""
-        for field in args:
-            if field is not None:
-                field_len = len(field)
-                field = '\0' * field_len
         self.pk_input.clear()
         self.bip38_input.clear()
         self.fee_input.clear()
 
+    def _confirm_low_fee(self, fee_kb: float) -> bool:
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Low Fee Warning")
+        dlg.setText(
+            f"The fee rate ({fee_kb} sat/kB) is below the minimum required by some miners (~100 sat/kB).\n\n"
+            "Transaction confirmations may be delayed.\n\n"
+            "Do you want to continue anyway?"
+        )
+        dlg.setIcon(QMessageBox.Warning)
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
+        dlg.setDefaultButton(QMessageBox.Cancel)
+        return dlg.exec_() == QMessageBox.Yes
+
     def _on_sweep_clicked(self) -> None:
+        def show_msg(title, msg, icon=QMessageBox.Information):
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle(title)
+            dlg.setText(msg)
+            dlg.setIcon(icon)
+            dlg.exec_()
+
         if self.wallet is None or not wallet_has_accounts(self.wallet):
-            QMessageBox.warning(self, "Error", "Wallet has no accounts or is not loaded.")
+            show_msg("Warning", "Wallet not loaded.", QMessageBox.Warning)
             return
 
         privkey = self.pk_input.text().strip()
         destination = self.addr_input.text().strip()
-        bip38_passphrase = self.bip38_input.text().strip() if self.bip38_input.isVisible() else None
-        use_uncompressed = self.uncompressed_checkbox.isChecked()
-        beef_utxos: Optional[List[Dict]] = None
-
-        # Handle optional fee
-        fee_rate_sat_per_byte = 1.0
-        if self.custom_fee_checkbox.isChecked() and self.fee_input.text().strip():
-            try:
-                fee_rate_sat_per_byte = max(0.1, float(self.fee_input.text().strip()))
-            except Exception:
-                QMessageBox.warning(self, "Error", "Fee must be a positive number.")
-                return
 
         if not privkey or not destination:
-            QMessageBox.warning(self, "Error", "Private key and destination are required.")
+            show_msg("Warning", "Private key and destination required.", QMessageBox.Warning)
             return
+
         if not is_address_valid(destination):
-            QMessageBox.warning(self, "Error", "Invalid destination address.")
+            show_msg("Warning", "Invalid destination address.", QMessageBox.Warning)
             return
 
         daemon = getattr(app_state, 'daemon', None)
-        if daemon is None or getattr(daemon, 'network', None) is None or not daemon.network.is_connected():
-            QMessageBox.warning(self, "Error", "Network is not available or connected.")
+        if not daemon or not daemon.network or not daemon.network.is_connected():
+            show_msg("Warning", "Network not connected.", QMessageBox.Warning)
             return
 
-        # Handle BEEF JSON if used
+        bip38_passphrase = self.bip38_input.text().strip() if self.bip38_input.isVisible() else None
+        use_uncompressed = self.uncompressed_checkbox.isChecked()
+        beef_utxos = None
+
         if self.beef_checkbox.isChecked():
-            beef_json = self.beef_input.toPlainText().strip()
-            if not beef_json:
-                QMessageBox.warning(self, "Error", "BEEF JSON selected but no JSON provided.")
-                return
             try:
-                parsed = json.loads(beef_json)
-                if "utxos" not in parsed:
-                    QMessageBox.warning(self, "Error", "BEEF JSON must contain 'utxos'.")
-                    return
+                parsed = json.loads(self.beef_input.toPlainText())
                 beef_utxos = parsed["utxos"]
             except Exception as e:
-                logger.exception("Failed to parse BEEF JSON")
-                QMessageBox.warning(self, "Error", f"Invalid BEEF JSON: {e}")
+                show_msg("Error", f"Invalid BEEF JSON: {e}", QMessageBox.Warning)
                 return
 
-        # Sweep transaction
-        try:
-            # Compute total fee satoshis by rounding after multiplying by estimated tx size
-            # Sweep helper expects int fee in satoshis
-            estimated_size = 10 + len(beef_utxos or []) * 148 + 34  # single output, fallback if no BEEF
-            fee_satoshis = max(1, int(math.ceil(estimated_size * fee_rate_sat_per_byte)))
+        fee_rate_sat_per_byte = 1.0
 
+        if self.custom_fee_checkbox.isChecked():
+            try:
+                fee_kb = float(self.fee_input.text())
+
+                if fee_kb <= 0:
+                    raise ValueError()
+
+                # ✅ NEW HARD CAP GUARDRAIL
+                if fee_kb > 1000:
+                    show_msg(
+                        "Fee Too High",
+                        "Fee exceeds 1000 sat/kB.\n\n"
+                        "This is unusually high and may indicate you accidentally entered "
+                        "a total amount instead of a fee rate.",
+                        QMessageBox.Warning
+                    )
+                    return
+
+                if fee_kb < 100:
+                    if not self._confirm_low_fee(fee_kb):
+                        return
+
+                fee_rate_sat_per_byte = fee_kb / 1000.0
+
+            except Exception:
+                show_msg("Warning", "Invalid fee value.", QMessageBox.Warning)
+                return
+
+        try:
             tx = sweep_single_privkey(
                 wif_privkey=privkey,
                 destination=destination,
@@ -234,37 +229,28 @@ class SweepPrivateKeyDialog(QDialog):
                 use_uncompressed=use_uncompressed,
                 fee_rate_sat_per_byte=fee_rate_sat_per_byte
             )
+
         except Exception as e:
             logger.exception("Sweep failed")
-            dlg = SweepWarningDialog(self, f"Sweep failed: {str(e)}")
-            dlg.exec_()
-            self._wipe_sensitive_data(privkey, bip38_passphrase)
+            show_msg("Sweep Failed", str(e), QMessageBox.Critical)
+            self._wipe_sensitive_data()
             return
 
         if not tx:
-            dlg = SweepWarningDialog(self, "No transaction could be created (possibly no funds).")
-            dlg.exec_()
-            self._wipe_sensitive_data(privkey, bip38_passphrase)
+            show_msg("Sweep Failed", "No funds found.", QMessageBox.Warning)
+            self._wipe_sensitive_data()
             return
 
-        # Broadcast
         try:
             result = self.main_window.broadcast_transaction(self.wallet, tx)
-            if isinstance(result, tuple) and len(result) >= 2 and result[0] != 1:
-                dlg = SweepWarningDialog(self, f"Transaction could not be broadcast:\n{result[1]}")
-                dlg.exec_()
-                self._wipe_sensitive_data(privkey, bip38_passphrase)
+            if isinstance(result, tuple) and result[0] != 1:
+                show_msg("Broadcast Failed", result[1], QMessageBox.Warning)
                 return
-            QMessageBox.information(self, "Sweep Successful", "Transaction broadcasted successfully!")
-        except Exception as e:
-            logger.exception("Broadcast failed")
-            err_msg = str(e)
-            if "Missing inputs" in err_msg or "transaction was rejected" in err_msg:
-                dlg = SweepWarningDialog(self, "The transaction could not be broadcast. "
-                                               "This usually happens if the UTXOs are already spent or invalid.")
-                dlg.exec_()
-            else:
-                QMessageBox.critical(self, "Broadcast Failed", f"Broadcast failed: {err_msg}")
-        finally:
-            self._wipe_sensitive_data(privkey, bip38_passphrase)
 
+            show_msg("Success", "Transaction broadcasted.")
+
+        except Exception as e:
+            show_msg("Broadcast Failed", str(e), QMessageBox.Critical)
+
+        finally:
+            self._wipe_sensitive_data()

@@ -1,66 +1,104 @@
 <html>
     <body>
-        <p style="color:red; font-weight:bold;">
-            <b>Beta Warning:</b> This is a pre-release beta version of the wallet. It may contain bugs, incomplete features, or other issues. 
-            Using this wallet could result in <b>loss of coins</b> or other unexpected behavior. Use at your own risk and do not store significant funds here.
+        <p style="color:green; font-weight:bold;">
+            <b>ElectrumSVP 0.1.0:</b> Initial stable release.
         </p>
 
         <p>
-            Welcome to the <b>Beta release</b> of our custom ElectrumSV wallet build. This version is intended for testing and feedback before the official release. 
-            We encourage users to explore the new features and report any bugs or issues encountered.
+            This marks the first official release of <b>ElectrumSVP</b>, evolving from the beta into a more stable, refined, and feature-complete wallet.
+            This version focuses on improved transaction safety, deterministic behavior, and enhanced control over coins and fees.
         </p>
 
         <p>
-            For a full overview of changes and development notes, please visit our <a href="https://crypto-rebel.medium.com/electrum-svp-beta-release-desktop-bitcoin-wallet-401030f93443">beta release article</a>.
+            For a full overview and usage guide, please refer to the 
+            <a href="https://electrumsv.io/articles/2026/electrumsvp-0_1_0.html" target="_blank">
+                official release article
+            </a>.
         </p>
 
+        
         <ul>
             <li><p>
-                <b>Dependencies</b>: Upgraded major dependencies, including <b>Bitcoinx 0.9.0</b>. Code was refactored to accommodate API changes and new features in the latest libraries.
+                <b>BREAD verification format</b>: Replaced the previous SPV BEEF verify implementation from the beta version, with the new <b>BREAD</b> format (Blockchain Referenced Evidence and Data) for transaction and UTXO handling.
+                This improves consistency, simplifies validation, and lays the foundation for future enhancements. BREAD is a subset of BEEF, but simpler and only deals with verifying funds, rather than tx ancestry.
             </p></li>
+
             <li><p>
-                <b>BEEF SPV verification</b>: Added SPV proof functions for transactions/UTXOs and addresses, enhancing on-chain and off-chain verification.
+                <b>Fee system overhaul</b>: 
+                Standardized fee handling to <b>satoshis per kilobyte (sats/KB)</b> for predictable and transparent transaction costs.
+                Fixed multiple edge-case bugs that could result in incorrect fee calculations or unintended 0 fees. A 1 sat minimum fee per transaction is now enforced.
             </p></li>
+
             <li><p>
-                <b>BIP39 seeds</b>: BIP39 seed support has been added as the default for wallet creation.
+                <b>Fee safety guard rails</b>:
+                Added protections to help prevent accidental overpayment of transaction fees, including improved validation and warning thresholds.
             </p></li>
+
             <li><p>
-                <b>Sweep function</b>: Added a new sweep function to import private keys. Supports BIP38 decryption, compressed and uncompressed keys, BEEF UTXO import.
-            </p></li>
-            <li><p>
-                <b>Destinations tab</b>: The previous "Keys" tab has been revamped and renamed "Destinations", now displaying addresses along with their derivation paths.
-            </p></li>
-            <li><p>
-                <b>Coin control</b>: Added freeze/unfreeze controls for addresses in the address tab. Fixed a bug where frozen coins persisted incorrectly between sessions.
-            </p></li>
-            <li><p>
-                <b>Block headers</b>: Introduced a new Block Headers file format compatible with Bitcoinx 0.9.0, including meta data. The headers file is synced to a recent tip and preloaded for faster startup.
-            </p></li>
-            <li><p>
-                <b>Hardware wallets</b>: Bundled hardware wallet dependencies. Feature is present but not fully functional in this beta.
-            </p></li>
-            <li><p>
-                <b>User interface</b>: 
+                <b>UTXO splitting (pay-to-many)</b>:
+                Added advanced coin splitting tool under Account menu > Generate address batch, including:
                 <ul>
-                    <li>Coinsplit tab hidden by default.</li>
-                    <li>Other tabs reorganized with improved UI layout.</li>
-                    <li>New units available: "Bitcoin", "BSV", "BSV blockchain tokens", "millibitcoin".</li>
+                    <li>Fixed-amount splits</li>
+                    <li>Randomized output splitting for improved privacy</li>
+                    <li>Enhanced pay-to-many workflow</li>
+                </ul>
+                These tools allow users to prepare and manage coins more effectively, currently a 1000 utxo limit per tx, and 300 sat minimum per output. Keep in mind many outputs may slow down BREAD verification.
+            </p></li>
+
+            <li><p>
+                <b>Sweep private key</b>:
+                Improved sweep functionality for importing funds from private keys. Supports 
+                Supports legacy (P2PKH) for compressed and uncompressed keys and BIP38 encryption, as well as BEEF/BREAD utxo import, and automatic transaction creation and broadcast.
+            </p></li>
+
+            <li><p>
+                <b>Coin control & UTXO management</b>:
+                Improved manual coin selection and management tools.
+                Users can "send from" certain utxos as well as freeze/unfreeze addresses and UTXOs, enabling better control over spending and privacy.
+            </p></li>
+
+            <li><p>
+                <b>Destinations tab improvements</b>:
+                Improved handling of large scripts and output display.
+                Better usability when working with multiple outputs and complex transactions.
+            </p></li>
+
+            <li><p>
+                <b>Hardware wallet support removed</b>:
+                Hardware wallet functionality has been deprecated and removed in this release.
+                This simplifies the codebase and reduces potential sources of instability. Former HW wallet users are encouraged to use a multisig setup for more security.
+            </p></li>
+
+            <li><p>
+                <b>Block headers & networking</b>:
+                Continued improvements to header syncing and reliability.
+                Updated server handling for more consistent connections.
+            </p></li>
+
+            <li><p>
+                <b>User interface improvements</b>:
+                <ul>
+                    <li>General UI cleanup and layout improvements</li>
+                    <li>Improved visibility for transaction outputs and amounts</li>
+                    <li>More consistent behavior across wallet tabs</li>
                 </ul>
             </p></li>
+
             <li><p>
-                <b>Explorers & Servers</b>: Updated block explorers and removed outdated ones. Default server list updated for reliability.
+                <b>AppImage & portability</b>:
+                Continued improvements to Linux AppImage builds for portability and compatibility.
+                Fully self-contained builds remain compatible with environments such as TAILS.
             </p></li>
+
             <li><p>
-                <b>AppImage improvements</b>: Improved Linux compatibility. No longer requires <code>libfuse2</code> on some systems, maintaining full compatibility with TAILS.
-            </p></li>
-            <li><p>
-                <b>Testing notes</b>: As this is a beta release, please be cautious with hardware wallets, and report any issues encountered during usage. Your feedback is valuable for the upcoming official release.
+                <b>Bug fixes</b>:
+                Numerous fixes across transaction creation, fee calculation, UI behavior, and edge-case handling.
             </p></li>
         </ul>
 
         <p>
-            Thank you for testing this beta release and helping us improve the wallet!
+            This release represents a major step forward in stability and usability. 
+            Further improvements will continue to focus on reliability, transparency, and user control.
         </p>
     </body>
 </html>
-

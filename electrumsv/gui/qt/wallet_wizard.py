@@ -293,7 +293,8 @@ class SplashScreenPage(QWizardPage):
         # Version label
         #version_label = QLabel(f"<b><big>v{PACKAGE_VERSION}</big></b>")
         #change for beta version
-        version_label = QLabel("<b><big>vBeta</big></b>")
+        version_label = QLabel("<b><big>ElectrumSVP v0.1.0</big></b><br><small>(based on ElectrumSV 1.3.16)</small>")
+        #version_label = QLabel("<b><big>ElectrumSVP v0.1.0 (based on ElectrumSV 1.3.16)</big></b>")
         version_label.setAlignment(Qt.AlignHCenter)
         version_label.setTextFormat(Qt.RichText)
         layout.addWidget(version_label)
@@ -303,10 +304,8 @@ class SplashScreenPage(QWizardPage):
         # Release label with improved formatting
         release_text = f"""
         <div style="font-size:10pt; text-align:center;">
-            <p style="font-weight:bold; color:#d9534f;">
-                ⚠️ {_("This is a BETA release of ElectrumSVP. "
-                        "It may contain bugs and should only be used for testing with small amounts. "
-                        "Use at your own risk.")}
+            <p style="font-weight:bold;">
+                {_("ElectrumSVP is a community-maintained fork of the ElectrumSV wallet, with ongoing support and improvements.")}
             </p>
             <p>
                 {_("Bitcoin SV is the original Bitcoin which adheres to the founding whitepaper and "

@@ -4,13 +4,13 @@ import json
 import os
 import hashlib
 import random
+import platform
 from bitcoinx import Address, Bitcoin
 from PyQt5.QtWidgets import (
-        QWidget, QPushButton, QVBoxLayout, QTextEdit, QDialog, QLabel,
-        QHBoxLayout, QSizePolicy, QApplication, QFileDialog, QScrollArea, QCheckBox
+    QWidget, QPushButton, QVBoxLayout, QTextEdit, QDialog, QLabel,
+    QHBoxLayout, QSizePolicy, QApplication, QFileDialog, QScrollArea, QCheckBox, QSplitter
 )
 from PyQt5.QtCore import Qt
-
 from electrumsv.gui.qt.util import read_QIcon
 from electrumsv.i18n import _
 
@@ -31,16 +31,65 @@ SERVERS = {
 
 TIMEOUT = 30  # seconds
 
-# --- Paths ---
+# --- Paths & platform user dir ---
+def user_data_dir() -> str:
+    """Return platform-specific data directory for ElectrumSV (writable by user)."""
+    system = platform.system()
+    if system == "Darwin":
+        path = os.path.expanduser("~/Library/Application Support/ElectrumSV")
+    elif system == "Windows":
+        path = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "ElectrumSV")
+    else:  # Linux / other Unix
+        path = os.path.expanduser("~/.electrum-sv")
+
+    try:
+        os.makedirs(path, exist_ok=True)
+    except PermissionError:
+        # Very defensive: fallback to temp dir if user dir not writable
+        import tempfile
+        path = os.path.join(tempfile.gettempdir(), "electrumsv")
+        os.makedirs(path, exist_ok=True)
+    return path
+
+# Default cache dir under user data dir
+DATA_DIR = user_data_dir()
+CACHE_DIR = os.path.join(DATA_DIR, "cache")
+os.makedirs(CACHE_DIR, exist_ok=True)
+
+# Legacy possible header paths (kept from original)
 POSSIBLE_HEADER_PATHS = [
+    os.path.join(DATA_DIR, "headers"),                     # preferred, cross-platform
     os.path.expanduser("~/.electrum-sv/headers"),
     os.path.expanduser("~/.electrum-sv/headers-electrumsv"),
     os.path.expanduser("~/.electrumsv/headers"),
 ]
-MERKLE_CACHE_PATH = os.path.expanduser("~/.electrum-sv/cache/merkle_cache.json")
-ADDRESS_BEEF_CACHE_PATH = os.path.expanduser("~/.electrum-sv/cache/merkle_address_cache.json")
 
+def find_headers_file():
+    """Find the headers file in the preferred location or legacy locations."""
+    for path in POSSIBLE_HEADER_PATHS:
+        if os.path.exists(path) and os.path.isfile(path):
+            return path
+    return None
 
+def get_headers_path():
+    """Dynamically find headers file each time (fixes stale path issue)."""
+    return find_headers_file()
+
+# Cache paths (use DATA_DIR caches by default; fall back to legacy if they exist)
+MERKLE_CACHE_PATH = os.path.join(CACHE_DIR, "merkle_cache.json")
+ADDRESS_BEEF_CACHE_PATH = os.path.join(CACHE_DIR, "merkle_address_cache.json")
+
+# If legacy cache locations exist, prefer them
+legacy_merkle = os.path.expanduser("~/.electrum-sv/cache/merkle_cache.json")
+legacy_addr_cache = os.path.expanduser("~/.electrum-sv/cache/merkle_address_cache.json")
+if os.path.exists(legacy_merkle):
+    MERKLE_CACHE_PATH = legacy_merkle
+    os.makedirs(os.path.dirname(MERKLE_CACHE_PATH), exist_ok=True)
+if os.path.exists(legacy_addr_cache):
+    ADDRESS_BEEF_CACHE_PATH = legacy_addr_cache
+    os.makedirs(os.path.dirname(ADDRESS_BEEF_CACHE_PATH), exist_ok=True)
+
+# --- Utilities ---
 def extract_time_from_header(header_bytes: bytes) -> int:
     """Extract block timestamp from 80-byte header."""
     if len(header_bytes) != 80:
@@ -48,16 +97,12 @@ def extract_time_from_header(header_bytes: bytes) -> int:
     return int.from_bytes(header_bytes[68:72], byteorder="little")
 
 
-def find_headers_file():
-    for path in POSSIBLE_HEADER_PATHS:
-        if os.path.exists(path):
-            return path
-    return None
-
-HEADERS_PATH = find_headers_file()
+def scripthash_from_address(address: str) -> str:
+    addr = Address.from_string(address, Bitcoin)
+    script_bytes = addr.to_script().to_bytes()
+    return hashlib.sha256(script_bytes).digest()[::-1].hex()
 
 
-# --- Caching ---
 def load_cache(path):
     if os.path.exists(path):
         try:
@@ -67,18 +112,20 @@ def load_cache(path):
             return {}
     return {}
 
+
 def save_cache(cache, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         json.dump(cache, f, indent=2)
 
+
 CACHE = load_cache(MERKLE_CACHE_PATH)
 ADDRESS_CACHE = load_cache(ADDRESS_BEEF_CACHE_PATH)
 
 
-# --- Networking ---
+# --- Networking (kept from original with Tor detection) ---
 def electrum_request(method, params, servers=None):
-    import socks  # PySocks is bundled with ElectrumSV builds
+    import socks  # PySocks (bundled with ElectrumSV)
     if servers is None:
         servers = SERVERS
 
@@ -96,9 +143,8 @@ def electrum_request(method, params, servers=None):
     use_tor = os.path.exists("/etc/os-release") and "TAILS" in open("/etc/os-release").read().upper()
     tor_proxy = ("127.0.0.1", 9050)
     if not use_tor:
-        # fallback: detect running Tor daemon manually
-        import socket
         try:
+            # fallback: detect running Tor daemon manually
             with socket.create_connection(tor_proxy, timeout=1):
                 use_tor = True
         except Exception:
@@ -142,17 +188,14 @@ def electrum_request(method, params, servers=None):
     raise ConnectionError(f"All servers failed for method {method} with params {params}. Last error: {last_error}")
 
 
-# --- Utilities ---
-def scripthash_from_address(address: str) -> str:
-    addr = Address.from_string(address, Bitcoin)
-    script_bytes = addr.to_script().to_bytes()
-    return hashlib.sha256(script_bytes).digest()[::-1].hex()
-
+# --- crypto/merkle helpers (from original) ---
 def double_sha256(b: bytes) -> bytes:
     return hashlib.sha256(hashlib.sha256(b).digest()).digest()
 
+
 def le(hex_str: str) -> bytes:
     return bytes.fromhex(hex_str)[::-1]
+
 
 def compute_merkle_root(txid: str, merkle_branch: list, pos: int) -> bytes:
     h = le(txid)
@@ -162,18 +205,10 @@ def compute_merkle_root(txid: str, merkle_branch: list, pos: int) -> bytes:
         pos >>= 1
     return h
 
-def read_header_from_file(height: int) -> bytes:
-    if HEADERS_PATH is None:
-        raise FileNotFoundError("No local headers file found.")
-    with open(HEADERS_PATH, "rb") as f:
-        f.seek(height * 80)
-        header = f.read(80)
-        if len(header) != 80:
-            raise ValueError(f"Header for block {height} not found.")
-        return header
 
 def merkle_root_from_header(header_bytes: bytes) -> bytes:
     return header_bytes[36:68]
+
 
 def verify_merkle(txid: str, merkle_proof: dict, header_hex: str) -> bool:
     if not merkle_proof or not header_hex:
@@ -190,6 +225,22 @@ def verify_merkle(txid: str, merkle_proof: dict, header_hex: str) -> bool:
     except Exception:
         return False
 
+
+# --- Header reading: keep the Linux-working behavior (seek height*80),
+# but use HEADERS_PATH detected above. Do NOT create or overwrite the headers file. ---
+def read_header_from_file(height: int) -> bytes:
+    headers_path = get_headers_path()
+    if headers_path is None:
+        raise FileNotFoundError(
+            "No local headers file found. Expected one of: " + ", ".join(POSSIBLE_HEADER_PATHS)
+        )
+
+    with open(headers_path, "rb") as f:
+        f.seek(height * 80)
+        header = f.read(80)
+        if len(header) != 80:
+            raise ValueError(f"Header for block {height} not found (file too short or truncated).")
+        return header
 
 
 def build_beef(tx, slim=False, retries=3, delay=0.5):
@@ -327,7 +378,7 @@ def build_beef(tx, slim=False, retries=3, delay=0.5):
         except Exception:
             hex_cache = None
 
-    beef_data = {"format": "BEEF", "version": 1, "txid": txid, "utxos": unique_utxos}
+    beef_data = {"format": "BREAD", "version": 1, "txid": txid, "utxos": unique_utxos}
     if hex_cache:
         beef_data["hex"] = hex_cache
 
@@ -421,7 +472,7 @@ def build_beef_for_address(address: str, slim=False, retries=3, delay=0.5):
 
     # --- Build BEEF data ---
     beef_data = {
-        "format": "BEEF",
+        "format": "BREAD",
         "version": 1,
         "address": address,
         "utxos": unique_utxos,
@@ -432,7 +483,6 @@ def build_beef_for_address(address: str, slim=False, retries=3, delay=0.5):
     save_cache(ADDRESS_CACHE, ADDRESS_BEEF_CACHE_PATH)
 
     return beef_data
-
 
 
 # --- Helper ---
@@ -448,8 +498,7 @@ def fetch_scripthash_utxos_with_retry(scripthash, retries=3, delay=0.5):
     return []
 
 
-
-
+# --- GUI: verification window (kept from your working code) ---
 def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=None, address=None):
     import copy, json, os
     from PyQt5.QtWidgets import (
@@ -459,7 +508,7 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
     # --- Determine BEEF data ---
-    if isinstance(beef_or_tx, dict) and beef_or_tx.get("format") == "BEEF":
+    if isinstance(beef_or_tx, dict) and beef_or_tx.get("format") == "BREAD":
         beef_data = copy.deepcopy(beef_or_tx)
         title_str = beef_data.get("address", beef_data.get("txid", ""))[:10] + "..."
         tx_obj = None
@@ -469,7 +518,7 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
             title_str = getattr(beef_or_tx, "txid", lambda: "unknown")()[:10] + "..."
             tx_obj = beef_or_tx
         except Exception:
-            beef_data = {"format": "BEEF", "version": 1, "utxos": []}
+            beef_data = {"format": "BREAD", "version": 1, "utxos": []}
             title_str = "Unknown"
             tx_obj = None
     elif address is not None:
@@ -477,8 +526,8 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
         title_str = address[:10] + "..."
         tx_obj = None
     else:
-        beef_data = {"format": "BEEF", "version": 1, "utxos": []}
-        title_str = "Empty BEEF"
+        beef_data = {"format": "BREAD", "version": 1, "utxos": []}
+        title_str = "Empty BREAD"
         tx_obj = None
 
     class SimpleVerificationWindow(QDialog):
@@ -537,7 +586,7 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
                 self._utxo_tx_cache.setdefault(txid_main, CACHE.get(txid_main, {}).get("hex"))
 
             self.hex_thread = None
-            self.setWindowTitle(f"BEEF Proof - {title_str}")
+            self.setWindowTitle(f"BREAD Proof - {title_str}")
             self.setMinimumSize(750, 500)
 
             # --- Checkboxes ---
@@ -579,24 +628,46 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
             main_splitter.setStretchFactor(0, 4)
             main_splitter.setStretchFactor(1, 1)
 
+
             # --- Bottom buttons ---
             bottom_layout = QHBoxLayout()
             self.verify_btn = QPushButton("Verify Proof (SPV)")
+
+            # Fixed height for verify button (cross-platform)
             self.verify_btn.setFixedHeight(26)
             bottom_layout.addWidget(self.verify_btn, stretch=4)
             self.verify_btn.clicked.connect(self.verify_proofs)
 
-            right_layout = QVBoxLayout()
-            right_layout.setSpacing(2)
-            bottom_layout.addLayout(right_layout, stretch=0.1)
+            # --- Determine OS-specific button heights / spacing ---
+            system = platform.system()
+            if system == "Darwin":
+                btn_height = 28           # slightly taller on macOS
+                btn_spacing = 6           # more spacing between buttons
+                btn_margins = (0, 6, 0, 6)
+            else:  # Windows / Linux
+                btn_height = 22
+                btn_spacing = 2
+                btn_margins = (0, 2, 0, 2)
+
+            # Container for copy/save buttons
+            right_widget = QWidget()
+            right_layout = QVBoxLayout(right_widget)
+            right_layout.setContentsMargins(*btn_margins)
+            right_layout.setSpacing(btn_spacing)
+
             self.copy_btn = QPushButton("Copy")
-            self.copy_btn.setFixedHeight(20)
+            self.copy_btn.setFixedHeight(btn_height)
             self.save_btn = QPushButton("Save")
-            self.save_btn.setFixedHeight(20)
+            self.save_btn.setFixedHeight(btn_height)
+
             right_layout.addWidget(self.copy_btn)
             right_layout.addWidget(self.save_btn)
             self.copy_btn.clicked.connect(self.copy_to_clipboard)
             self.save_btn.clicked.connect(self.save_to_file)
+
+            # Add container to bottom layout
+            bottom_layout.addWidget(right_widget, stretch=0)
+
 
             main_layout = QVBoxLayout(self)
             main_layout.setContentsMargins(6, 6, 6, 6)
@@ -607,6 +678,8 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
 
             # initial view
             self.update_beef_view()
+
+        # ... rest of methods (same as before) ...
 
         def _stop_hex_fetcher(self):
             if self.hex_thread and self.hex_thread.isRunning():
@@ -661,7 +734,7 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
                 self._utxo_tx_cache[txid] = hex_str
                 c = CACHE.setdefault(txid, {})
                 if not c.get("utxos") and self.full_beef.get("utxos"):
-                    c.update({"format": "BEEF", "version": 1, "txid": txid})
+                    c.update({"format": "BREAD", "version": 1, "txid": txid})
                 c["hex"] = hex_str
                 try:
                     save_cache(CACHE, MERKLE_CACHE_PATH)
@@ -758,9 +831,6 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
 
             self.verify_btn.setEnabled(include_merkle)
 
-
-
-
         def verify_proofs(self):
             while self.result_layout.count():
                 item = self.result_layout.takeAt(0)
@@ -776,7 +846,7 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
                     blockheight_to_utxos.setdefault(h, []).append(utxo)
 
             headers_cache = {}
-            if HEADERS_PATH and blockheight_to_utxos:
+            if get_headers_path() and blockheight_to_utxos:
                 for height in blockheight_to_utxos.keys():
                     try:
                         headers_cache[height] = read_header_from_file(height)
@@ -789,7 +859,7 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
                 local_ok = False
                 if utxo.get("merkle") and utxo.get("header"):
                     electrumx_ok = verify_merkle(utxo.get("txid", ""), utxo["merkle"], utxo["header"])
-                if HEADERS_PATH and utxo.get("merkle") and blockheight >= 0:
+                if get_headers_path() and utxo.get("merkle") and blockheight >= 0:
                     header_bytes = headers_cache.get(blockheight)
                     if header_bytes:
                         try:
@@ -826,7 +896,6 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
             else:
                 self.scroll_area.setVisible(False)
 
-
         def copy_to_clipboard(self):
             QApplication.clipboard().setText(self.text.toPlainText())
 
@@ -835,7 +904,7 @@ def open_simple_verification_window(main_window: QWidget, account, beef_or_tx=No
             os.makedirs(desktop_dir, exist_ok=True)
             default_filename = self.beef_data.get("address", self.beef_data.get("txid", "proof"))
             default_path = os.path.join(desktop_dir, f"{default_filename}.json")
-            path, _ = QFileDialog.getSaveFileName(self, "Save BEEF Proof", default_path, "JSON Files (*.json)")
+            path, _ = QFileDialog.getSaveFileName(self, "Save BREAD Proof", default_path, "JSON Files (*.json)")
             if path:
                 with open(path, "w") as f:
                     f.write(self.text.toPlainText())

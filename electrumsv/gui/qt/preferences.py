@@ -101,22 +101,28 @@ class PreferencesDialog(QDialog):
     def tx_widgets(self, tab: QWidget) -> None:
         def on_customfee(_text):
             amt = customfee_e.get_amount()
-            m = int(amt * 1000.0) if amt is not None else None
+            # NOW: treat input as sat/kB directly (no scaling)
+            m = int(amt) if amt is not None else None
             app_state.config.set_key('customfee', m)
             app_state.app.custom_fee_changed.emit()
 
         customfee_e = BTCSatsByteEdit()
-        customfee_e.setAmount(app_state.config.custom_fee_rate() / 1000.0
-                              if app_state.config.has_custom_fee_rate() else None)
+        
+        # IMPORTANT: remove /1000 scaling
+        customfee_e.setAmount(
+            app_state.config.custom_fee_rate()
+            if app_state.config.has_custom_fee_rate() else None
+        )
+
         customfee_e.textChanged.connect(on_customfee)
-        # customfee_label = HelpLabel(_('Custom Fee Rate'),
-        #                             _('Custom Fee Rate in Satoshis per byte'))
 
         unconf_cb = QCheckBox(_('Spend only confirmed coins'))
         unconf_cb.setToolTip(_('Spend only confirmed inputs.'))
         unconf_cb.setChecked(app_state.config.get('confirmed_only', False))
+
         def on_unconf(state):
             app_state.config.set_key('confirmed_only', state != Qt.Unchecked)
+
         unconf_cb.stateChanged.connect(on_unconf)
 
         options_box = QGroupBox()
@@ -125,13 +131,16 @@ class PreferencesDialog(QDialog):
         options_vbox.addWidget(unconf_cb)
 
         form = FormSectionWidget(minimum_label_width=120)
-        form.add_row(_('Custom Fee Rate'), customfee_e)
+
+        # 👇 Label updated to reflect sat/kB
+        form.add_row(_('Custom Fee Rate (sat/kB)'), customfee_e)
         form.add_row(_("Options"), options_box, True)
 
         vbox = QVBoxLayout()
         vbox.addWidget(form)
         vbox.addStretch(1)
         tab.setLayout(vbox)
+
 
     def general_widgets(self, tab: QWidget) -> None:
         # language
@@ -542,3 +551,4 @@ class PreferencesDialog(QDialog):
         vbox.addWidget(form)
         vbox.addStretch(1)
         tab.setLayout(vbox)
+

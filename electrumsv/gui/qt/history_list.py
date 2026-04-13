@@ -353,7 +353,7 @@ class HistoryList(MyTreeWidget):
                         beef_data["_confirmed_cache"] = True
                         verification_utils.CACHE[tx_id] = beef_data
                     except Exception:
-                        beef_data = {"format": "BEEF", "version": 1, "utxos": []}
+                        beef_data = {"format": "BREAD", "version": 1, "utxos": []}
                 else:
                     beef_data = cached
             else:
@@ -363,12 +363,12 @@ class HistoryList(MyTreeWidget):
                         beef_data["_confirmed_cache"] = True
                     verification_utils.CACHE[tx_id] = beef_data
                 except Exception:
-                    beef_data = {"format": "BEEF", "version": 1, "utxos": []}
+                    beef_data = {"format": "BREAD", "version": 1, "utxos": []}
 
             verification_utils.open_simple_verification_window(self._main_window, account, beef_data)
 
         if not is_unconfirmed:
-            menu.addAction(_("Simple Verify (BEEF)"), fetch_and_show_beef)
+            menu.addAction(_("Simple Verify (BREAD)"), fetch_and_show_beef)
 
 
         if is_unconfirmed and tx:

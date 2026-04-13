@@ -14,19 +14,18 @@ from .main_window import ElectrumWindow
 from .util import icon_path, read_qt_ui, WindowModalDialog
 
 
-MSG_TITLE_CHECK = "Checking GitHub for Updates"
+MSG_TITLE_CHECK = "Checking ElectrumSV.io for Updates"
 MSG_BODY_CHECK = "Please wait.."
 
 MSG_BODY_ERROR = ("The update check encountered an error.<br/><br/>"+
     "{error_message}.")
 MSG_BODY_UPDATE_AVAILABLE = (
-    "You are using <b>{this_version}</b>.<br/>"+
-    "A newer version, <b>{next_version}</b>, was released on "+
+    "This version of ElectrumSV, <b>{this_version}</b>, is obsolete.<br/>"+
+    "The latest version, <b>{next_version}</b>, was released on "+
     "<b>{next_version_date:%Y/%m/%d %I:%M%p}</b>."+
     "<br/><br/>"+
-    "Download it from "+
-    "<a href='https://Crypto-Rebel.github.com/electrumsv-releases/{next_version}/'>here</a>.")
-
+    "Please download it from "+
+    "<a href='{download_uri}{next_version}/'>electrumsv.io downloads</a>.")
 MSG_BODY_NO_UPDATE_AVAILABLE = ("The update check was successful.<br/><br/>"+
     "You are already using <b>{this_version}</b>, which is the latest version.")
 MSG_BODY_UNRELEASED_AVAILABLE = ("The update check was successful.<br/><br/>"+
@@ -144,8 +143,7 @@ class UpdateCheckDialog(WindowModalDialog):
                     this_version = PACKAGE_VERSION,
                     next_version = stable_version,
                     next_version_date = release_date,
-                    download_uri='https://Crypto-Rebel.github.com/electrumsv-updates/')
-                    #download_uri='https://electrumsv.io/#downloads')
+                    download_uri='https://electrumsv.io/#downloads')
             # Handle the case where the we are newer than the latest stable release.
             elif StrictVersion(stable_version) < StrictVersion(PACKAGE_VERSION):
                 message = _(MSG_BODY_UNRELEASED_AVAILABLE).format(

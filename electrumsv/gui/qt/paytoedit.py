@@ -1,27 +1,4 @@
 #!/usr/bin/env python
-#
-# Electrum - lightweight Bitcoin client
-# Copyright (C) 2012 thomasv@gitorious
-#
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation files
-# (the "Software"), to deal in the Software without restriction,
-# including without limitation the rights to use, copy, modify, merge,
-# publish, distribute, sublicense, and/or sell copies of the Software,
-# and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 
 import time
 from decimal import Decimal, InvalidOperation
@@ -46,38 +23,36 @@ from electrumsv.web import is_URI, URIError
 from .qrtextedit import ScanQRTextEdit
 from . import util
 
-
 if TYPE_CHECKING:
     from .send_view import SendView
 
-
 logger = logs.get_logger("ui.paytoedit")
-
 
 frozen_style = "QWidget { background-color:none; border:none;}"
 normal_style = "QPlainTextEdit { }"
 
+
 class PayToEdit(ScanQRTextEdit):
-    ''' timestamp indicating when the user was last warned about using cash addresses. '''
     last_cashaddr_warning = None
 
     def __init__(self, send_view: 'SendView') -> None:
         super().__init__()
 
         self._send_view = send_view
-        # self._main_window = send_view._main_window
         self.document().contentsChanged.connect(self.update_size)
         self.heightMin = 0
         self.heightMax = 150
         self._completer = None
         self.textChanged.connect(self._on_text_changed)
+
         self._outputs: List[XTxOutput] = []
         self._errors = []
-        # Accessed by the send view.
+
         self.is_pr = False
         self._ignore_uris = False
-        self.update_size()
         self._payto_script: Optional[Script] = None
+
+        self.update_size()
 
     def setFrozen(self, b):
         self.setReadOnly(b)
@@ -92,11 +67,6 @@ class PayToEdit(ScanQRTextEdit):
         self.setStyleSheet(util.ColorScheme.RED.as_stylesheet(True))
 
     def _show_cashaddr_warning(self, address_text):
-        '''
-        cash addresses are not in the future for BSV. Anyone who uses one should be warned that
-        they are being phased out, in order to encourage them to pre-emptively move on.
-        '''
-        # We only care if it is decoded, as this will be a cash address.
         try:
             cashaddr.decode(address_text)
         except Exception:
@@ -107,37 +77,37 @@ class PayToEdit(ScanQRTextEdit):
         if last_check_time is None or last_check_time < ignore_watermark_time:
             PayToEdit.last_cashaddr_warning = time.time()
 
-            message = ("<p>"+
-                _("One or more of the addresses you have provided has been recognized "+
-                "as a 'cash address'. For now, this is acceptable but is recommended that you get "+
-                "in the habit of requesting that anyone who provides you with payment addresses "+
-                "do so in the form of normal Bitcoin SV addresses.")+
-                "</p>"+
-                "<p>"+
-                _("Within the very near future, various services and applications in the Bitcoin "+
-                "SV ecosystem will stop accepting 'cash addresses'. It is in your best interest "+
-                "to make sure you transition over to normal Bitcoin SV addresses as soon as "+
-                "possible, in order to ensure that you can both be paid, and also get paid.")+
-                "</p>"
-                )
+            message = _("Cash address detected. Consider using standard BSV addresses.")
             util.MessageBox.show_warning(message, title=_("Cash address warning"))
 
-    def _parse_tx_output(self, line: str) -> XTxOutput:
-        try:
-            x, y = line.split(',')
-        except ValueError:
-            raise InvalidPayToError(_("Invalid payment destination: {}").format(line))
 
-        script = self._parse_output(x)
+    def _parse_tx_output(self, line: str) -> XTxOutput:
+        parts = [p.strip() for p in line.split(',')]
+
+        if len(parts) < 2:
+            raise InvalidPayToError(_("Invalid format (expected: address, amount): {}").format(line))
+
+        address_part = parts[0]
+        amount_part = parts[1]
+
+        script = self._parse_output(address_part)
+
         try:
-            amount = self._parse_amount(y)
+            amount = self._parse_amount(amount_part)
         except InvalidOperation:
-            raise InvalidPayToError(_("Invalid payment destination: {}").format(line))
+            raise InvalidPayToError(_("Invalid amount: {}").format(line))
+
+        if amount == 0:
+            raise InvalidPayToError(
+                _("Amount must be greater than zero (check unit mismatch: sats vs BSV)")
+            )
 
         return XTxOutput(amount, script)
 
+
+
+
     def _parse_output(self, text: str) -> Script:
-        # raises InvalidPayToError
         try:
             address = Address.from_string(text, Net.COIN)
             self._show_cashaddr_warning(text)
@@ -145,7 +115,7 @@ class PayToEdit(ScanQRTextEdit):
         except ValueError:
             pass
 
-        if text.startswith(PREFIX_BIP276_SCRIPT +":"):
+        if text.startswith(PREFIX_BIP276_SCRIPT + ":"):
             try:
                 return string_to_bip276_script(text)
             except ValueError as e:
@@ -162,12 +132,12 @@ class PayToEdit(ScanQRTextEdit):
     def _parse_amount(self, x):
         if x.strip() == '!':
             return all
+        if not x.strip():
+            raise InvalidOperation
         p = pow(10, self._send_view.amount_e.decimal_point())
         return int(p * Decimal(x.strip()))
 
     def setPlainText(self, text: str, ignore_uris: bool=False) -> None:
-        # We override this so that there's no infinite loop where pay_to_URI calls this then
-        # the BIP276 URI is detected as a URI and we feed it back to pay_to_URI.
         self._ignore_uris = ignore_uris
         try:
             super().setPlainText(text)
@@ -180,11 +150,14 @@ class PayToEdit(ScanQRTextEdit):
             return
 
         self._payto_script = None
+        self._outputs = []
 
-        # filter out empty lines
         lines = [i for i in self._lines() if i]
+
+        # SINGLE LINE MODE (script or address only)
         if len(lines) == 1:
             data = lines[0]
+
             if not self._ignore_uris and is_URI(data):
                 self._send_view._main_window.pay_to_URI(data)
                 return
@@ -192,16 +165,17 @@ class PayToEdit(ScanQRTextEdit):
             try:
                 self._payto_script = self._parse_output(data)
             except InvalidPayToError:
-                # We don't need to capture this error as it will be caught in the multiple-line
-                # case for display.
                 pass
+
             if self._payto_script is not None:
                 self._send_view.lock_amount(False)
                 return
 
+        # MULTI-LINE MODE
         total = 0
         outputs = []
         is_max = False
+
         for i, line in enumerate(lines):
             try:
                 tx_output = self._parse_tx_output(line)
@@ -210,10 +184,15 @@ class PayToEdit(ScanQRTextEdit):
                 continue
 
             outputs.append(tx_output)
+
             if tx_output.value is all:
                 is_max = True
             else:
                 total += tx_output.value
+
+        # 🔥 CRITICAL FIX: discard invalid outputs (all zero)
+        if outputs and all(o.value == 0 for o in outputs):
+            outputs = []
 
         self._send_view.set_is_spending_maximum(is_max)
         self._outputs = outputs
@@ -223,7 +202,7 @@ class PayToEdit(ScanQRTextEdit):
             self._send_view.do_update_fee()
         else:
             self._send_view.amount_e.setAmount(total if outputs else None)
-            self._send_view.lock_amount(total or len(lines)>1)
+            self._send_view.lock_amount(total or len(lines) > 1)
 
     def get_errors(self):
         return self._errors
@@ -232,12 +211,19 @@ class PayToEdit(ScanQRTextEdit):
         return self._payto_script
 
     def get_outputs(self, is_max):
+        # SINGLE OUTPUT MODE (script pasted)
         if self._payto_script is not None:
             if is_max:
                 amount = all
             else:
                 amount = self._send_view.amount_e.get_amount()
-            self._outputs = [XTxOutput(amount, self._payto_script)]
+
+            # 🔥 CRITICAL FIX: do not allow None/zero amounts
+            if amount is None or amount == 0:
+                return []
+
+            return [XTxOutput(amount, self._payto_script)]
+
         return self._outputs[:]
 
     def _lines(self):
@@ -299,32 +285,10 @@ class PayToEdit(ScanQRTextEdit):
 
         QPlainTextEdit.keyPressEvent(self, e)
 
-        ctrlOrShift = e.modifiers() and (Qt.ControlModifier or Qt.ShiftModifier)
-        if self._completer is None or (ctrlOrShift and not e.text()):
-            return
-
-        eow = "~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="
-        hasModifier = (e.modifiers() != Qt.NoModifier) and not ctrlOrShift
-        completionPrefix = self._get_text_under_cursor()
-
-        if hasModifier or not e.text() or len(completionPrefix) < 1 or eow.find(e.text()[-1]) >= 0:
-            self._completer.popup().hide()
-            return
-
-        if completionPrefix != self._completer.completionPrefix():
-            self._completer.setCompletionPrefix(completionPrefix)
-            self._completer.popup().setCurrentIndex(self._completer.completionModel().index(0, 0))
-
-        cr = self.cursorRect()
-        cr.setWidth(self._completer.popup().sizeHintForColumn(0)
-                    + self._completer.popup().verticalScrollBar().sizeHint().width())
-        self._completer.complete(cr)
-
     def qr_input(self):
-        data = super(PayToEdit,self).qr_input(ignore_uris=True)
+        data = super(PayToEdit, self).qr_input(ignore_uris=True)
         if data:
             try:
                 self._send_view._main_window.pay_to_URI(data)
             except URIError as e:
                 self._send_view._main_window.show_error(str(e))
-            # TODO: update fee

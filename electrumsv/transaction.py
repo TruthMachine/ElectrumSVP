@@ -78,10 +78,16 @@ def classify_tx_output(tx_output: TxOutput) -> ScriptTemplate:
 def script_to_display_text(script: Script, kind: ScriptTemplate) -> str:
     if isinstance(kind, Address):
         text = kind.to_string()
+
     elif isinstance(kind, P2PK_Output):
         text = kind.public_key.to_hex()
+
     else:
-        text = script.to_asm()
+        try:
+            text = script.to_asm(False)
+        except TypeError:
+            text = script.to_asm()
+
     return text
 
 def tx_output_to_display_text(tx_output: TxOutput) -> Tuple[str, ScriptTemplate]:

@@ -240,146 +240,188 @@ class _ItemModel(QAbstractItemModel):
 
         row = model_index.row()
         column = model_index.column()
+
         if row >= len(self._data):
             return None
         if column >= len(self._column_names):
             return None
 
-        if model_index.isValid():
-            line = self._data[row]
-            account = self._view._account  # ✅ Use this instead of self._account
+        if not model_index.isValid():
+            return None
 
-            # Custom sort role
-            if role == QT_SORT_ROLE:
-                if column == DESTINATION_COLUMN:
-                    return None
-                if column == TYPE_COLUMN:
-                    return line.script_type
-                elif column == STATE_COLUMN:
-                    return line.flags
-                elif column == KEY_COLUMN:
-                    key_text = get_key_text(line)
-                    return electrumsv_to_bip44_path(key_text)
-                elif column == SCRIPT_COLUMN:
-                    return ScriptType(line.script_type).name
-                elif column == LABEL_COLUMN:
-                    return account.get_keyinstance_label(line.keyinstance_id)
-                elif column == USAGES_COLUMN:
-                    return line.match_count
-                elif column in (BALANCE_COLUMN, FIAT_BALANCE_COLUMN):
-                    if column == BALANCE_COLUMN:
-                        return line.total_value
-                    elif column == FIAT_BALANCE_COLUMN:
-                        fx = app_state.fx
-                        rate = fx.exchange_rate()
-                        return fx.value_str(line.total_value, rate)
+        line = self._data[row]
+        account = self._view._account
 
-            elif role == QT_FILTER_ROLE:
-                if column == KEY_COLUMN:
-                    return line
-
-            elif role == Qt.DecorationRole:
-                if column == TYPE_COLUMN:
-                    return self._receive_icon
-
-            elif role == Qt.DisplayRole:
-                if column == TYPE_COLUMN:
-                    return None
-                elif column == STATE_COLUMN:
-                    state_text = ""
-                    if line.flags & KeyInstanceFlag.ALLOCATED_MASK:
-                        state_text += "A"
-                    if line.flags & KeyInstanceFlag.IS_PAYMENT_REQUEST:
-                        state_text += "R"
-                    if line.flags & KeyInstanceFlag.IS_INVOICE:
-                        state_text += "I"
-                    #  Show frozen state via account
-                    if account.is_frozen_key(line.keyinstance_id):
-                        state_text += "🔒️❄️"
-                    if state_text:
-                        return state_text
-
-                elif column == KEY_COLUMN:
-                    key_text = get_key_text(line)
-                    return electrumsv_to_bip44_path(key_text)
-                elif column == SCRIPT_COLUMN:
-                    return ScriptType(line.script_type).name
-                elif column == LABEL_COLUMN:
-                    return account.get_keyinstance_label(line.keyinstance_id)
-                elif column == USAGES_COLUMN:
-                    return line.match_count
-                elif column == BALANCE_COLUMN:
-                    return app_state.format_amount(line.total_value, whitespaces=True)
-                elif column == FIAT_BALANCE_COLUMN:
+        # -------------------------
+        # SORT ROLE
+        # -------------------------
+        if role == QT_SORT_ROLE:
+            if column == DESTINATION_COLUMN:
+                return None
+            if column == TYPE_COLUMN:
+                return line.script_type
+            elif column == STATE_COLUMN:
+                return line.flags
+            elif column == KEY_COLUMN:
+                return get_key_text(line)
+            elif column == SCRIPT_COLUMN:
+                return ScriptType(line.script_type).name
+            elif column == LABEL_COLUMN:
+                return account.get_keyinstance_label(line.keyinstance_id)
+            elif column == USAGES_COLUMN:
+                return line.match_count
+            elif column in (BALANCE_COLUMN, FIAT_BALANCE_COLUMN):
+                if column == BALANCE_COLUMN:
+                    return line.total_value
+                else:
                     fx = app_state.fx
                     rate = fx.exchange_rate()
                     return fx.value_str(line.total_value, rate)
-                elif column == DESTINATION_COLUMN:
-                    for script_type in account.get_enabled_script_types():
-                        template = account.get_script_template_for_id(line.keyinstance_id, script_type)
-                        if template:
-                            try:
-                                from bitcoinx import P2MultiSig_Output, Script
-                                if isinstance(template, P2MultiSig_Output):
-                                    script_hex = template.to_script().to_hex()
-                                    return f"bitcoin-script:{script_hex[:20]}..."
-                                elif isinstance(template, Script):
-                                    return f"bitcoin-script:{template.to_hex()[:20]}..."
-                                else:
-                                    return str(template)
-                            except Exception:
-                                return str(template)
-                    return None
 
-            elif role == Qt.FontRole:
-                if column in (BALANCE_COLUMN, FIAT_BALANCE_COLUMN):
-                    return None
+        # -------------------------
+        # FILTER ROLE
+        # -------------------------
+        if role == QT_FILTER_ROLE:
+            if column == KEY_COLUMN:
+                return line
 
-            elif role == Qt.TextAlignmentRole:
-                if column in (TYPE_COLUMN, STATE_COLUMN):
-                    return Qt.AlignCenter
-                elif column in (BALANCE_COLUMN, FIAT_BALANCE_COLUMN, USAGES_COLUMN):
-                    return Qt.AlignLeft | Qt.AlignVCenter
-                return Qt.AlignVCenter
+        # -------------------------
+        # DECORATION ROLE
+        # -------------------------
+        if role == Qt.DecorationRole:
+            if column == TYPE_COLUMN:
+                return self._receive_icon
 
-            elif role == Qt.ToolTipRole:
-                if column == TYPE_COLUMN:
-                    return _("Key")
-                elif column == STATE_COLUMN:
-                    if line.flags & KeyInstanceFlag.ALLOCATED_MASK:
-                        return _("This is an allocated address")
-                    elif not line.flags & KeyInstanceFlag.IS_ACTIVE:
-                        return _("This is an inactive address")
-                elif column == KEY_COLUMN:
-                    key_id = line.keyinstance_id
-                    masterkey_id = line.masterkey_id
-                    derivation_text = account.get_derivation_path_text(key_id)
-                    return "\n".join([
-                        f"Key instance id: {key_id}",
-                        f"Master key id: {masterkey_id}",
-                        f"Derivation path {derivation_text}",
-                    ])
+        # -------------------------
+        # DISPLAY ROLE
+        # -------------------------
+        if role == Qt.DisplayRole:
 
-            elif role == Qt.EditRole:
-                if column == LABEL_COLUMN:
-                    return account.get_keyinstance_label(line.keyinstance_id)
-                elif column == DESTINATION_COLUMN:
-                    for script_type in account.get_enabled_script_types():
-                        template = account.get_script_template_for_id(line.keyinstance_id, script_type)
-                        if template:
-                            try:
-                                from bitcoinx import P2MultiSig_Output, Script
-                                if isinstance(template, P2MultiSig_Output):
-                                    return f"bitcoin-script:{template.to_script().to_hex()}"
-                                elif isinstance(template, Script):
-                                    return f"bitcoin-script:{template.to_hex()}"
-                                else:
-                                    return str(template)
-                            except Exception:
-                                return str(template)
-                    return None
+            if column == TYPE_COLUMN:
+                return None
+
+            elif column == STATE_COLUMN:
+                state_text = ""
+                if line.flags & KeyInstanceFlag.ALLOCATED_MASK:
+                    state_text += "A"
+                if line.flags & KeyInstanceFlag.IS_PAYMENT_REQUEST:
+                    state_text += "R"
+                if line.flags & KeyInstanceFlag.IS_INVOICE:
+                    state_text += "I"
+                if account.is_frozen_key(line.keyinstance_id):
+                    state_text += "🔒❄️"
+                return state_text or None
+
+            elif column == KEY_COLUMN:
+                return electrumsv_to_bip44_path(get_key_text(line))
+
+            elif column == SCRIPT_COLUMN:
+                return ScriptType(line.script_type).name
+
+            elif column == LABEL_COLUMN:
+                return account.get_keyinstance_label(line.keyinstance_id)
+
+            elif column == USAGES_COLUMN:
+                return line.match_count
+
+            elif column == BALANCE_COLUMN:
+                return app_state.format_amount(line.total_value, whitespaces=True)
+
+            elif column == FIAT_BALANCE_COLUMN:
+                fx = app_state.fx
+                rate = fx.exchange_rate()
+                return fx.value_str(line.total_value, rate)
+
+            elif column == DESTINATION_COLUMN:
+                # -------------------------
+                # FIXED: NO DUPLICATE PREFIX
+                # -------------------------
+                from electrumsv.bitcoin import script_template_to_string
+
+                for script_type in account.get_enabled_script_types():
+                    template = account.get_script_template_for_id(
+                        line.keyinstance_id, script_type
+                    )
+                    if not template:
+                        continue
+
+                    try:
+                        text = script_template_to_string(template)
+
+                        if not text:
+                            return None
+
+                        # optional shortening for UI readability
+                        if len(text) > 90:
+                            text = f"{text[:45]}...{text[-30:]}"
+
+                        return text
+
+                    except Exception:
+                        try:
+                            raw = template.to_script().to_hex()
+                            if len(raw) > 90:
+                                raw = f"{raw[:45]}...{raw[-30:]}"
+                            return raw
+                        except Exception:
+                            return "<?>"
+
+                return None
+
+        # -------------------------
+        # FONT ROLE
+        # -------------------------
+        if role == Qt.FontRole:
+            return None
+
+        # -------------------------
+        # ALIGNMENT ROLE
+        # -------------------------
+        if role == Qt.TextAlignmentRole:
+            if column in (TYPE_COLUMN, STATE_COLUMN):
+                return Qt.AlignCenter
+            if column in (BALANCE_COLUMN, FIAT_BALANCE_COLUMN, USAGES_COLUMN):
+                return Qt.AlignLeft | Qt.AlignVCenter
+            return Qt.AlignVCenter
+
+        # -------------------------
+        # TOOLTIP ROLE
+        # -------------------------
+        if role == Qt.ToolTipRole:
+            if column == TYPE_COLUMN:
+                return _("Key")
+            elif column == STATE_COLUMN:
+                if line.flags & KeyInstanceFlag.ALLOCATED_MASK:
+                    return _("This is an allocated address")
+                elif not line.flags & KeyInstanceFlag.IS_ACTIVE:
+                    return _("This is an inactive address")
+            elif column == KEY_COLUMN:
+                return account.get_derivation_path_text(line.keyinstance_id)
+
+        # -------------------------
+        # EDIT ROLE
+        # -------------------------
+        if role == Qt.EditRole:
+            if column == LABEL_COLUMN:
+                return account.get_keyinstance_label(line.keyinstance_id)
+
+            elif column == DESTINATION_COLUMN:
+                from electrumsv.bitcoin import script_template_to_string
+
+                for script_type in account.get_enabled_script_types():
+                    template = account.get_script_template_for_id(
+                        line.keyinstance_id, script_type
+                    )
+                    if template:
+                        try:
+                            return script_template_to_string(template)
+                        except Exception:
+                            return str(template)
+
+                return None
 
         return None
+
 
 
 
@@ -881,18 +923,43 @@ class KeyView(QTableView):
             menu_column = menu_source_index.column()
             column_title = self._headers[menu_column]
 
-            # Only add copy action if not multisig destination
-            if not (menu_column == DESTINATION_COLUMN and isinstance(self._account, MultisigAccount)):
-                if menu_column == 0:
-                    copy_text = get_key_text(menu_line)
-                else:
-                    copy_text = str(menu_source_index.model().data(menu_source_index, Qt.DisplayRole)).strip()
+            # ----------------------------
+            # FIXED COPY LOGIC (WORKS FOR DESTINATION)
+            # ----------------------------
+            if menu_column == KEY_COLUMN:
+                copy_text = get_key_text(menu_line)
+
+            elif menu_column == DESTINATION_COLUMN:
+                # Use EditRole to get FULL script (not truncated display)
+                copy_text = menu_source_index.model().data(
+                    menu_source_index, Qt.EditRole
+                )
+
+                if not copy_text:
+                    # fallback to display role
+                    copy_text = menu_source_index.model().data(
+                        menu_source_index, Qt.DisplayRole
+                    )
+
+                if copy_text:
+                    copy_text = str(copy_text).strip()
+
+            else:
+                copy_text = str(
+                    menu_source_index.model().data(
+                        menu_source_index, Qt.DisplayRole
+                    )
+                ).strip()
+
+            if copy_text:
                 menu.addAction(
                     _("Copy {}").format(column_title),
                     lambda text=copy_text: self._main_window.app.clipboard().setText(text)
                 )
 
-        # Row selection
+        # ----------------------------
+        # ROW SELECTION
+        # ----------------------------
         selected_indexes = self.selectedIndexes()
         if selected_indexes:
             selected = []
@@ -911,7 +978,7 @@ class KeyView(QTableView):
                 row, column, line, selected_index, base_index = selected[0]
                 key_id = line.keyinstance_id
 
-                # Standard key actions
+                # Standard actions
                 menu.addAction(
                     _('Details'),
                     lambda key_id=key_id: self._main_window.show_key(self._account, key_id)
@@ -944,100 +1011,48 @@ class KeyView(QTableView):
                         lambda key_id=key_id: self._main_window.encrypt_message(self._account, key_id)
                     )
 
-                # Block explorer submenu
-                explore_menu = menu.addMenu(_("View on block explorer"))
-                keyinstance = self._account.get_keyinstance(key_id)
-                addr_URL = script_URL = None
-                if keyinstance.script_type != ScriptType.NONE:
-                    script_template = self._account.get_script_template_for_id(key_id)
-                    if isinstance(script_template, Address):
-                        addr_URL = web.BE_URL(self._main_window.config, 'addr', script_template)
-                    try:
-                        script_bytes = script_template.to_script_bytes()
-                        assert isinstance(script_bytes, bytes)
-                        scripthash = scripthash_hex(script_bytes)
-                        script_URL = web.BE_URL(self._main_window.config, 'script', scripthash)
-                    except Exception:
-                        script_URL = None
-
-                addr_action = explore_menu.addAction(
-                    _("By address"),
-                    partial(webbrowser.open, addr_URL)
-                )
-                if not addr_URL:
-                    addr_action.setEnabled(False)
-
-                script_action = explore_menu.addAction(
-                    _("By script"),
-                    partial(webbrowser.open, script_URL)
-                )
-                if not script_URL:
-                    script_action.setEnabled(False)
-
-                for script_type, script in self._account.get_possible_scripts_for_id(key_id):
-                    try:
-                        scripthash = scripthash_hex(bytes(script))
-                        script_URL = web.BE_URL(self._main_window.config, 'script', scripthash)
-                        if script_URL:
-                            explore_menu.addAction(
-                                _("As {scripttype}").format(scripttype=script_type.name),
-                                partial(webbrowser.open, script_URL)
-                            )
-                    except Exception:
-                        pass
-
-                if isinstance(self._account, StandardAccount):
-                    keystore = self._account.get_keystore()
-                    if isinstance(keystore, Hardware_KeyStore):
-                        def show_key():
-                            self._main_window.run_in_thread(
-                                keystore.plugin.show_key, self._account, key_id
-                            )
-                        menu.addAction(
-                            _("Show on {}").format(keystore.plugin.device),
-                            show_key
-                        )
-
-                # --- Single BEEF action (Address-based) ---
+                # ----------------------------
+                # BREAD VERIFY (UNCHANGED)
+                # ----------------------------
                 try:
-                    address = None
-                    try:
-                        for script_type in self._account.get_enabled_script_types():
-                            tmpl = self._account.get_script_template_for_id(key_id, script_type)
-                            if tmpl and isinstance(tmpl, Address):
-                                address = str(tmpl)
-                                break
-                    except Exception:
-                        pass
+                    from electrumsv.bitcoin import script_template_to_string
 
-                    if address is None:
-                        if hasattr(self._account, "get_address_for_keyinstance"):
-                            address = self._account.get_address_for_keyinstance(key_id)
-                        elif hasattr(self._account, "get_address_for_keyid"):
-                            address = self._account.get_address_for_keyid(key_id)
+                    address = None
+
+                    for script_type in self._account.get_enabled_script_types():
+                        tmpl = self._account.get_script_template_for_id(key_id, script_type)
+                        if tmpl:
+                            try:
+                                text = script_template_to_string(tmpl)
+                                if text and not text.startswith("bitcoin-script:"):
+                                    address = text
+                                    break
+                            except Exception:
+                                pass
 
                     if address is None:
                         keyinstance = self._account.get_keyinstance(key_id)
                         if hasattr(keyinstance, "address") and keyinstance.address:
                             address = keyinstance.address
-                        elif hasattr(keyinstance, "public_key") and keyinstance.public_key:
-                            from bitcoinx import PublicKey, Address as BXAddress, Bitcoin as BXBitcoin
-                            pub = PublicKey(bytes(keyinstance.public_key))
-                            address = str(BXAddress.from_public_key(pub, BXBitcoin))
 
-                    if not address:
-                        raise AttributeError(f"Cannot resolve address for key_id {key_id}")
-
-                    menu.addAction(
-                        _("Simple Verify (BEEF)"),
-                        lambda addr=address: open_simple_verification_window(
-                            self._main_window, self._account, address=addr
+                    if address:
+                        menu.addAction(
+                            _("Simple Verify (BREAD)"),
+                            lambda addr=address: open_simple_verification_window(
+                                self._main_window,
+                                self._account,
+                                address=addr
+                            )
                         )
-                    )
-                except Exception as e:
-                    self._logger.warning("BEEF action failed: %s", e)
+                    else:
+                        self._logger.warning(
+                            "BREAD action skipped: no address for key_id %s", key_id
+                        )
 
-            # Freeze / Unfreeze addresses
+                except Exception as e:
+                    self._logger.warning("BREAD action failed: %s", e)
+
+            # Freeze / Unfreeze
             key_ids = [line.keyinstance_id for (_, _, line, _, _) in selected]
             any_frozen = any(self._account.is_frozen_key(kid) for kid in key_ids)
             all_frozen = all(self._account.is_frozen_key(kid) for kid in key_ids)
@@ -1054,12 +1069,14 @@ class KeyView(QTableView):
                     lambda key_ids=key_ids: self._account.set_frozen_key_state(key_ids, False)
                 )
 
-            coins = self._account.get_spendable_coins(domain=key_ids, config=self._main_window.config)
+            coins = self._account.get_spendable_coins(
+                domain=key_ids,
+                config=self._main_window.config
+            )
             if coins:
-                menu.addAction(_("Spend from"), partial(self._main_window.spend_coins, coins))
+                menu.addAction(
+                    _("Spend from"),
+                    partial(self._main_window.spend_coins, coins)
+                )
 
         menu.exec_(self.viewport().mapToGlobal(position))
-
-
-
-

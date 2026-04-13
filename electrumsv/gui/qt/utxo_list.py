@@ -182,7 +182,7 @@ class UTXOList(MyTreeWidget):
                 if item is not None:
                     height_str = item.text(3)  # column 3 is height
                     if height_str.isdigit() and int(height_str) > 0:
-                        menu.addAction(_("Simple Verify (BEEF)"), 
+                        menu.addAction(_("Simple Verify (BREAD)"), 
                             lambda: verification_utils.open_simple_verification_window(
                                 self._main_window, self._account, tx)
                         )

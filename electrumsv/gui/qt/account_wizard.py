@@ -106,9 +106,10 @@ class AccountPage(enum.IntEnum):
     IMPORT_ACCOUNT_FILE = 400
     IMPORT_ACCOUNT_TEXT = 405
     IMPORT_ACCOUNT_TEXT_CUSTOM = 410
-
-    FIND_HARDWARE_WALLET = 500
-    SETUP_HARDWARE_WALLET = 505
+    
+    #Remove HW support
+    #FIND_HARDWARE_WALLET = 500
+    #SETUP_HARDWARE_WALLET = 505
 
 class KeyFlags(enum.IntEnum):
     NONE = 0
@@ -131,7 +132,7 @@ class ResultType(IntFlag):
     NEW = 1
     MULTISIG = 2
     IMPORTED = 3
-    HARDWARE = 4
+    #HARDWARE = 4
 
 
 def request_password(parent: Optional[QWidget], storage: WalletStorage) -> Optional[str]:
@@ -178,8 +179,9 @@ class AccountWizard(BaseWizard, MessageBoxMixin):
             CreateMultisigAccountCustomPage(self))
         self.setPage(AccountPage.CREATE_MULTISIG_ACCOUNT_COSIGNERS,
             MultisigAccountCosignerListPage(self))
-        self.setPage(AccountPage.FIND_HARDWARE_WALLET, FindHardwareWalletAccountPage(self))
-        self.setPage(AccountPage.SETUP_HARDWARE_WALLET, SetupHardwareWalletAccountPage(self))
+        #Removing HW support
+        #self.setPage(AccountPage.FIND_HARDWARE_WALLET, FindHardwareWalletAccountPage(self))
+        #self.setPage(AccountPage.SETUP_HARDWARE_WALLET, SetupHardwareWalletAccountPage(self))
 
         self.setStartId(AccountPage.ADD_ACCOUNT_MENU)
 
@@ -531,13 +533,14 @@ class AddAccountWizardPage(QWizardPage):
                 'enabled': True,
                 'mode_mask': WizardFlags.ALL_MODES,
             },
-            {
-                'page': AccountPage.FIND_HARDWARE_WALLET,
-                'description': _("Import hardware wallet"),
-                'icon_filename': 'icons8-usb-2-80-blueui-active.png',
-                'enabled': True,
-                'mode_mask': WizardFlags.ALL_MODES,
-            },
+            #Removing HW support 
+            #{
+                #'page': AccountPage.FIND_HARDWARE_WALLET,
+                #'description': _("Import hardware wallet"),
+                #'icon_filename': 'icons8-usb-2-80-blueui-active.png',
+                #'enabled': True,
+                #'mode_mask': WizardFlags.ALL_MODES,
+            #},
         ]
 
 

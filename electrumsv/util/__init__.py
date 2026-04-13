@@ -565,6 +565,7 @@ def get_identified_release_signers(entry):
     signature_addresses = [
         ("rt121212121", "1Bu6ABvLAXn1ARFo1gjq6sogpajGbp6iK6"),
         ("kyuupichan", "1BH8E3TkuJMCcH5WGD11kVweKZuhh6vb7V"),
+        ("TruthMachine", "1HyeBJLWUrA8tJxkaPLYMZrsifKf3mpmnh"),
     ]
 
     release_version = entry['version']

@@ -1,14 +1,43 @@
 <h2>The Payment Destination window</h2>
 <p style="text-align: center"><i>Provisional in-wallet help</i></p>
+
 <p>
-This window allows you to view the unused payment destinations that the given
-account will use next. In some cases these will be standard Bitcoin addresses,
-and in other cases where the script type has no address form, the BIP276 standard
-will be used to present them.
+This window allows you to generate a list of fresh, unused payment destinations
+for the selected account. These destinations can be used for creating
+multi-output transactions (for example, splitting funds across many outputs).
 </p>
+
+<p>
+In some cases these will be standard Bitcoin addresses, and in other cases where
+the script type has no address form, the BIP276 standard will be used to present them.
+</p>
+
+<h3>How to use</h3>
+<ul>
+  <li><b>How many:</b> Choose the number of destinations (outputs) to generate.</li>
+  <li><b>Mode:</b> Select how amounts are assigned to each destination:
+    <ul>
+      <li><b>Addresses only:</b> Generate destinations without amounts.</li>
+      <li><b>Equal split (total):</b> Enter a total amount which will be divided evenly across all destinations.</li>
+      <li><b>Fixed amount (per address):</b> Enter an amount that will be sent to each destination.</li>
+      <li><b>Random split (total):</b> Enter a total amount which will be distributed randomly across destinations.</li>
+    </ul>
+  </li>
+  <li><b>Amount:</b> The meaning of this field depends on the selected mode (total vs per-address).</li>
+</ul>
+
+<h3>Tips</h3>
+<ul>
+  <li>Each output has a minimum value of approximately <b>300 satoshis</b>. Values below this may not be accepted or may be uneconomical to spend.</li>
+  <li>You can use the <b>Pay-to-Many</b> feature to send funds to these destinations, including sending to your own wallet to split UTXOs.</li>
+  <li>Large numbers of outputs may result in large transactions, which can take longer to confirm or be rejected by some servers.</li>
+  <li>Very small outputs may be considered uneconomical to spend later.</li>
+  <li>This tool can be useful for splitting UTXOs or preparing funds for distribution.</li>
+</ul>
+
 <h3>Possible dangers</h3>
 <p>
 The destinations listed here are not reserved. If you take them and use them
 elsewhere, there is no guarantee that ElectrumSV won't also proceed to use them
-in the course of it's normal wallet usage on your behalf.
+in the course of its normal wallet usage on your behalf.
 </p>

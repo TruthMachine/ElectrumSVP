@@ -92,7 +92,7 @@ from .wallet_api import WalletAPI
 
 from .sweep_private_key_dialog import SweepPrivateKeyDialog
 
-PACKAGE_VERSION = "Beta"  # override the packaged version
+PACKAGE_VERSION = "v0.1.0"  # override the packaged version
 
 
 logger = logs.get_logger("mainwindow")
@@ -246,13 +246,13 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         self.app.timer.timeout.connect(self.timer_actions)
 
         # --- beta popup message ---
-        QMessageBox.warning(
-            self,
-            "Beta Release",
-            "⚠️ This is a BETA release of ElectrumSV.\n\n"
-            "It may contain bugs and should only be used for testing and small amounts.\n\n"
-            "Use at your own risk."
-        )
+        #QMessageBox.warning(
+            #self,
+            #"Beta Release",
+            #"⚠️ This is a BETA release of ElectrumSV.\n\n"
+            #"It may contain bugs and should only be used for testing and small amounts.\n\n"
+            #"Use at your own risk."
+        #)
 
     def _init_tails_proxy(self) -> None:
         """Programmatically trigger the network tab logic to apply TAILS Tor proxy."""
@@ -607,6 +607,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
 
         # After wallet is loaded/opened, assign:
         self.wallet = wallet
+
+
 
 
     def init_geometry(self):
