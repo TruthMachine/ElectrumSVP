@@ -8,7 +8,7 @@ SRC_DIR="$PROJECTS_DIR/electrumsv"
 VENV_DIR="$SRC_DIR/venv"
 PYTHON_BIN="$VENV_DIR/bin/python3.9"
 ICON_PATH="$SRC_DIR/electrumsv/data/icons/electrum-sv.icns"
-APP_NAME="ElectrumSVP-0.1.0.app"
+APP_NAME="ElectrumSVP-0.1.1.app"
 
 # ===[ ENSURE OPENSSL EXISTS ]===
 OPENSSL_DIR="/usr/local/opt/openssl@3"
@@ -80,10 +80,10 @@ mkdir -p "$MAC_APP_DIR/Contents/Frameworks"
 # Copy icon
 cp "$ICON_PATH" "$MAC_APP_DIR/Contents/Resources/electrum-sv.icns"
 
-# ===[ BUNDLE OPENSSL 3 ]===
+# ===[ BUNDLE OPENSSL 3 (FIXED) ]===
 echo "🔹 Bundling OpenSSL 3..."
-cp "$OPENSSL_DIR/lib/libssl.dylib" "$MAC_APP_DIR/Contents/Frameworks/"
-cp "$OPENSSL_DIR/lib/libcrypto.dylib" "$MAC_APP_DIR/Contents/Frameworks/"
+cp "$OPENSSL_DIR/lib/libssl.3.dylib" "$MAC_APP_DIR/Contents/Frameworks/"
+cp "$OPENSSL_DIR/lib/libcrypto.3.dylib" "$MAC_APP_DIR/Contents/Frameworks/"
 
 # ===[ PYTHON LAUNCHER ]===
 cat > "$MAC_APP_DIR/Contents/MacOS/ElectrumSV.py" << 'EOF'
@@ -153,25 +153,24 @@ rm -rf "$APP_USR/include"
 find "$APP_USR/lib" -type f -name "*.a" -delete
 find "$APP_USR/lib" -type f -name "*.so*" -exec strip -x {} \; 2>/dev/null || true
 find "$APP_USR/bin" -type f -exec strip -x {} \; 2>/dev/null || true
-QT_PLUGINS="$APP_USR/plugins"
-find "$QT_PLUGINS" -mindepth 1 -maxdepth 1 -type d ! -name "platforms" ! -name "imageformats" -exec rm -rf {} +
-PYQT_SITE="$APP_USR/lib/python3.9/site-packages/PyQt5/Qt5"
-if [ -d "$PYQT_SITE" ]; then
-    find "$PYQT_SITE" -mindepth 1 -maxdepth 1 -type d ! -name "lib" ! -name "plugins" -exec rm -rf {} +
-fi
-find "$APP_USR/lib/python3.9/site-packages" -type d -name "locale" -exec bash -c 'cd "{}" && find . ! -name "en*" -type d -exec rm -rf {} +' \;
-rm -rf "$APP_USR/lib/python3.9/site-packages/pygments" || true
-rm -rf "$APP_USR/lib/python3.9/site-packages/cffi" || true
-rm -rf "$APP_USR/lib/python3.9/site-packages/pip/_vendor/cache" || true
-rm -rf "$APP_USR/lib/python3.9/site-packages/*/docs" || true
 
-# ===[ PATCH .SO FILES TO USE BUNDLED OPENSSL 3 ]===
-echo "🔹 Patching .so files to use bundled OpenSSL..."
-find "$APP_USR/lib/python3.9/site-packages" -name "*.so" | while read so; do
-    install_name_tool -change "$OPENSSL_DIR/lib/libssl.dylib" "@executable_path/../Frameworks/libssl.dylib" "$so" 2>/dev/null || true
-    install_name_tool -change "$OPENSSL_DIR/lib/libcrypto.dylib" "@executable_path/../Frameworks/libcrypto.dylib" "$so" 2>/dev/null || true
+# ===[ PATCH ALL .SO FILES INCLUDING _ssl (FIX) ]===
+echo "🔹 Patching OpenSSL linkage..."
+
+PY_BASE="$APP_USR/lib/python3.9"
+
+for so in "$PY_BASE"/lib-dynload/*.so; do
+    install_name_tool -change "$OPENSSL_DIR/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "$so" 2>/dev/null || true
+    install_name_tool -change "$OPENSSL_DIR/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "$so" 2>/dev/null || true
 done
 
-echo "✅ Build and stripping complete!"
+find "$PY_BASE/site-packages" -name "*.so" | while read so; do
+    install_name_tool -change "$OPENSSL_DIR/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "$so" 2>/dev/null || true
+    install_name_tool -change "$OPENSSL_DIR/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "$so" 2>/dev/null || true
+done
+
+echo "🔍 Verifying _ssl linkage..."
+otool -L "$PY_BASE/lib-dynload/_ssl.cpython-39-darwin.so"
+
+echo "✅ Build complete!"
 du -sh "$MAC_APP_DIR"
-echo "👉 Try launching it from Finder now!"
