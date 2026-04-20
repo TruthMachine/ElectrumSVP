@@ -1,8 +1,10 @@
-This software is currently licensed using the Open BSV open source license.
-Before it was relicensed to use the Open BSV license, it was licensed using
-the MIT license. This software is derived from both Electrum and Electron
-Cash, both of which used the MIT license.
+This project includes code derived from Electrum, ElectrumSV, and Electron Cash.
 
+Portions of this software were previously distributed under the MIT License,
+and some components may also be distributed under the Open BSV License.
+Original license notices are preserved.
+
+This software is provided as-is for use.
 ******
 
 The Open BSV license.
