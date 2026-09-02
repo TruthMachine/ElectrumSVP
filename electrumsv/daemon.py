@@ -142,7 +142,6 @@ def get_rpc_credentials(config: SimpleConfig, is_restapi=False) \
 
 class Daemon(DaemonThread):
     rest_server: Optional[AiohttpServer]
-    cmd_runner: Commands
 
     def __init__(self, fd, is_gui: bool) -> None:
         super().__init__('daemon')
@@ -241,8 +240,11 @@ class Daemon(DaemonThread):
         elif sub == 'load_wallet':
             path = config.get_cmdline_wallet_filepath()
             wallet = self.load_wallet(path) if path is not None else None
-            self.cmd_runner._wallet = wallet
-            response = True
+            # `cmd_runner` was never assigned on Daemon (only ever a local in run_cmdline), so the
+            # old `self.cmd_runner._wallet = wallet` raised AttributeError on every headless
+            # load_wallet — inherited from upstream. load_wallet() already registers the wallet via
+            # start_wallet(); nothing else needs it. Report what actually happened, not always True.
+            response = wallet is not None
         elif sub == 'close_wallet':
             cmdline_wallet_filepath = config.get_cmdline_wallet_filepath()
             assert cmdline_wallet_filepath is not None
