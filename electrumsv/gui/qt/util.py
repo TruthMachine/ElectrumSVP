@@ -1273,7 +1273,7 @@ class AspectRatioPixmapLabel(QLabel):
 
     def heightForWidth(self, width: int) -> int:
         return self.height() if self._pixmap is None else \
-            (self._pixmap.height() * width) / self._pixmap.width()
+            (self._pixmap.height() * width) // self._pixmap.width()
 
     def sizeHint(self) -> QSize:
         width = self.parent().width()

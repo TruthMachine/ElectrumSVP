@@ -799,10 +799,11 @@ class AbstractAccount:
         app_state.app.on_keyinstance_label_change(self, key_id, text)
 
     def get_dummy_script_template(self, script_type: Optional[ScriptType] = None) -> ScriptTemplate:
-        public_keys_hex = [PrivateKey(os.urandom(32)).public_key.to_hex() for _ in range(self.m)]
+        m = getattr(self, 'm', 1)
+        public_keys_hex = [PrivateKey(os.urandom(32)).public_key.to_hex() for _ in range(m)]
         if script_type is None:
             script_type = self.get_default_script_type()
-        return make_script_template(public_keys_hex, script_type, self.m)
+        return make_script_template(public_keys_hex, script_type, m)
 
     def get_script_template_for_id(self, keyinstance_id: int,
             script_type: Optional[ScriptType] = None) -> ScriptTemplate:

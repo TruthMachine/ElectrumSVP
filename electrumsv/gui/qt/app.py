@@ -35,7 +35,7 @@ from typing import Callable, Optional
 from aiorpcx import run_in_thread
 import PyQt5.QtCore as QtCore
 from PyQt5.QtCore import pyqtSignal, QObject, QTimer
-from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtGui import QGuiApplication, QColor, QPalette
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QWidget, QDialog
 
 from electrumsv.app_state import app_state
@@ -107,6 +107,25 @@ class SVApplication(QApplication):
         if hasattr(QGuiApplication, 'setDesktopFileName'):
             QGuiApplication.setDesktopFileName('electrum-sv.desktop')
         super().__init__(argv)
+        # Recent macOS versions render table/tree text illegibly (invisible or
+        # mismatched foreground/background) under Qt5's native "macintosh" style,
+        # partly because it partially adopts the OS Dark Mode palette (white text)
+        # while this app's own widgets assume a light background. Fusion plus an
+        # explicit, fully-specified light palette avoids both problems at once.
+        self.setStyle('Fusion')
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(240, 240, 240))
+        palette.setColor(QPalette.WindowText, QColor(0, 0, 0))
+        palette.setColor(QPalette.Base, QColor(255, 255, 255))
+        palette.setColor(QPalette.AlternateBase, QColor(242, 242, 242))
+        palette.setColor(QPalette.Text, QColor(0, 0, 0))
+        palette.setColor(QPalette.Button, QColor(240, 240, 240))
+        palette.setColor(QPalette.ButtonText, QColor(0, 0, 0))
+        palette.setColor(QPalette.ToolTipBase, QColor(255, 255, 220))
+        palette.setColor(QPalette.ToolTipText, QColor(0, 0, 0))
+        palette.setColor(QPalette.Highlight, QColor(51, 121, 217))
+        palette.setColor(QPalette.HighlightedText, QColor(255, 255, 255))
+        self.setPalette(palette)
         self.windows = []
         self.log_handler = SVLogHandler()
         self.log_window = None
