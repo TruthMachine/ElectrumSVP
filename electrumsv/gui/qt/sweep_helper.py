@@ -132,7 +132,6 @@ def create_ssl_context(host: str) -> ssl.SSLContext:
     if os.path.exists(pem_path):
         try:
             ctx.load_verify_locations(cafile=pem_path)
-            ctx.check_hostname = False
         except Exception as e:
             logger.warning("Failed to load host PEM %s: %s", pem_path, e)
     return ctx
@@ -307,7 +306,8 @@ def sweep_single_privkey(
         script_pubkey_bytes, value_sats = prevouts[i]
         sighash = tx.signature_hash(i, value_sats, script_pubkey_bytes,
                                     sighash=SigHash(SigHash.ALL | SigHash.FORKID))
-        der_sig = sk.sign_digest(sighash, sigencode=ecdsa.util.sigencode_der_canonize)
+        der_sig = sk.sign_digest_deterministic(
+            sighash, hashfunc=hashlib.sha256, sigencode=ecdsa.util.sigencode_der_canonize)
         signature = der_sig + b"\x41"  # SigHash.ALL|FORKID
         txin.script_sig = Script(bytes([len(signature)]) + signature +
                                  bytes([len(pubkey_bytes)]) + pubkey_bytes)
