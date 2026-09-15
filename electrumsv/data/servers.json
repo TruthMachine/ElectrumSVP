@@ -5,19 +5,13 @@
         "t": "50001",
         "version": "1.4"
     },
-    "electrum.api.sv": {
+    "sv.electrumr.sv'": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
         "version": "1.4"
     },
-    "neptune.api.sv": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.4"
-    },
-    "alpha-esv.api.sv": {
+    "sv2.electrumr.sv'": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",

@@ -60,6 +60,7 @@ from .main_window import ElectrumWindow
 from .util import (ChoicesLayout, icon_path, MessageBox, MessageBoxMixin, protected, query_choice,
     read_QIcon)
 from .wizard_common import BaseWizard, DEFAULT_WIZARD_FLAGS, WizardFlags, WizardFormSection
+from .theme import account_types_style, Theme, theme_from_config
 
 
 logger = logs.get_logger('wizard-account')
@@ -157,9 +158,15 @@ class AccountWizard(BaseWizard, MessageBoxMixin):
             parent = main_window
         super().__init__(parent)
 
+        theme = theme_from_config(app_state.config, True)
+
+        if theme in (Theme.DARK, Theme.PINK, Theme.ORANGE):
+            self.setWizardStyle(QWizard.ClassicStyle)
+
         self.flags = flags
 
         self._main_window = main_window
+
         self._wallet: Wallet = main_window._wallet
 
         self._text_import_type: Optional[KeystoreTextType] = None
@@ -224,30 +231,33 @@ class AccountWizard(BaseWizard, MessageBoxMixin):
     def get_keystore(self) -> KeyStore:
         return self._keystore
 
-    def set_keystore_result(self, result_type: ResultType, keystore: Optional[KeyStore]) -> None:
+    def set_keystore_result(self, result_type: ResultType, keystore: Optional[KeyStore]) -> bool:
         self._keystore_type = result_type
         self._keystore = keystore
 
         if keystore is None:
-            return
+            return False
 
         # For now, all other result types are expected to be collected by the invoking logic of
         # this account wizard instance.
         if self.flags & WizardFlags.ACCOUNT_RESULT:
-            self._wallet.create_account_from_keystore(keystore)
+            account = self._wallet.create_account_from_keystore(keystore)
+            return account is not None
+
+        return True
 
     def set_text_entry_account_result(self, result_type: ResultType, text_type: KeystoreTextType,
             script_type: ScriptType, text_matches: KeystoreMatchType,
-            password: Optional[str]) -> None:
+            password: Optional[str]) -> bool:
         self._keystore_type = result_type
 
         if self.flags & WizardFlags.ACCOUNT_RESULT:
             assert password is not None
-            self._wallet.create_account_from_text_entries(text_type, script_type, text_matches,
-                password)
+            account = self._wallet.create_account_from_text_entries(
+                text_type, script_type, text_matches, password)
+            return account is not None
         else:
             raise NotImplementedError("Invalid attempt to generate keyless keystore data")
-
 
 
 class AddAccountWizardPage(QWizardPage):
@@ -270,15 +280,12 @@ class AddAccountWizardPage(QWizardPage):
 
         option_list = self._option_list = ListWidget()
         option_list.setIconSize(QSize(30, 30))
-        option_list.setStyleSheet("""
-            QListWidget {
-                background-color: white;
-            }
-            QListWidget::item:selected {
-                background-color: white;
-                color: black;
-            }
-        """)
+
+        theme = theme_from_config(app_state.config)
+        option_list.setStyleSheet(
+            account_types_style(theme)
+        )
+
 
         # Populate the list
         for entry in self._get_entries():
@@ -310,7 +317,16 @@ class AddAccountWizardPage(QWizardPage):
               "Older Electrum-style seeds can still be imported.")
         )
         info_label.setWordWrap(True)
-        info_label.setStyleSheet("color: gray; font-style: italic;")
+        
+        if theme_from_config(app_state.config, True) == Theme.DARK:
+            info_label.setStyleSheet(
+                "color: #b8bdc4; background-color: transparent; font-style: italic;"
+            )
+        else:
+            info_label.setStyleSheet(
+                "color: gray; background-color: transparent; font-style: italic;"
+            )
+
         info_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         # Horizontal layout for list + detail
@@ -328,8 +344,6 @@ class AddAccountWizardPage(QWizardPage):
         # Connect signals
         option_list.itemSelectionChanged.connect(self._event_selection_changed)
         option_list.itemDoubleClicked.connect(self._event_double_click_item)
-
-
 
 
     # Qt default QWizardPage event when page is entered.
@@ -776,13 +790,22 @@ class ImportWalletTextPage(QWizardPage):
         if self._checked_match_type in (KeystoreTextType.ADDRESSES, KeystoreTextType.PRIVATE_KEYS):
             script_type = (ScriptType.P2PKH
                 if self._checked_match_type == KeystoreTextType.PRIVATE_KEYS else ScriptType.NONE)
-            wizard.set_text_entry_account_result(ResultType.IMPORTED, self._checked_match_type,
-                script_type, entries, password)
+            if not wizard.set_text_entry_account_result(
+                    ResultType.IMPORTED, self._checked_match_type,
+                    script_type, entries, password):
+                if main_window is not None:
+                    main_window.show_error(
+                        _("Nothing was imported because all of the keys or addresses are "
+                          "already present in this wallet."))
+                return False
         else:
             _keystore = instantiate_keystore_from_text(self._checked_match_type,
                 self._matches[self._checked_match_type], password)
-            wizard.set_keystore_result(ResultType.IMPORTED, _keystore)
-        return True
+            if not wizard.set_keystore_result(ResultType.IMPORTED, _keystore):
+                if main_window is not None:
+                    main_window.show_error(
+                        _("This account is already present in this wallet."))
+                return False
 
 
 class ImportWalletTextCustomPage(QWizardPage):
@@ -890,8 +913,7 @@ class ImportWalletTextCustomPage(QWizardPage):
         _keystore = instantiate_keystore_from_text(self._text_type, self._text_matches,
             password, derivation_text, passphrase, watch_only)
         wizard: AccountWizard = self.wizard()
-        wizard.set_keystore_result(ResultType.IMPORTED, _keystore)
-        return True
+        return wizard.set_keystore_result(ResultType.IMPORTED, _keystore)
 
 
 class FindHardwareWalletAccountPage(QWizardPage):
@@ -1671,3 +1693,4 @@ class MultisigAccountCosignerListPage(QWizardPage):
 
     def event_cosigner_updated(self, cosigner_index: int) -> None:
         self.completeChanged.emit()
+

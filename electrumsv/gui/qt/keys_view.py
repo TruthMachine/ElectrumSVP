@@ -40,9 +40,10 @@ import webbrowser
 from bitcoinx import Address
 
 from PyQt5.QtCore import (QAbstractItemModel, QModelIndex, QVariant, Qt, QSortFilterProxyModel,
-    QTimer)
-from PyQt5.QtGui import QFont, QFontMetrics, QKeySequence
-from PyQt5.QtWidgets import QTableView, QAbstractItemView, QHeaderView, QMenu
+    QTimer, QSize)
+from PyQt5.QtGui import QFont, QFontMetrics, QKeySequence, QPalette
+from PyQt5.QtWidgets import QTableView, QAbstractItemView, QHeaderView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
+
 
 from electrumsv.i18n import _
 from electrumsv.app_state import app_state
@@ -59,7 +60,7 @@ from electrumsv.wallet_database.tables import (KeyInstanceRow, KeyInstanceFlag,
 from electrumsv import web
 
 from .main_window import ElectrumWindow
-from .util import read_QIcon, get_source_index
+from .util import read_QIcon, get_source_index, ColorScheme
 
 from PyQt5.QtGui import QColor, QBrush
 
@@ -68,7 +69,7 @@ from electrumsv.verification_utils import (
     build_beef_for_address,
     open_simple_verification_window,
 )
-
+from .theme import Theme, theme_from_config
 
 
 
@@ -90,29 +91,45 @@ LABEL_COLUMN = 8
 
 
 
-def electrumsv_to_bip44_path(e_path: str, purpose: int = 44, coin_type: int = 0, account: int = 0) -> str:
+def electrumsv_to_bip44_path(e_path: str, account: AbstractAccount) -> str:
     """
-    Convert ElectrumSV internal key path to BIP44-style path.
-    Assumes e_path like "1:1:m/branch/index"
-    Maps branch -> change, index -> address index
-    Appends '(change)' if branch is 1.
+    Convert an ElectrumSV internal key path to the full BIP32 path
+    using the account's actual master derivation path.
+
+    ElectrumSV internal format:
+        1:1:m/0/132
+
+    Example master derivation:
+        m/47'/0'/0'
+
+    Result:
+        m/47'/0'/0'/0/132
+
+    Branch 1 is marked as change.
     """
     try:
         parts = e_path.split(":")
         if len(parts) != 3:
-            return e_path  # Unknown format
+            return e_path
 
-        subpath = parts[2].lstrip("m/")  # e.g. '0/2' or '1/0'
+        subpath = parts[2].lstrip("m/")
         branch, index = subpath.split("/")
 
-        bip44_path = f"m/{purpose}'/{coin_type}'/{account}'/{branch}/{index}"
-        if branch == "1":
-            bip44_path += " (change)"
+        keystore = account.get_keystore()
+        base_derivation = getattr(keystore, "derivation", None)
 
-        return bip44_path
+        if not base_derivation:
+            return e_path
+
+        bip_path = f"{base_derivation}/{branch}/{index}"
+
+        if branch == "1":
+            bip_path += " (change)"
+
+        return bip_path
+
     except Exception:
         return e_path
-
 
 
 
@@ -163,7 +180,7 @@ class _ItemModel(QAbstractItemModel):
         self._account_id: Optional[int] = None
 
         self._receive_icon = read_QIcon("icons8-down-arrow-96")
-
+        self._frozen_icon = read_QIcon("lockflake")
         self._frozen_keys: Set[int] = set()
 
 
@@ -291,6 +308,8 @@ class _ItemModel(QAbstractItemModel):
         if role == Qt.DecorationRole:
             if column == TYPE_COLUMN:
                 return self._receive_icon
+            elif column == STATE_COLUMN and account.is_frozen_key(line.keyinstance_id):
+                return self._frozen_icon.pixmap(QSize(20, 20))
 
         # -------------------------
         # DISPLAY ROLE
@@ -308,12 +327,12 @@ class _ItemModel(QAbstractItemModel):
                     state_text += "R"
                 if line.flags & KeyInstanceFlag.IS_INVOICE:
                     state_text += "I"
-                if account.is_frozen_key(line.keyinstance_id):
-                    state_text += "🔒❄️"
+                #if account.is_frozen_key(line.keyinstance_id):
+                    #state_text += "🔒❄"
                 return state_text or None
 
             elif column == KEY_COLUMN:
-                return electrumsv_to_bip44_path(get_key_text(line))
+                return electrumsv_to_bip44_path(get_key_text(line), account)
 
             elif column == SCRIPT_COLUMN:
                 return ScriptType(line.script_type).name
@@ -534,6 +553,35 @@ class _SortFilterProxyModel(QSortFilterProxyModel):
                     return True
         return False
 
+class FrozenRowDelegate(QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def paint(self, painter, option, index):
+        super().paint(painter, option, index)
+
+        source_index = get_source_index(index, _ItemModel)
+
+        if source_index.isValid():
+            model = source_index.model()
+            line = model._data[source_index.row()]
+            account = model._view._account
+
+            if account is not None and account.is_frozen_key(line.keyinstance_id):
+                painter.save()
+
+                theme = theme_from_config(app_state.config)
+
+                if theme in (Theme.ORANGE, Theme.PINK):
+                    orange = QColor(45, 45, 45)
+                    orange.setAlpha(130)
+                else:
+                    orange = ColorScheme.ORANGE.as_color(True)
+                    orange.setAlpha(80)
+
+                painter.fillRect(option.rect, orange)
+
+                painter.restore()
 
 class KeyView(QTableView):
     def __init__(self, main_window: ElectrumWindow) -> None:
@@ -567,6 +615,7 @@ class KeyView(QTableView):
         proxy_model.setSortRole(QT_SORT_ROLE)
         proxy_model.setSourceModel(model)
         self.setModel(proxy_model)
+        self.setItemDelegate(FrozenRowDelegate(self))
 
         fx = app_state.fx
         self._set_fiat_columns_enabled(fx and fx.get_fiat_address_config())
@@ -747,9 +796,9 @@ class KeyView(QTableView):
         self._update_keys(account, updates, pending_state)
 
         for action in pending_actions:
-            if ListActions.RESET_BALANCES:
+            if action == ListActions.RESET_BALANCES:
                 self._base_model.invalidate_column(BALANCE_COLUMN)
-            elif ListActions.RESET_FIAT_BALANCES:
+            elif action == ListActions.RESET_FIAT_BALANCES:
                 fx = app_state.fx
                 flag = fx and fx.get_fiat_address_config()
                 # This will show or hide the relevant columns as applicable.
@@ -758,6 +807,7 @@ class KeyView(QTableView):
                 self._base_model.invalidate_column(FIAT_BALANCE_COLUMN)
             else:
                 self._logger.error("_on_update_check action %s not applied", action)
+
 
     def _validate_account_event(self, account_id: int) -> bool:
         return account_id == self._account_id
@@ -910,8 +960,114 @@ class KeyView(QTableView):
             line = self._data[base_index.row()]
             self._main_window.show_key(self._account, line.keyinstance_id)
 
+
+    def _unfreeze_all_addresses(self) -> None:
+        if self._account is None:
+            return
+
+        frozen_key_ids = []
+
+        for line in self._data:
+            if self._account.is_frozen_key(line.keyinstance_id):
+                frozen_key_ids.append(line.keyinstance_id)
+
+        if frozen_key_ids:
+            self._account.set_frozen_key_state(
+                frozen_key_ids,
+                False
+            )
+
+
+    def _copy_selected_destinations(self) -> None:
+        """Copy all selected destinations to the clipboard, one per line."""
+        destinations = []
+        selected_rows = set()
+
+        for selected_index in self.selectedIndexes():
+            base_index = get_source_index(selected_index, _ItemModel)
+            row = base_index.row()
+
+            if row in selected_rows:
+                continue
+
+            selected_rows.add(row)
+
+            destination_index = self._base_model.index(
+                row,
+                DESTINATION_COLUMN,
+                QModelIndex()
+            )
+
+            destination = self._base_model.data(
+                destination_index,
+                Qt.EditRole
+            )
+
+            if destination:
+                destination = str(destination).strip()
+                if destination:
+                    destinations.append(destination)
+
+        if destinations:
+            self._main_window.app.clipboard().setText(
+                "\n".join(destinations)
+            )
+
+
+    def _copy_selected_rows(self) -> None:
+        """Copy all visible information from the selected rows."""
+        selected_rows = set()
+
+        for selected_index in self.selectedIndexes():
+            selected_rows.add(selected_index.row())
+
+        if not selected_rows:
+            return
+
+        lines = []
+
+        # Use the visible column order.
+        for proxy_row in sorted(selected_rows):
+            row_values = []
+
+            for proxy_column in range(self.model().columnCount()):
+                if self.isColumnHidden(proxy_column):
+                    continue
+
+                proxy_index = self.model().index(proxy_row, proxy_column)
+
+                value = self.model().data(
+                    proxy_index,
+                    Qt.DisplayRole
+                )
+
+                if value is None:
+                    value = ""
+
+                row_values.append(str(value))
+
+            lines.append("\t".join(row_values))
+
+        if lines:
+            self._main_window.app.clipboard().setText(
+                "\n".join(lines)
+            )
+
+
+
+
     def _event_create_menu(self, position):
         menu = QMenu()
+
+        selected_indexes = self.selectedIndexes()
+
+        if selected_indexes:
+            menu.addAction(
+                _("Copy Selected Rows"),
+                self._copy_selected_rows
+            )
+
+            menu.addSeparator()
 
         # What the user clicked on
         menu_index = self.indexAt(position)
@@ -973,6 +1129,13 @@ class KeyView(QTableView):
             is_multisig = isinstance(self._account, MultisigAccount)
             rows = set(v[0] for v in selected)
             multi_select = len(rows) > 1
+
+            if multi_select:
+                menu.addAction(
+                    _("Copy Selected Destinations"),
+                    self._copy_selected_destinations
+                )
+
 
             if not multi_select:
                 row, column, line, selected_index, base_index = selected[0]
@@ -1079,4 +1242,24 @@ class KeyView(QTableView):
                     partial(self._main_window.spend_coins, coins)
                 )
 
+        # Provide "Unfreeze All Addresses" only when there are frozen addresses.
+        if self._account is not None:
+            frozen_key_ids = [
+                line.keyinstance_id
+                for line in self._data
+                if self._account.is_frozen_key(line.keyinstance_id)
+            ]
+
+            if frozen_key_ids:
+                if not menu.isEmpty():
+                    menu.addSeparator()
+
+                menu.addAction(
+                    _("Unfreeze All Addresses"),
+                    self._unfreeze_all_addresses
+                )
+
+
         menu.exec_(self.viewport().mapToGlobal(position))
+
+

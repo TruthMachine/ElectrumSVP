@@ -65,19 +65,27 @@ class SecuredDataDialog(QDialog):
         main_path_text = _("N/A")
         change_path_text = _("N/A")
 
-        if hasattr(keystore, 'bip39_words') and keystore.bip39_words:
-            # BIP39 account
-            seed_text = keystore.bip39_words
-            is_checksum_valid, is_wordlist_valid = bip39_is_checksum_valid(seed_text)
-            if is_checksum_valid and is_wordlist_valid:
-                seed_type_text = _("BIP39")
+        if keystore.seed is not None and keystore.derivation_type == DerivationType.BIP32:
+            # Determine whether this is a BIP39 seed from the decrypted seed.
+            try:
+                seed_text = keystore.get_seed(password)
+                is_checksum_valid, is_wordlist_valid = bip39_is_checksum_valid(seed_text)
 
-            # Derivation paths
-            derivation_base = getattr(keystore, 'derivation', "m/44'/0'/0'")
-            main_path_text = derivation_base + "/0"   # external/main addresses
-            change_path_text = derivation_base + "/1" # change addresses
+                if is_checksum_valid and is_wordlist_valid:
+                    seed_type_text = _("BIP39")
+
+                    derivation_base = getattr(
+                        keystore, 'derivation', "m/44'/0'/0'"
+                    )
+                    main_path_text = derivation_base + "/0"
+                    change_path_text = derivation_base + "/1"
+                else:
+                    seed_text = ""
+            except Exception:
+                seed_text = ""
 
         elif keystore.seed is not None:
+
             # Electrum-style account
             seed_text = keystore.get_seed(password)
             if keystore.derivation_type == DerivationType.BIP32:

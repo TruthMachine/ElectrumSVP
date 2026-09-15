@@ -89,7 +89,7 @@ if TYPE_CHECKING:
 
 
 
-Network.deserialized_header = staticmethod(deserialized_header)
+#Network.deserialized_header = staticmethod(deserialized_header)
 
 
 
@@ -133,15 +133,21 @@ BAD_SERVER_HOSTS = { "satoshi.vision.cash" }
 
 # Determine preloaded headers path
 
-
 if getattr(sys, 'frozen', False):
-    # Running from AppImage
-    BASE_PATH = os.path.join(sys._MEIPASS, 'usr', 'share')
+    # Handle both PyInstaller (_MEIPASS) and py2app (__file__ inside bundle)
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller / AppImage builds
+        BASE_PATH = os.path.join(sys._MEIPASS, 'usr', 'share')
+    else:
+        # py2app or macOS .app bundle
+        app_path = os.path.abspath(os.path.dirname(sys.executable))
+        BASE_PATH = os.path.join(app_path, 'Resources', 'share')
 else:
     # Running from source
     BASE_PATH = os.path.join(os.path.dirname(__file__), 'resources')
 
 PRELOADED_HEADERS = os.path.join(BASE_PATH, 'headersloaded', 'headers')
+
 
 
 
@@ -524,23 +530,199 @@ class SVSession(RPCSession):
 
 
 
+
+
+
     def _connect_chunk(self, headers_obj, raw_chunk, start_height):
         HEADER_SIZE = 80
         count = len(raw_chunk) // HEADER_SIZE
-        for i in range(count):
-            raw_header = raw_chunk[i*HEADER_SIZE : (i+1)*HEADER_SIZE]
-            height = start_height + i
-            try:
-                headers_obj.connect(raw_header, check_work=True)
-            except Exception as e:
-                hex_str = hash_to_hex_str(Net.COIN.header_hash(raw_header))
-                self.logger.warning(f"Cannot connect header at height {height}: {e}")
 
-        # --- persist after full chunk ---
+        self.logger.debug(
+            "\n========== CONNECT CHUNK ==========\n"
+            "start height : %d\n"
+            "header count : %d",
+            start_height,
+            count,
+        )
+
+        for i in range(count):
+            raw_header = raw_chunk[i * HEADER_SIZE:(i + 1) * HEADER_SIZE]
+            height = start_height + i
+
+            header = deserialized_header(raw_header, height)
+
+            try:
+                # ------------------------------------------------------
+                # Get the current longest chain.
+                # ------------------------------------------------------
+                longest = headers_obj.longest_chain()
+
+                if longest is None:
+                    raise RuntimeError(
+                        f"NO LONGEST CHAIN before connecting height {height}"
+                    )
+
+                # ------------------------------------------------------
+                # SAFETY CHECK:
+                #
+                # Never write to a height which is already populated.
+                #
+                # Same header:
+                #     Already have it -> safely skip.
+                #
+                # Different header:
+                #     Conflicting chain -> reject it.
+                #
+                # This is deliberately checked BEFORE calling
+                # headers_obj.connect().
+                # ------------------------------------------------------
+                if height <= longest.height:
+                    existing_header = headers_obj.header_at_height(
+                        longest,
+                        height,
+                    )
+
+                    if existing_header.hash == header.hash:
+                        self.logger.debug(
+                            "HEADER ALREADY PRESENT"
+                            "\n  height : %d"
+                            "\n  hash   : %s",
+                            height,
+                            existing_header.hash.hex(),
+                        )
+                        continue
+
+                    raise RuntimeError(
+                        f"HEIGHT ALREADY OCCUPIED at height {height}: "
+                        f"existing={existing_header.hash.hex()} "
+                        f"incoming={header.hash.hex()}"
+                    )
+
+                # ------------------------------------------------------
+                # SAFETY CHECK:
+                #
+                # A new header must point to the header immediately
+                # preceding it in our existing chain.
+                #
+                # This prevents a bad/corrupt header from being appended
+                # to the wrong chain.
+                # ------------------------------------------------------
+                if height > 0:
+                    previous_header = headers_obj.header_at_height(
+                        longest,
+                        height - 1,
+                    )
+
+                    if header.prev_hash != previous_header.hash:
+                        raise RuntimeError(
+                            f"PREV HASH MISMATCH at height {height}: "
+                            f"expected previous hash "
+                            f"{previous_header.hash.hex()}, "
+                            f"got {header.prev_hash.hex()}"
+                        )
+
+                # ------------------------------------------------------
+                # Connect the new header.
+                # ------------------------------------------------------
+                chain = headers_obj.connect(
+                    raw_header,
+                    check_work=True,
+                )
+
+                # ------------------------------------------------------
+                # READ-BACK SAFETY CHECK:
+                #
+                # Verify that BitcoinX actually stored the header
+                # we supplied.
+                # ------------------------------------------------------
+                longest = headers_obj.longest_chain()
+
+                if longest is None:
+                    raise RuntimeError(
+                        f"NO LONGEST CHAIN after connecting height {height}"
+                    )
+
+                stored_header = headers_obj.header_at_height(
+                    longest,
+                    height,
+                )
+
+                if stored_header.hash != header.hash:
+                    raise RuntimeError(
+                        f"READ-BACK HASH MISMATCH at height {height}: "
+                        f"supplied={header.hash.hex()} "
+                        f"stored={stored_header.hash.hex()}"
+                    )
+
+                if stored_header.prev_hash != header.prev_hash:
+                    raise RuntimeError(
+                        f"READ-BACK PREV HASH MISMATCH at height {height}: "
+                        f"supplied={header.prev_hash.hex()} "
+                        f"stored={stored_header.prev_hash.hex()}"
+                    )
+
+                self.logger.debug(
+                    "CONNECTED HEADER"
+                    "\n  height : %d"
+                    "\n  hash   : %s",
+                    height,
+                    stored_header.hash.hex(),
+                )
+
+            except Exception:
+                self.logger.exception(
+                    "\nFAILED CONNECTING HEADER"
+                    "\nheight : %d"
+                    "\nhash   : %s"
+                    "\nprev   : %s",
+                    height,
+                    header.hash.hex(),
+                    header.prev_hash.hex(),
+                )
+
+                # ------------------------------------------------------
+                # Show chain state at the point of failure.
+                # ------------------------------------------------------
+                try:
+                    longest = headers_obj.longest_chain()
+
+                    if longest:
+                        tip_header = longest.tip()
+
+                        self.logger.warning(
+                            "\nLongest chain at failure"
+                            "\nheight : %d"
+                            "\nhash   : %s",
+                            longest.height,
+                            tip_header.hash.hex(),
+                        )
+
+                except Exception:
+                    self.logger.exception(
+                        "Could not inspect longest chain"
+                    )
+
+                raise
+
+        # --------------------------------------------------------------
+        # Flush only after the entire chunk has been processed.
+        # --------------------------------------------------------------
         if hasattr(headers_obj, "flush"):
             headers_obj.flush()
+            self.logger.debug("headers flushed")
 
-        return headers_obj.longest_chain()
+        longest = headers_obj.longest_chain()
+
+        self.logger.debug(
+            "========== END CHUNK ==========\n"
+            "longest chain tip : %d",
+            longest.height if longest else -1,
+        )
+
+        return longest
+
+
+
 
 
     @classmethod
@@ -550,10 +732,13 @@ class SVSession(RPCSession):
 
     @classmethod
     def _log_prev_hash_mismatch(cls, height, raw_header, prev_raw):
+
         logger = getattr(cls, 'logger', print)
-        logger.debug(f'PrevHash mismatch at {height}: '
-                     f'{hash_to_hex_str(Net.COIN.header_hash(raw_header))} '
-                     f'prev {hash_to_hex_str(Net.COIN.header_hash(prev_raw))}')
+        logger.debug(f'PrevHash mismatch at {height}')
+        #logger = getattr(cls, 'logger', print)
+        #logger.debug(f'PrevHash mismatch at {height}: '
+                     #f'{hash_to_hex_str(Net.COIN.header_hash(raw_header))} '
+                     #f'prev {hash_to_hex_str(Net.COIN.header_hash(prev_raw))}')
 
 
     async def _negotiate_protocol(self):
@@ -585,15 +770,19 @@ class SVSession(RPCSession):
         Returns last height connected.
         """
         self.logger.info(f'requesting {count:,d} headers from height {height:,d}')
+
         method = 'blockchain.block.headers'
         checkpoint_height = Net.CHECKPOINT['height']
+
         # if the request crosses or reaches checkpoint, ask server to omit proof (0)
         cp_arg = 0 if (height + count) >= checkpoint_height else checkpoint_height
 
         try:
             result = await self.send_request(method, (height, count, cp_arg))
+
             rec_count = result['count']
             last_height = height + rec_count - 1
+
             if rec_count == 0:
                 return height - 1
 
@@ -601,8 +790,48 @@ class SVSession(RPCSession):
                 self.logger.info(f'received just {rec_count:,d} headers')
 
             raw_chunk = bytes.fromhex(result['hex'])
+
             HEADER_SIZE = 80
             assert len(raw_chunk) == HEADER_SIZE * rec_count
+
+            # ----------------------------------------------------------
+            # DEBUG: only log the chunks we care about
+            # ----------------------------------------------------------
+            if height in (945505, 946505, 947521):
+                first_raw = raw_chunk[:HEADER_SIZE]
+                last_raw = raw_chunk[-HEADER_SIZE:]
+
+                first_header = deserialized_header(first_raw, height)
+                last_header = deserialized_header(last_raw, last_height)
+
+                self.logger.warning(
+                    "\n========== RAW CHUNK =========="
+                    "\nserver       : %s"
+                    "\nstart height : %d"
+                    "\nend height   : %d"
+                    "\ncount        : %d"
+                    "\n"
+                    "\nFIRST HEADER"
+                    "\nheight : %d"
+                    "\nhash   : %s"
+                    "\nprev   : %s"
+                    "\n"
+                    "\nLAST HEADER"
+                    "\nheight : %d"
+                    "\nhash   : %s"
+                    "\nprev   : %s"
+                    "\n===============================",
+                    self,
+                    height,
+                    last_height,
+                    rec_count,
+                    height,
+                    first_header.hash.hex(),
+                    first_header.prev_hash.hex(),
+                    last_height,
+                    last_header.hash.hex(),
+                    last_header.prev_hash.hex(),
+                )
 
             if cp_arg:
                 # server returned proof for the tail header
@@ -612,15 +841,33 @@ class SVSession(RPCSession):
                 self._check_header_proof(hex_root, branch, tail_raw, last_height)
 
             # Attempt to append the chunk; will raise MissingHeader if it doesn't continue the tip.
-            self.chain = self._connect_chunk(app_state.headers, raw_chunk, height)
+            self.logger.warning(
+                "Downloading chunk starting at height %d",
+                height,
+            )
 
-        except (AssertionError, KeyError, TypeError, ValueError,
-                IncorrectBits, InsufficientPoW, MissingHeader) as e:
+            self.chain = self._connect_chunk(
+                app_state.headers,
+                raw_chunk,
+                height,
+            )
+
+        except (
+            AssertionError,
+            KeyError,
+            TypeError,
+            ValueError,
+            IncorrectBits,
+            InsufficientPoW,
+            MissingHeader,
+        ) as e:
             raise DisconnectSessionError(f'{method} failed: {e}', blacklist=True)
 
-        self.logger.info(f'connected {rec_count:,d} headers up to height {last_height:,d}')
-        return last_height
+        self.logger.info(
+            f'connected {rec_count:,d} headers up to height {last_height:,d}'
+        )
 
+        return last_height
 
 
 
@@ -649,7 +896,8 @@ class SVSession(RPCSession):
             tip_header = deserialized_header(bytes.fromhex(tip_json['hex']), tip_json['height'])
 
             if self.headers.tip.height < tip_header.height:
-                await self._catch_up_to_tip(tip_header)
+                await self._catch_up_to_tip_throttled(tip_header)
+                #await self._catch_up_to_tip(tip_header)
 
             # --- NEW: push local tip to GUI immediately ---
             if self.headers.tip.height > 0:
@@ -682,7 +930,7 @@ class SVSession(RPCSession):
         if hex_root != expected_root:
             raise DisconnectSessionError(f'bad header merkle root {hex_root} expected '
                                          f'{expected_root}', blacklist=True)
-        header = Net.COIN.deserialized_header(raw_header, height)
+        header = deserialized_header(raw_header, height)
         proven_root = hash_to_hex_str(_root_from_proof(header.hash, branch, height))
         if proven_root != expected_root:
             raise DisconnectSessionError(f'invalid header proof {proven_root} expected '
@@ -735,7 +983,7 @@ class SVSession(RPCSession):
         # Fallback: catch up from checkpoint
         self.logger.debug(f"Tip at height {height:,d} not connectable, starting catch-up")
         try:
-            tip_obj = self.network.COIN.deserialized_header(
+            tip_obj = deserialized_header(
                 bytes.fromhex(raw_header), height
             )
             await self._catch_up_to_tip_throttled(tip_obj)
@@ -748,6 +996,45 @@ class SVSession(RPCSession):
             self.tip = longest.tip()
             self.chain = longest
 
+    async def _catch_up_to_tip_throttled(self, tip):
+        '''Raises: DisconnectSessionError, BatchError, TaskTimeout'''
+        # Avoid thundering herd effect by having one session catch up per tip
+
+        done_event = SVSession._connecting_tips.get(tip.raw)
+
+        self.logger.warning(
+            "\n===== THROTTLE ====="
+            "\nsession : %s"
+            "\nkey     : %s"
+            "\nwaiting : %s",
+            id(self),
+            tip.raw.hex(),
+            done_event is not None,
+        )
+
+        if done_event:
+            self.logger.warning(
+                "WAITING on existing throttle entry for %s",
+                tip.raw.hex(),
+            )
+            await done_event.wait()
+        else:
+            self.logger.warning(
+                "CREATED throttle entry for %s",
+                tip.raw.hex(),
+            )
+
+            SVSession._connecting_tips[tip.raw] = app_state.async_.event()
+
+            try:
+                await self._catch_up_to_tip(tip)
+            finally:
+                SVSession._connecting_tips.pop(tip.raw).set()
+                self.logger.warning(
+                    "RELEASED throttle entry for %s",
+                    tip.raw.hex(),
+                )
+
 
 
     async def _catch_up_to_tip(self, tip):
@@ -756,16 +1043,81 @@ class SVSession(RPCSession):
         local_tip_height = headers_obj.tip.height
         remote_tip_height = tip.height
 
+        self.logger.debug(
+            "\n========== CATCH UP START =========="
+            "\nlocal tip  : %d"
+            "\nremote tip : %d",
+            local_tip_height,
+            remote_tip_height,
+        )
+
         while local_tip_height < remote_tip_height:
             chunk_size = min(2016, remote_tip_height - local_tip_height)
-            last_height = await self._request_chunk(local_tip_height + 1, chunk_size)
+
+            self.logger.debug(
+                "\nCATCH-UP ITERATION"
+                "\nrequest start : %d"
+                "\nrequest count : %d"
+                "\ncurrent local : %d"
+                "\nremote tip    : %d",
+                local_tip_height + 1,
+                chunk_size,
+                local_tip_height,
+                remote_tip_height,
+            )
+
+            last_height = await self._request_chunk(
+                local_tip_height + 1,
+                chunk_size,
+            )
+
+            self.logger.debug(
+                "request returned last_height = %d",
+                last_height,
+            )
+
+            new_tip = headers_obj.tip.height
+
+            self.logger.warning(
+                "headers_obj.tip.height now = %d",
+                new_tip,
+            )
+
             local_tip_height = last_height
+
+        self.logger.warning(
+            "========== CATCH UP END =========="
+            "\nfinal local tip : %d",
+            local_tip_height,
+        )
+
 
 
     async def _subscribe_to_script_hash(self, script_hash: str) -> None:
-        '''Raises: RPCError, TaskTimeout'''
-        status = await self.send_request(SCRIPTHASH_SUBSCRIBE, [script_hash])
-        await self._on_queue_status_changed(script_hash, status)
+        '''Subscribe to a script hash, retrying temporary server failures.'''
+        for attempt in range(3):
+            try:
+                status = await self.send_request(
+                    SCRIPTHASH_SUBSCRIBE, [script_hash]
+                )
+                await self._on_queue_status_changed(script_hash, status)
+                return
+            except (TaskTimeout, RPCError) as e:
+                if attempt == 2:
+                    logger.warning(
+                        f'failed to subscribe to script hash {script_hash} '
+                        f'after 3 attempts: {e}'
+                    )
+                    return
+
+                logger.warning(
+                    f'script hash subscription failed for {script_hash}; '
+                    f'retrying ({attempt + 1}/3): {e}'
+                )
+                await sleep(2)
+
+
+
 
     async def _unsubscribe_from_script_hash(self, script_hash: str) -> bool:
         return await self.send_request(SCRIPTHASH_UNSUBSCRIBE, [script_hash])
@@ -1101,7 +1453,7 @@ class Network(TriggeredCallbacks):
 
     def __init__(self, headers_path: str = None):
         self.logger = logging.getLogger("network")
-        self.deserialized_header = None
+        #self.deserialized_header = None
 
         TriggeredCallbacks.__init__(self)
 
@@ -1350,15 +1702,16 @@ class Network(TriggeredCallbacks):
 
         # Priority server list (user-defined)
         priority_servers = [
-            ('electrumx.gorillapool.io', {'s': '50002'}),            
-            ('electrum.api.sv', {'s': '50002'}),
-            ('neptune.api.sv', {'s': '50002'}),
-            ('alpha-esv.api.sv', {'s': '50002'}),
+            ('electrumx.gorillapool.io', {'s': '50002'}), 
+            ('sv.electrumr.sv', {'s': '50002'}),
+            ('sv2.electrumr.sv', {'s': '50002'}),           
+            #('electrum.api.sv', {'s': '50002'}),
+            #('neptune.api.sv', {'s': '50002'}),
+            #('alpha-esv.api.sv', {'s': '50002'}),
             ('sv.satoshi.io', {'s': '50002'}),
             ('sv2.satoshi.io', {'s': '50002'}),
             ('esv.bitails.io', {'s': '50002'}),
-            ('electrum.server.sv', {'s': '50002'}),
-            ('alpha-esv.api.sv', {'s': '50002'}),
+            ('electrum.server.sv', {'s': '50002'}),            
             ('bsv.aftrek.org', {'s': '50002'}),
         ]
 

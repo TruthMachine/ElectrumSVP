@@ -30,6 +30,7 @@ import threading
 from aiorpcx import instantiate_coroutine
 
 from .logs import logs
+import sys
 
 logger = logs.get_logger("async")
 
@@ -49,11 +50,16 @@ class ASync(object):
 
     def event(self):
         '''Return an asyncio.Event for our event loop.'''
+        if sys.version_info >= (3, 10):
+            return Event()
         return Event(loop=self.loop)
 
     def queue(self, maxsize=0):
-        '''Return an asyncio.Event for our event loop.'''
+        '''Return an asyncio.Queue for our event loop.'''
+        if sys.version_info >= (3, 10):
+            return Queue(maxsize)
         return Queue(maxsize, loop=self.loop)
+
 
     def __enter__(self):
         logger.info('starting async thread')

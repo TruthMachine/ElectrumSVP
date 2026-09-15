@@ -1,107 +1,769 @@
 #!/usr/bin/env python
-#
-# Electrum - lightweight Bitcoin client
-# Copyright (C) 2015 Thomas Voegtlin
-#
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation files
-# (the "Software"), to deal in the Software without restriction,
-# including without limitation the rights to use, copy, modify, merge,
-# publish, distribute, sublicense, and/or sell copies of the Software,
-# and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 
 import os
-import ctypes
 
 from electrumsv.platform import platform
 from electrumsv.startup import base_dir
 
 
-try:
-    libzbar = ctypes.cdll.LoadLibrary(platform.libzbar_name)
-except OSError:
-    libzbar = None
+# ============================================================================
+# Qt Multimedia + zxingcpp
+#
+# Windows and Linux:
+#     Qt Multimedia camera capture + zxingcpp decoding
+#
+# macOS:
+#     Original CalinsQRReader helper application
+#
+# IMPORTANT:
+#     This file does NOT use ZBar.
+# ============================================================================
 
 
-def scan_barcode_ctypes(device='', timeout=-1, display=True, threaded=False, try_again=True):
-    if libzbar is None:
-        raise RuntimeError("Cannot start QR scanner; zbar not available.")
-    libzbar.zbar_symbol_get_data.restype = ctypes.c_char_p
-    libzbar.zbar_processor_create.restype = ctypes.POINTER(ctypes.c_int)
-    libzbar.zbar_processor_get_results.restype = ctypes.POINTER(ctypes.c_int)
-    libzbar.zbar_symbol_set_first_symbol.restype = ctypes.POINTER(ctypes.c_int)
-    proc = libzbar.zbar_processor_create(threaded)
-    libzbar.zbar_processor_request_size(proc, 640, 480)
-    if libzbar.zbar_processor_init(proc, device.encode('utf-8'), display) != 0:
-        if try_again:
-            # workaround for a bug in "ZBar for Windows"
-            # libzbar.zbar_processor_init always seem to fail the first time around
-            return scan_barcode(device, timeout, display, threaded, try_again=False)
-        raise RuntimeError("Can not start QR scanner; initialization failed.")
-    libzbar.zbar_processor_set_visible(proc)
-    if libzbar.zbar_process_one(proc, timeout):
-        symbols = libzbar.zbar_processor_get_results(proc)
-    else:
-        symbols = None
-    libzbar.zbar_processor_destroy(proc)
-    if symbols is None:
-        return
-    if not libzbar.zbar_symbol_set_get_size(symbols):
-        return
-    symbol = libzbar.zbar_symbol_set_first_symbol(symbols)
-    data = libzbar.zbar_symbol_get_data(symbol)
-    return data.decode('utf8')
+def _scan_barcode_qt(device='', max_duration=30):
+
+    from PyQt5.QtCore import Qt, QTimer
+    from PyQt5.QtGui import QImage, QPixmap
+    from PyQt5.QtWidgets import (
+        QApplication,
+        QDialog,
+        QLabel,
+        QPushButton,
+        QVBoxLayout,
+        QHBoxLayout,
+    )
+    from PyQt5.QtMultimedia import (
+        QCamera,
+        QCameraImageCapture,
+        QCameraInfo,
+    )
+
+    import zxingcpp
+
+    # ------------------------------------------------------------------------
+    # QApplication
+    # ------------------------------------------------------------------------
+
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    # ------------------------------------------------------------------------
+    # Scanner dialog
+    # ------------------------------------------------------------------------
+
+    dialog = QDialog()
+    dialog.setWindowTitle("Scan QR Code")
+    dialog.setModal(True)
+    dialog.resize(700, 600)
+
+    # ------------------------------------------------------------------------
+    # Preview
+    # ------------------------------------------------------------------------
+
+    preview = QLabel()
+    preview.setAlignment(Qt.AlignCenter)
+    preview.setMinimumSize(640, 480)
+    preview.setStyleSheet(
+        "background-color: black;"
+    )
+
+    instruction = QLabel(
+        "Starting camera..."
+    )
+    instruction.setAlignment(Qt.AlignCenter)
+
+    cancel_button = QPushButton("Cancel")
+
+    button_layout = QHBoxLayout()
+    button_layout.addStretch()
+    button_layout.addWidget(cancel_button)
+    button_layout.addStretch()
+
+    layout = QVBoxLayout(dialog)
+    layout.addWidget(preview)
+    layout.addWidget(instruction)
+    layout.addLayout(button_layout)
+
+    # ------------------------------------------------------------------------
+    # State
+    # ------------------------------------------------------------------------
+
+    result = {
+        'text': '',
+        'finished': False,
+        'closing': False,
+    }
+
+    # ------------------------------------------------------------------------
+    # Find cameras
+    # ------------------------------------------------------------------------
+
+    try:
+        cameras = QCameraInfo.availableCameras()
+
+    except Exception as e:
+
+        instruction.setText(
+            "Unable to enumerate cameras: {}".format(e)
+        )
+
+        QTimer.singleShot(
+            1500,
+            dialog.reject
+        )
+
+        dialog.exec_()
+        return ''
+
+    if not cameras:
+
+        instruction.setText(
+            "No camera was detected."
+        )
+
+        QTimer.singleShot(
+            1500,
+            dialog.reject
+        )
+
+        dialog.exec_()
+        return ''
+
+    # ------------------------------------------------------------------------
+    # Select camera
+    # ------------------------------------------------------------------------
+
+    selected_camera = None
+
+    if device and device != 'default':
+
+        for camera_info in cameras:
+
+            try:
+
+                if (
+                    camera_info.deviceName() == device
+                    or camera_info.description() == device
+                ):
+                    selected_camera = camera_info
+                    break
+
+            except Exception:
+                pass
+
+    if selected_camera is None:
+        selected_camera = cameras[0]
+
+    # ------------------------------------------------------------------------
+    # Create camera
+    # ------------------------------------------------------------------------
+
+    camera = QCamera(selected_camera)
+
+    # Explicitly use still-image capture.
+    try:
+        camera.setCaptureMode(
+            QCamera.CaptureStillImage
+        )
+    except Exception:
+        pass
+
+    capture = QCameraImageCapture(camera)
+
+    # ------------------------------------------------------------------------
+    # Timers
+    # ------------------------------------------------------------------------
+
+    capture_timer = QTimer()
+    timeout_timer = QTimer()
+
+    timeout_timer.setSingleShot(True)
+
+    # ------------------------------------------------------------------------
+    # Finish / shutdown
+    #
+    # IMPORTANT:
+    #
+    # We do NOT delete the QCamera immediately.
+    #
+    # On Linux, Qt Multimedia may be using GStreamer underneath.
+    # Immediately destroying the camera while the dialog is closing can
+    # leave the camera device in a partially-open state.
+    # ------------------------------------------------------------------------
+
+    def finish_scan(accepted):
+
+        if result['closing']:
+            return
+
+        result['closing'] = True
+
+        # Stop requesting new frames first.
+        try:
+            capture_timer.stop()
+        except Exception:
+            pass
+
+        # Stop timeout.
+        try:
+            timeout_timer.stop()
+        except Exception:
+            pass
+
+        # Stop camera.
+        try:
+            camera.stop()
+        except Exception:
+            pass
+
+        # Give Qt Multimedia/GStreamer time to process the camera shutdown
+        # before closing the dialog.
+        if accepted:
+
+            QTimer.singleShot(
+                150,
+                dialog.accept
+            )
+
+        else:
+
+            QTimer.singleShot(
+                150,
+                dialog.reject
+            )
+
+    # ------------------------------------------------------------------------
+    # Cancel
+    # ------------------------------------------------------------------------
+
+    def cancel_scan():
+
+        if result['finished']:
+            return
+
+        result['finished'] = True
+
+        instruction.setText(
+            "Cancelling..."
+        )
+
+        finish_scan(False)
+
+    cancel_button.clicked.connect(
+        cancel_scan
+    )
+
+    # ------------------------------------------------------------------------
+    # Camera errors
+    # ------------------------------------------------------------------------
+
+    def camera_error(error):
+
+        if result['finished']:
+            return
+
+        try:
+            error_string = camera.errorString()
+        except Exception:
+            error_string = ''
+
+        if error_string:
+
+            instruction.setText(
+                "Camera error: {}".format(
+                    error_string
+                )
+            )
+
+        else:
+
+            instruction.setText(
+                "Unable to access the camera."
+            )
+
+    try:
+        camera.error.connect(
+            camera_error
+        )
+    except Exception:
+        pass
+
+    # ------------------------------------------------------------------------
+    # Camera status
+    # ------------------------------------------------------------------------
+
+    def camera_status_changed(status):
+
+        if result['finished']:
+            return
+
+        try:
+
+            if status == QCamera.StartingStatus:
+
+                instruction.setText(
+                    "Starting camera..."
+                )
+
+            elif status == QCamera.LoadedStatus:
+
+                instruction.setText(
+                    "Camera ready..."
+                )
+
+            elif status == QCamera.ActiveStatus:
+
+                instruction.setText(
+                    "Point your camera at a QR code."
+                )
+
+            elif status == QCamera.UnloadedStatus:
+
+                if not result['closing']:
+                    instruction.setText(
+                        "Camera stopped."
+                    )
+
+        except Exception:
+            pass
+
+    try:
+        camera.statusChanged.connect(
+            camera_status_changed
+        )
+    except Exception:
+        pass
+
+    # ------------------------------------------------------------------------
+    # QImage -> zxingcpp buffer
+    #
+    # QImage RGB888 rows can contain padding.
+    #
+    # Therefore we cannot blindly assume:
+    #
+    #     bytes_per_line == width * 3
+    #
+    # We explicitly remove row padding.
+    # ------------------------------------------------------------------------
+
+    def image_to_buffer(image):
+
+        image = image.convertToFormat(
+            QImage.Format_RGB888
+        )
+
+        width = image.width()
+        height = image.height()
+
+        if width <= 0 or height <= 0:
+            return None
+
+        bytes_per_line = image.bytesPerLine()
+        row_size = width * 3
+
+        ptr = image.bits()
+
+        try:
+            ptr.setsize(
+                image.byteCount()
+            )
+        except Exception:
+            pass
+
+        raw = bytes(ptr)
+
+        # No padding.
+        if bytes_per_line == row_size:
+
+            return memoryview(
+                raw
+            ).cast(
+                'B',
+                (height, width, 3)
+            )
+
+        # Remove row padding.
+        packed = bytearray(
+            row_size * height
+        )
+
+        for y in range(height):
+
+            src_start = y * bytes_per_line
+            src_end = src_start + row_size
+
+            dst_start = y * row_size
+            dst_end = dst_start + row_size
+
+            packed[dst_start:dst_end] = (
+                raw[src_start:src_end]
+            )
+
+        return memoryview(
+            packed
+        ).cast(
+            'B',
+            (height, width, 3)
+        )
+
+    # ------------------------------------------------------------------------
+    # Process captured frame
+    # ------------------------------------------------------------------------
+
+    def process_image(image_id, image):
+
+        if result['finished']:
+            return
+
+        try:
+
+            if image.isNull():
+                return
+
+            # ------------------------------------------------------------
+            # Display preview
+            # ------------------------------------------------------------
+
+            pixmap = QPixmap.fromImage(
+                image
+            )
+
+            scaled_pixmap = pixmap.scaled(
+                preview.size(),
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+
+            preview.setPixmap(
+                scaled_pixmap
+            )
+
+            # ------------------------------------------------------------
+            # Convert image
+            # ------------------------------------------------------------
+
+            frame = image_to_buffer(
+                image
+            )
+
+            if frame is None:
+                return
+
+            # ------------------------------------------------------------
+            # Decode
+            # ------------------------------------------------------------
+
+            barcodes = zxingcpp.read_barcodes(
+                frame,
+                try_rotate=True,
+                try_downscale=True,
+            )
+
+            for barcode in barcodes:
+
+                if not barcode.text:
+                    continue
+
+                # QR successfully decoded.
+                result['text'] = barcode.text
+                result['finished'] = True
+
+                instruction.setText(
+                    "QR code detected!"
+                )
+
+                finish_scan(True)
+
+                return
+
+        except Exception:
+
+            # Ignore malformed individual frames.
+            #
+            # The scanner should continue trying subsequent frames.
+            return
+
+    capture.imageCaptured.connect(
+        process_image
+    )
+
+    # ------------------------------------------------------------------------
+    # Capture one frame
+    # ------------------------------------------------------------------------
+
+    def capture_frame():
+
+        if result['finished']:
+            return
+
+        try:
+
+            if capture.isReadyForCapture():
+
+                capture.capture()
+
+        except Exception:
+            pass
+
+    capture_timer.timeout.connect(
+        capture_frame
+    )
+
+    # ------------------------------------------------------------------------
+    # Timeout
+    # ------------------------------------------------------------------------
+
+    def timeout_scan():
+
+        if result['finished']:
+            return
+
+        result['finished'] = True
+
+        instruction.setText(
+            "No QR code detected."
+        )
+
+        finish_scan(False)
+
+    timeout_timer.timeout.connect(
+        timeout_scan
+    )
+
+    # ------------------------------------------------------------------------
+    # Start camera
+    # ------------------------------------------------------------------------
+
+    try:
+
+        camera.start()
+
+    except Exception as e:
+
+        instruction.setText(
+            "Unable to start camera: {}".format(e)
+        )
+
+        QTimer.singleShot(
+            1500,
+            dialog.reject
+        )
+
+        dialog.exec_()
+
+        return ''
+
+    # ------------------------------------------------------------------------
+    # Wait until camera is active before capturing.
+    # ------------------------------------------------------------------------
+
+    def start_capture_timer():
+
+        if result['finished'] or result['closing']:
+            return
+
+        try:
+
+            if camera.status() == QCamera.ActiveStatus:
+
+                instruction.setText(
+                    "Point your camera at a QR code."
+                )
+
+                # About 6-7 frames per second.
+                capture_timer.start(150)
+
+            else:
+
+                QTimer.singleShot(
+                    100,
+                    start_capture_timer
+                )
+
+        except Exception:
+
+            # If status isn't available, try anyway.
+            capture_timer.start(150)
+
+    QTimer.singleShot(
+        250,
+        start_capture_timer
+    )
+
+    # ------------------------------------------------------------------------
+    # Start overall timeout
+    # ------------------------------------------------------------------------
+
+    timeout_timer.start(
+        int(max_duration * 1000)
+    )
+
+    # ------------------------------------------------------------------------
+    # Run modal dialog
+    # ------------------------------------------------------------------------
+
+    try:
+
+        dialog.exec_()
+
+    finally:
+
+        # Stop timers.
+        try:
+            capture_timer.stop()
+        except Exception:
+            pass
+
+        try:
+            timeout_timer.stop()
+        except Exception:
+            pass
+
+        # Stop camera one final time.
+        try:
+            camera.stop()
+        except Exception:
+            pass
+
+        # Schedule destruction through Qt rather than destroying the
+        # multimedia objects immediately.
+        try:
+            capture.deleteLater()
+        except Exception:
+            pass
+
+        try:
+            camera.deleteLater()
+        except Exception:
+            pass
+
+    return result['text']
+
+
+# ============================================================================
+# macOS
+# ============================================================================
 
 def scan_barcode_osx(*args_ignored, **kwargs_ignored):
-    import subprocess
-    # NOTE: This code needs to be modified if the positions of this file changes with respect
-    # to the helper app!  This assumes the built macOS .app bundle which puts the helper app in
-    # ./CalinsQRReader.app.
-    prog = os.path.join(base_dir, "CalinsQRReader.app/Contents/MacOS/CalinsQRReader")
-    if not os.path.exists(prog):
-        raise RuntimeError("Cannot start QR scanner; helper app not found.")
-    data = ''
-    try:
-        # This will run the "CalinsQRReader" helper app (which gets bundled with the built .app)
-        # Like for zbar the main app will hang until the QR window returns a QR code
-        # (or is closed). Communication with the subprocess is done via stdout.
-        # See contrib/CalinsQRReader for the helper app source code.
-        with subprocess.Popen([prog], stdout=subprocess.PIPE) as p:
-            data = p.stdout.read().decode('utf-8').strip()
-        return data
-    except OSError as e:
-        raise RuntimeError("Cannot start camera helper app; {}".format(e.strerror))
 
-scan_barcode = scan_barcode_osx if platform.name == 'MacOSX' else scan_barcode_ctypes
+    import subprocess
+
+    # Original ElectrumSV macOS helper.
+    prog = os.path.join(
+        base_dir,
+        "CalinsQRReader.app",
+        "Contents",
+        "MacOS",
+        "CalinsQRReader"
+    )
+
+    if not os.path.exists(prog):
+
+        raise RuntimeError(
+            "Cannot start QR scanner; helper app not found."
+        )
+
+    try:
+
+        with subprocess.Popen(
+            [prog],
+            stdout=subprocess.PIPE
+        ) as p:
+
+            return (
+                p.stdout
+                .read()
+                .decode('utf-8')
+                .strip()
+            )
+
+    except OSError as e:
+
+        raise RuntimeError(
+            "Cannot start camera helper app; {}".format(
+                e.strerror
+            )
+        )
+
+
+# ============================================================================
+# Public scanner
+# ============================================================================
+
+def scan_barcode(
+    device='',
+    max_duration=30
+):
+
+    # macOS keeps its original native helper.
+    if platform.name == 'MacOSX':
+
+        return scan_barcode_osx(
+            device=device
+        )
+
+    # Windows + Linux:
+    #
+    # Qt Multimedia camera
+    # +
+    # zxingcpp QR decoding
+    #
+    # No ZBar.
+    return _scan_barcode_qt(
+        device=device,
+        max_duration=max_duration
+    )
+
+
+# ============================================================================
+# Linux camera discovery
+# ============================================================================
 
 def find_system_cameras():
+
     device_root = "/sys/class/video4linux"
-    devices = {} # Name -> device
+
+    devices = {}
+
     if os.path.exists(device_root):
+
         for device in os.listdir(device_root):
-            path = os.path.join(device_root, device, 'name')
+
+            path = os.path.join(
+                device_root,
+                device,
+                'name'
+            )
+
             try:
-                with open(path, encoding='utf-8') as f:
-                    name = f.read()
+
+                with open(
+                    path,
+                    encoding='utf-8'
+                ) as f:
+
+                    name = f.read().strip()
+
             except Exception:
+
                 continue
-            name = name.strip('\n')
-            devices[name] = os.path.join("/dev", device)
+
+            devices[name] = os.path.join(
+                "/dev",
+                device
+            )
+
     return devices
 
 
+# ============================================================================
+# Direct command-line testing
+# ============================================================================
+
 if __name__ == "__main__":
-    print(scan_barcode())
+
+    print(
+        scan_barcode()
+    )

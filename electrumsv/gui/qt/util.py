@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
 
 from PyQt5.QtCore import QTimer
-
+from .theme import form_style, Theme, theme_from_config
 
 
 logger = logs.get_logger("qt-util")
@@ -1146,20 +1146,8 @@ class FormSectionWidget(QWidget):
         frame.setObjectName("FormFrame")
         frame.setLayout(self.frame_layout)
 
-        self.setStyleSheet("""
-        #FormSeparatorLine {
-            border: 1px solid #E3E2E2;
-        }
-
-        #FormSectionLabel {
-            color: #444444;
-        }
-
-        #FormFrame {
-            background-color: #F2F2F2;
-            border: 1px solid #E3E2E2;
-        }
-        """)
+        theme = theme_from_config(app_state.config)
+        self.setStyleSheet(form_style(theme))
 
         vlayout = QVBoxLayout()
         vlayout.setContentsMargins(0, 0, 0, 0)
@@ -1236,6 +1224,15 @@ class FormSectionWidget(QWidget):
         self._resizable_rows.append(grid_layout)
         return result
 
+    def update_theme(self, theme: Theme) -> None:
+        style = form_style(theme)
+        self.setStyleSheet(style)
+
+        frame = self.findChild(QFrame, "FormFrame")
+        if frame is not None:
+            frame.setStyleSheet(style)
+
+        self.update()
 
 class FramedTextWidget(QLabel):
     def __init__(self, parent: Optional[QWidget]=None) -> None:
@@ -1273,7 +1270,7 @@ class AspectRatioPixmapLabel(QLabel):
 
     def heightForWidth(self, width: int) -> int:
         return self.height() if self._pixmap is None else \
-            (self._pixmap.height() * width) / self._pixmap.width()
+            (self._pixmap.height() * width) // self._pixmap.width()
 
     def sizeHint(self) -> QSize:
         width = self.parent().width()

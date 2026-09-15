@@ -31,6 +31,31 @@ CCY_PRECISIONS = {'BHD': 3, 'BIF': 0, 'BYR': 0, 'CLF': 4, 'CLP': 0,
                   'VUV': 0, 'XAF': 0, 'XAU': 4, 'XOF': 0, 'XPF': 0}
 
 
+FIAT_CURRENCIES = {
+    'AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD',
+    'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF',
+    'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTN', 'BWP', 'BYN',
+    'BZD', 'CAD', 'CDF', 'CHF', 'CLP', 'CNY', 'COP', 'CRC',
+    'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP',
+    'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GHS',
+    'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HTG',
+    'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK', 'JMD',
+    'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KRW', 'KWD',
+    'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD',
+    'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRU',
+    'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN',
+    'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK',
+    'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB',
+    'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP',
+    'SLE', 'SLL', 'SOS', 'SRD', 'SSP', 'STN', 'SVC', 'SYP',
+    'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD',
+    'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VES',
+    'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XOF', 'XPF', 'YER',
+    'ZAR', 'ZMW', 'ZWL'
+}
+
+
+
 class ExchangeBase(object):
 
     def __init__(self):
@@ -40,8 +65,15 @@ class ExchangeBase(object):
     def get_json(self, site, get_string):
         # APIs must have https
         url = ''.join(['https://', site, get_string])
-        response = requests.request('GET', url, headers={'User-Agent' : 'ElectrumSV'}, timeout=10)
+        response = requests.request(
+            'GET',
+            url,
+            headers={'User-Agent': 'ElectrumSV'},
+            timeout=10
+        )
+        response.raise_for_status()
         return response.json()
+
 
     def name(self) -> str:
         return self.__class__.__name__
@@ -109,40 +141,11 @@ class ExchangeBase(object):
 
     def get_currencies(self):
         rates = self.get_rates('')
-        return sorted([str(a) for (a, b) in rates.items() if b is not None and len(a)==3])
+        return sorted([
+            str(a) for (a, b) in rates.items()
+            if b is not None and a in FIAT_CURRENCIES
+        ])
 
-
-class BitPay(ExchangeBase):
-
-    def get_rates(self, ccy):
-        json = self.get_json('bitpay.com', '/api/rates/BSV')
-        return dict([(r['code'], Decimal(r['rate'])) for r in json])
-
-
-class Bitfinex(ExchangeBase):
-    """
-    https://docs.bitfinex.com/v2/reference
-    """
-    INDEX_SYMBOL = 0
-    INDEX_BID = 1
-    INDEX_BID_SIZE = 2
-    INDEX_ASK = 3
-    INDEX_ASK_SIZE = 4
-    INDEX_DAILY_CHANGE = 5
-    INDEX_DAILY_CHANGE_PERC = 6
-    INDEX_LAST_PRICE = 7
-    INDEX_VOLUME = 8
-    INDEX_HIGH = 9
-    INDEX_LOW = 10
-
-    def get_rates(self, ccy):
-        json_value = self.get_json('api.bitfinex.com', '/v2/tickers?symbols=tBSVUSD')
-        if not isinstance(json_value, list) or not json_value:
-            raise RuntimeError(f'bad Bitfinex rates: {json_value}')
-        usd_entry = json_value[0]
-        return {
-            'USD': Decimal(usd_entry[Bitfinex.INDEX_LAST_PRICE]),
-        }
 
 
 class Coinbase(ExchangeBase):
@@ -152,12 +155,6 @@ class Coinbase(ExchangeBase):
                              '/v2/exchange-rates?currency=BSV')
         return {ccy: Decimal(rate) for (ccy, rate) in json["data"]["rates"].items()}
 
-
-class CoinFloor(ExchangeBase):
-    # CoinFloor API only supports GBP on public API
-    def get_rates(self, ccy):
-        json = self.get_json('webapi.coinfloor.co.uk:8090/bist/BSV/GBP', '/ticker/')
-        return {'GBP': Decimal(json['last'])}
 
 
 class CoinPaprika(ExchangeBase):
@@ -169,34 +166,17 @@ class CoinPaprika(ExchangeBase):
         return ['USD']
 
     def request_history(self, ccy):
-        limit = 1000
+        limit = 364
         end_date = datetime.date.today()
         start_date = end_date - datetime.timedelta(days=limit-1)
         history = self.get_json(
             'api.coinpaprika.com',
             "/v1/tickers/bsv-bitcoin-sv/historical?start={}&quote=USD&limit={}&interval=24h"
             .format(start_date.strftime("%Y-%m-%d"), limit))
+
         return dict([(datetime.datetime.strptime(
             h['timestamp'], '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d'), h['price'])
                      for h in history])
-
-
-class CoinCap(ExchangeBase):
-    def get_rates(self, ccy):
-        json = self.get_json('api.coincap.io', '/v2/assets/bitcoin-sv')
-        return {'USD': Decimal(json['data']['priceUsd'])}
-
-    def history_ccys(self):
-        return ['USD']
-
-    def request_history(self, ccy):
-        # Currently 2000 days is the maximum in 1 API call which needs to be fixed
-        # sometime before the year 2023...
-        history = self.get_json('api.coincap.io',
-                               "/v2/assets/bitcoin-sv/history?interval=d1&limit=2000")
-        return dict([(datetime.datetime.utcfromtimestamp(h['time']/1000).strftime('%Y-%m-%d'),
-                        h['priceUsd'])
-                     for h in history['data']])
 
 
 class CoinGecko(ExchangeBase):
@@ -208,19 +188,61 @@ class CoinGecko(ExchangeBase):
         return dict([(a[0].upper(),Decimal(a[1])) for a in prices.items()])
 
     def history_ccys(self):
-        return ['AED', 'ARS', 'AUD', 'BTD', 'BHD', 'BMD', 'BRL', 'BTC',
-                'CAD', 'CHF', 'CLP', 'CNY', 'CZK', 'DKK', 'ETH', 'EUR',
-                'GBP', 'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'JPY', 'KRW',
-                'KWD', 'LKR', 'LTC', 'MMK', 'MXH', 'MYR', 'NOK', 'NZD',
-                'PHP', 'PKR', 'PLN', 'RUB', 'SAR', 'SEK', 'SGD', 'THB',
-                'TRY', 'TWD', 'USD', 'VEF', 'XAG', 'XAU', 'XDR', 'ZAR']
+        return ['USD']
 
     def request_history(self, ccy):
         history = self.get_json(
             'api.coingecko.com',
-            '/api/v3/coins/bitcoin-cash/market_chart?vs_currency=%s&days=max' % ccy)
+            '/api/v3/coins/bitcoin-cash-sv/market_chart?vs_currency=%s&days=365' % ccy)
         return dict([(datetime.datetime.utcfromtimestamp(h[0]/1000).strftime('%Y-%m-%d'), h[1])
                      for h in history['prices']])
+
+
+class BananaBlocks(ExchangeBase):
+
+    def get_rates(self, ccy):
+        json = self.get_json(
+            'bananablocks.com',
+            '/api/v1/exchangerates')
+        rates = json['rates']
+
+        if ccy:
+            return {ccy: Decimal(str(rates[ccy]))}
+
+        return {ccy: Decimal(str(rate)) for ccy, rate in rates.items()}
+
+    def history_ccys(self):
+        return ['USD']
+
+    def request_history(self, ccy):
+        history = self.get_json(
+            'bananablocks.com',
+            '/api/v1/stats/chart/exchange_rate?days=365')
+
+        return {
+            datetime.datetime.utcfromtimestamp(
+                h['timestamp'] / 1000
+            ).strftime('%Y-%m-%d'): h['price']
+            for h in history
+        }
+
+
+class WhatsOnChain(ExchangeBase):
+
+    def get_rates(self, ccy):
+        json = self.get_json(
+            'api.whatsonchain.com',
+            '/v1/bsv/main/exchangerate')
+
+        rate = Decimal(str(json['rate']))
+
+        if ccy:
+            if ccy == 'USD':
+                return {'USD': rate}
+            return {}
+
+        return {'USD': rate}
+
 
 
 def dictinvert(d):
@@ -245,7 +267,7 @@ def get_exchanges_and_currencies():
                                and obj != ExchangeBase)
     exchanges = dict(inspect.getmembers(sys.modules[__name__], is_exchange))
     for name, klass in exchanges.items():
-        exchange = klass(None, None)
+        exchange = klass()
         try:
             d[name] = exchange.get_currencies()
             logger.debug("get_exchanges_and_currencies %s = ok", name)
@@ -325,13 +347,13 @@ class FxTask:
                 self.network.trigger_callback(NetworkEventNames.EXCHANGE_RATE_QUOTES)
 
     def is_enabled(self):
-        return bool(self.config.get('use_exchange_rate'))
+        return bool(self.config.get('use_exchange_rate', True))
 
     def set_enabled(self, enabled):
         return self.config.set_key('use_exchange_rate', enabled)
 
     def get_history_config(self):
-        return bool(self.config.get('history_rates'))
+        return bool(self.config.get('history_rates', True))
 
     def set_history_config(self, enabled):
         self.config.set_key('history_rates', enabled)
@@ -339,17 +361,17 @@ class FxTask:
             self.trigger_history_refresh()
 
     def get_fiat_address_config(self):
-        return bool(self.config.get('fiat_address'))
+        return bool(self.config.get('fiat_address', True))
 
     def set_fiat_address_config(self, b):
         self.config.set_key('fiat_address', b)
 
     def get_currency(self):
         '''Use when dynamic fetching is needed'''
-        return self.config.get("currency", "EUR")
+        return self.config.get("currency", "USD")
 
     def config_exchange(self):
-        return self.config.get('use_exchange', 'CoinGecko')
+        return self.config.get('use_exchange', 'BananaBlocks')
 
     def show_history(self):
         return (self.is_enabled() and self.get_history_config() and
@@ -400,7 +422,7 @@ class FxTask:
             f"{self.ccy}")
         return bitcoin_value, fiat_value
 
-    def value_str(self, satoshis, rate, default_prec = 2 ):
+    def value_str(self, satoshis, rate, default_prec = 8 ):
         if satoshis is None:  # Can happen with incomplete history
             return _("Unknown")
         if rate:

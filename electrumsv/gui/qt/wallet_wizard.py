@@ -57,6 +57,8 @@ from .util import (AspectRatioPixmapLabel, can_show_in_file_explorer, create_new
     MessageBox, show_in_file_explorer)
 from .wizard_common import BaseWizard, HelpContext
 
+from .theme import Theme, theme_from_config
+
 
 logger = logs.get_logger('wizard-wallet')
 
@@ -213,6 +215,8 @@ class WalletWizard(BaseWizard):
             migration_data: Optional[MigrationContext]=None) -> None:
         super().__init__(None)
 
+        self.setWizardStyle(QWizard.ClassicStyle)
+
         self._recently_opened_entries = None
 
         self.setWindowTitle('ElectrumSV')
@@ -234,6 +238,7 @@ class WalletWizard(BaseWizard):
             self.setStartId(WalletPage.SPLASH_SCREEN)
         else:
             self.setStartId(WalletPage.CHOOSE_WALLET)
+
 
     @classmethod
     def attempt_open(klass, wallet_path: str) -> Tuple[bool, bool, Optional['WalletWizard']]:
@@ -293,7 +298,7 @@ class SplashScreenPage(QWizardPage):
         # Version label
         #version_label = QLabel(f"<b><big>v{PACKAGE_VERSION}</big></b>")
         #change for beta version
-        version_label = QLabel("<b><big>ElectrumSVP v0.1.0</big></b><br><small>(based on ElectrumSV 1.3.16)</small>")
+        version_label = QLabel("<b><big>ElectrumSVP v0.2.0-beta.1</big></b><br><small>(based on ElectrumSV 1.3.16)</small>")
         #version_label = QLabel("<b><big>ElectrumSVP v0.1.0 (based on ElectrumSV 1.3.16)</big></b>")
         version_label.setAlignment(Qt.AlignHCenter)
         version_label.setTextFormat(Qt.RichText)
@@ -467,7 +472,7 @@ class ChooseWalletPage(QWizardPage):
         # Tab by default in QTableWidget, moves between list items. The arrow keys also perform
         # the same function, and we want tab to allow toggling to the wizard button bar instead.
         self._wallet_table.setTabKeyNavigation(False)
-        self._wallet_table.setHorizontalHeaderLabels([ "Recently Opened Wallets" ])
+        self._wallet_table.setHorizontalHeaderLabels(["Recently Opened Wallets"])
 
         self._unlocked_pixmap = QPixmap(icon_path("icons8-lock-80.png")).scaledToWidth(
             40, Qt.SmoothTransformation)

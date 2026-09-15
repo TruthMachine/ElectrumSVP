@@ -133,7 +133,7 @@ def show_named(name, *, parent=None, wallet=None, **kwargs):
         raise ValueError(f'no box with name {name} found')
     return box.result(parent, wallet, **kwargs)
 
-article_uri = "https://electrumsv.io/articles/2026/electrumsvp-0_1_0.html"
+article_uri = "https://electrumsv.io/articles/2026/electrumsvp-0_2_0-beta-1.html"
 
 take_care_notice = """
 <span>ElectrumSVP is just a Bitcoin SV wallet, it cannot stop you from making bad decisions. Read
@@ -145,7 +145,7 @@ Your coins are your responsibility, take care with them.</span>
 
 all_boxes = [
     InfoBox('welcome-ESV-1.3.16',  # keep original key
-            'Welcome to ElectrumSVP v0.1.0',  # remove _()
+            'Welcome to ElectrumSVP v0.2.0-beta.1',  # remove _()
 
             '<p>'+ take_care_notice +'</p>'+
             '<p>You can read about the changes included in this release, in the '+

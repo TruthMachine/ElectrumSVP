@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (QCheckBox, QCompleter, QGridLayout, QGroupBox, QHBo
     QLabel, QSizePolicy, QTreeView, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from electrumsv.app_state import app_state
-from electrumsv.constants import PaymentFlag, WalletSettings
+from electrumsv.constants import DEFAULT_FEE, MAX_GUI_FEE_RATE, PaymentFlag, WalletSettings
 from electrumsv.exceptions import ExcessiveFee, NotEnoughFunds
 from electrumsv.i18n import _
 from electrumsv.logs import logs
@@ -49,14 +49,14 @@ from electrumsv.util import format_satoshis_plain
 from electrumsv.wallet import AbstractAccount, UTXO
 from electrumsv.wallet_database.tables import InvoiceRow
 
-from .amountedit import AmountEdit, BTCAmountEdit, MyLineEdit
+from .amountedit import AmountEdit, BTCAmountEdit, BTCSatsByteEdit, MyLineEdit
 from . import dialogs
 from .invoice_list import InvoiceList
 from .paytoedit import PayToEdit
 from .table_widgets import TableTopButtonLayout
 from .util import (ColorScheme, EnterButton, HelpDialogButton, HelpLabel, MyTreeWidget,
     UntrustedMessageDialog, update_fixed_tree_height)
-
+from .theme import Theme, theme_from_config
 
 if TYPE_CHECKING:
     from .main_window import ElectrumWindow
@@ -104,29 +104,38 @@ class SendView(QWidget):
 
         self._main_window.wallet_setting_changed_signal.connect(self._on_wallet_setting_changed)
 
+
     def create_send_layout(self) -> QVBoxLayout:
         """ Re-render the layout and it's child widgets of this view. """
         # A 4-column grid layout.  All the stretch is in the last column.
         # The exchange rate plugin adds a fiat widget in column 2
         self._send_grid = grid = QGridLayout()
-        grid.setSpacing(8)
+        grid.setRowMinimumHeight(2, 24)
+        grid.setRowMinimumHeight(3, 24)
+        grid.setRowMinimumHeight(4, 24)
+        grid.setRowMinimumHeight(5, 24)
+        grid.setRowMinimumHeight(6, 24)
+        grid.setHorizontalSpacing(8)
+        grid.setVerticalSpacing(2)
         # This ensures all columns are stretched over the full width of the last tab.
         grid.setColumnStretch(4, 1)
 
         self.amount_e = BTCAmountEdit(self)
+        self.amount_e.setFixedHeight(20)
         self._payto_e = PayToEdit(self)
+        self._payto_e.setFixedHeight(26)
 
         # From fields row.
         # This is enabled by "spending" coins in the coins tab.
 
         self._from_label = QLabel(_('From'), self)
-        self._from_label.setContentsMargins(0, 5, 0, 0)
+        self._from_label.setContentsMargins(0, 0, 0, 0)
         self._from_label.setAlignment(Qt.AlignTop)
         grid.addWidget(self._from_label, 1, 0)
 
         self._from_list = MyTreeWidget(self, self._main_window.reference(), self.from_list_menu,
             ['Address / Outpoint','Amount'])
-        self._from_list.setMaximumHeight(80)
+        self._from_list.setMaximumHeight(60)
         grid.addWidget(self._from_list, 1, 1, 1, -1)
         self.set_pay_from([])
 
@@ -137,7 +146,10 @@ class SendView(QWidget):
         payto_label = HelpLabel(_('Pay to'), msg, self)
         payto_label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         grid.addWidget(payto_label, 2, 0)
-        grid.addWidget(self._payto_e, 2, 1, 1, -1)
+        payto_layout = QVBoxLayout()
+        payto_layout.setContentsMargins(0, 1, 0, 0)
+        payto_layout.addWidget(self._payto_e)
+        grid.addLayout(payto_layout, 2, 1, 1, -1)
 
         msg = (_('Amount to be sent.') + '\n\n' +
                _('The amount will be displayed in red if you do not have '
@@ -147,18 +159,97 @@ class SendView(QWidget):
                + _('Keyboard shortcut: type "!" to send all your coins.'))
         amount_label = HelpLabel(_('Amount'), msg, self)
         grid.addWidget(amount_label, 3, 0)
-        grid.addWidget(self.amount_e, 3, 1)
+        amount_layout = QVBoxLayout()
+        amount_layout.setContentsMargins(0, 3, 0, 0)
+        amount_layout.addWidget(self.amount_e)
+        grid.addLayout(amount_layout, 3, 1)
 
-        self._fiat_send_e = AmountEdit(app_state.fx.get_currency if app_state.fx else '', self)
+        fee_rate_label = QLabel(_('Fee Rate'), self)
+        grid.addWidget(fee_rate_label, 4, 0)
+
+        self._fee_rate_e = BTCSatsByteEdit(self)
+        self._fee_rate_e.setFixedHeight(20)
+        self._fee_rate_e.setAmount(app_state.config.fee_per_kb())
+        fee_rate_layout = QVBoxLayout()
+        fee_rate_layout.setContentsMargins(0, 3, 0, 0)
+        fee_rate_layout.addWidget(self._fee_rate_e)
+        grid.addLayout(fee_rate_layout, 4, 1)
+
+        fee_label = QLabel(_('Transaction Fee'), self)
+        grid.addWidget(fee_label, 5, 0)
+
+        self._fee_e = BTCAmountEdit(self)
+        self._fee_e.setFixedHeight(20)
+        self._fee_e.setReadOnly(True)
+
+        fee_layout = QVBoxLayout()
+        fee_layout.setContentsMargins(0, 3, 0, 0)
+        fee_layout.addWidget(self._fee_e)
+        grid.addLayout(fee_layout, 5, 1)
+
+        self._fiat_fee_e = AmountEdit(
+            app_state.fx.get_currency if app_state.fx else '',
+            self,
+            prefix='≈'
+        )
+        self._fiat_fee_e.setFixedHeight(20)
+        self._fiat_fee_e.setReadOnly(True)
+
+        fiat_fee_layout = QVBoxLayout()
+        fiat_fee_layout.setContentsMargins(0, 3, 0, 0)
+        fiat_fee_layout.addWidget(self._fiat_fee_e)
+        grid.addLayout(fiat_fee_layout, 5, 2)
+
+        self._main_window.connect_fields(
+            self._fee_e,
+            self._fiat_fee_e,
+            fiat_precision=8
+        )
+
+
+        self._recommended_fee_checkbox = QCheckBox(_('Use recommended fee'), self)
+        self._recommended_fee_checkbox.setChecked(
+            app_state.config.fee_per_kb() == DEFAULT_FEE
+        )
+        self._recommended_fee_checkbox.setToolTip(
+            _('Use the recommended transaction fee rate.')
+        )
+        recommended_fee_layout = QVBoxLayout()
+        recommended_fee_layout.setContentsMargins(0, 3, 0, 0)
+        recommended_fee_layout.addWidget(self._recommended_fee_checkbox)
+        grid.addLayout(recommended_fee_layout, 4, 2)
+
+        self._fee_rate_e.textEdited.connect(self._on_fee_rate_edited)
+        self._fee_rate_e.editingFinished.connect(self._on_fee_rate_editing_finished)
+        self._recommended_fee_checkbox.stateChanged.connect(
+            self._on_recommended_fee_changed
+        )
+
+
+        self._fiat_send_e = AmountEdit(
+            app_state.fx.get_currency if app_state.fx else '',
+            self,
+            prefix='≈'
+        )
+        self._fiat_send_e.setFixedHeight(20)
+        self._fiat_send_e.setReadOnly(True)
+        self._fiat_send_e.setFrame(True)
         self.set_fiat_ccy_enabled(bool(app_state.fx and app_state.fx.is_enabled()))
 
-        grid.addWidget(self._fiat_send_e, 3, 2)
-        self.amount_e.frozen.connect(
-            lambda: self._fiat_send_e.setFrozen(self.amount_e.isReadOnly()))
+        fiat_layout = QVBoxLayout()
+        fiat_layout.setContentsMargins(0, 3, 0, 0)
+        fiat_layout.addWidget(self._fiat_send_e)
+        grid.addLayout(fiat_layout, 3, 2)
 
         self._max_button = EnterButton(_("Max"), self._spend_max, self)
+
+        self._max_button.setMinimumHeight(22)
         self._max_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
-        grid.addWidget(self._max_button, 3, 3)
+        self._max_button.setStyleSheet("font-size: 11px;")
+        max_layout = QVBoxLayout()
+        max_layout.setContentsMargins(0, 2, 3, 0)
+        max_layout.addWidget(self._max_button)
+        grid.addLayout(max_layout, 3, 3)
 
         completer = QCompleter()
         completer.setCaseSensitivity(False)
@@ -169,9 +260,13 @@ class SendView(QWidget):
                _('The description is not sent to the recipient of the funds. '
                  'It is stored in your wallet file, and displayed in the \'History\' tab.'))
         description_label = HelpLabel(_('Description'), msg, self)
-        grid.addWidget(description_label, 4, 0)
+        grid.addWidget(description_label, 6, 0)
         self._message_e = MyLineEdit(self)
-        grid.addWidget(self._message_e, 4, 1, 1, -1)
+        self._message_e.setFixedHeight(26)
+        description_layout = QVBoxLayout()
+        description_layout.setContentsMargins(0, 0, 0, 0)
+        description_layout.addWidget(self._message_e)
+        grid.addLayout(description_layout, 6, 1, 1, -1)
 
         self._main_window.connect_fields(self.amount_e, self._fiat_send_e)
 
@@ -186,31 +281,42 @@ class SendView(QWidget):
             if state != Qt.Checked:
                 dialogs.show_named('sv-only-disabled')
         self._coinsplitting_checkbox.stateChanged.connect(coinsplitting_checkbox_cb)
-        grid.addWidget(self._coinsplitting_checkbox, 5, 1, 1, -1)
+        grid.addWidget(self._coinsplitting_checkbox, 7, 1, 1, -1)
 
         self._help_button = HelpDialogButton(self, "misc", "send-tab", _("Help"))
+        self._help_button.setMinimumHeight(24)
+        self._help_button.setStyleSheet("font-size: 11px;")
         self._preview_button = EnterButton(_("Preview"), self._do_preview, self)
+        self._preview_button.setMinimumHeight(24)
+        self._preview_button.setStyleSheet("font-size: 11px;")
         self._preview_button.setToolTip(
             _('Display the details of your transactions before signing it.'))
         self._send_button = EnterButton(_("Send"), self._do_send, self)
+        self._send_button.setMinimumHeight(24)
+        self._send_button.setStyleSheet("font-size: 11px;")
         if self._main_window.network is None:
             self._send_button.setEnabled(False)
             self._send_button.setToolTip(_('You are using ElectrumSV in offline mode; restart '
                                           'ElectrumSV if you want to get connected'))
         self._send_button.setVisible(not self._account.is_watching_only())
         self._clear_button = EnterButton(_("Clear"), self.clear, self)
+        self._clear_button.setMinimumHeight(24)
+        self._clear_button.setStyleSheet("font-size: 11px;")
 
         buttons = QHBoxLayout()
+        buttons.setSpacing(4)
         buttons.addStretch(1)
         buttons.addWidget(self._help_button)
         buttons.addWidget(self._clear_button)
         buttons.addWidget(self._preview_button)
         buttons.addWidget(self._send_button)
         buttons.addStretch(1)
-        grid.addLayout(buttons, 7, 0, 1, -1)
+        grid.addLayout(buttons, 8, 0, 1, -1)
+
 
         self.amount_e.shortcut.connect(self._spend_max)
         self._payto_e.textChanged.connect(self.update_fee)
+        #self.amount_e.editingFinished.connect(self.update_fee)
         self.amount_e.textEdited.connect(self.update_fee)
 
         def reset_max(t) -> None:
@@ -220,6 +326,7 @@ class SendView(QWidget):
             self._is_max = False
             self._max_button.setEnabled(not bool(t))
         self.amount_e.textEdited.connect(reset_max)
+        #self.amount_e.editingFinished.connect(self._on_entry_changed)
         self.amount_e.textChanged.connect(self._on_entry_changed)
         self._fiat_send_e.textEdited.connect(reset_max)
 
@@ -246,12 +353,13 @@ class SendView(QWidget):
         invoice_box.setAlignment(Qt.AlignCenter)
         invoice_box.setContentsMargins(0, 0, 0, 0)
         invoice_box.setLayout(invoice_layout)
+        invoice_box.setMaximumHeight(100)
+
 
         vbox = QVBoxLayout(self)
-        vbox.addLayout(hbox)
-        vbox.addSpacing(20)
-        vbox.addWidget(invoice_box)
-        vbox.setStretchFactor(self._invoice_list, 1000)
+        vbox.addLayout(hbox, 1)
+        vbox.addSpacing(0)
+        vbox.addWidget(invoice_box, 0)
 
         return vbox
 
@@ -261,6 +369,38 @@ class SendView(QWidget):
     def _on_wallet_setting_changed(self, setting_name: str, setting_value: Any) -> None:
         if setting_name == WalletSettings.ADD_SV_OUTPUT:
             self._coinsplitting_checkbox.setVisible(setting_value)
+
+    def _on_recommended_fee_changed(self, state: int) -> None:
+
+        if state == Qt.Checked:
+            self._fee_rate_e.setAmount(DEFAULT_FEE)
+            self._fee_rate_e.setReadOnly(True)
+        else:
+            self._fee_rate_e.setReadOnly(False)
+
+        if self._is_max:
+            self._is_max = False
+            self.amount_e.setText("")
+            self._max_button.setDisabled(False)
+
+        self.update_fee()
+
+
+    def _on_fee_rate_edited(self, text: str) -> None:
+        if self._recommended_fee_checkbox.isChecked():
+            self._recommended_fee_checkbox.setChecked(False)
+
+        if self._is_max:
+            self._is_max = False
+            self.amount_e.setText("")
+            self._max_button.setDisabled(False)
+
+        if not text.strip():
+            self._fee_e.clear()
+            return
+
+        self.update_fee()
+
 
     def _show_splitting_option(self) -> bool:
         return self._account._wallet.get_boolean_setting(WalletSettings.ADD_SV_OUTPUT)
@@ -274,21 +414,29 @@ class SendView(QWidget):
 
     def _on_entry_changed(self) -> None:
         text = ""
-        if self._not_enough_funds:
-            amt_color = ColorScheme.RED
-            text = _( "Not enough funds" )
-            c, u, x = self._account.get_frozen_balance()
-            if c+u+x:
-                text += (' (' + app_state.format_amount(c+u+x).strip() + ' ' +
-                            app_state.base_unit() + ' ' + _("are frozen") + ')')
 
-        if self.amount_e.isModified():
-            amt_color = ColorScheme.DEFAULT
+        if self._not_enough_funds:
+            text = _("Not enough funds")
+            c, u, x = self._account.get_frozen_balance()
+            if c + u + x:
+                text += (
+                    " (" +
+                    app_state.format_amount(c + u + x).strip() +
+                    " " +
+                    app_state.base_unit() +
+                    " " +
+                    _("are frozen") +
+                    ")"
+                )
+            amt_color = "#ff6666"
+        elif theme_from_config(app_state.config) == Theme.DARK:
+            amt_color = "#d0d3d7"
         else:
-            amt_color = ColorScheme.BLUE
+            amt_color = "#333333"
 
         self._main_window.statusBar().showMessage(text)
-        self.amount_e.setStyleSheet(amt_color.as_stylesheet())
+        self.amount_e.setStyleSheet(f"color: {amt_color};")
+
 
     def lock_amount(self, flag: bool) -> None:
         self.amount_e.setFrozen(flag)
@@ -299,6 +447,25 @@ class SendView(QWidget):
 
     def get_is_spending_maximum(self) -> bool:
         return self._is_max
+
+
+    def _on_fee_rate_editing_finished(self) -> None:
+        if not self._fee_rate_e.text().strip():
+            self._recommended_fee_checkbox.setChecked(True)
+            return
+
+        fee_rate = self._fee_rate_e.get_amount()
+
+        if fee_rate is not None:
+            if fee_rate > MAX_GUI_FEE_RATE:
+                self._main_window.show_warning(
+                    _("Fee rate cannot exceed 50,000 sat/kB.")
+                )
+                self._fee_rate_e.setAmount(MAX_GUI_FEE_RATE)
+                fee_rate = MAX_GUI_FEE_RATE
+
+            app_state.config.set_key('customfee', fee_rate)
+
 
 
 
@@ -339,11 +506,18 @@ class SendView(QWidget):
         self._payment_request = None
         self._payto_e.is_pr = False
 
-        edit_fields = (self._payto_e, self.amount_e, self._fiat_send_e, self._message_e)
-        for edit_field in edit_fields:
-            # TODO: Does this work with refresh given the ' ' refresh note in some edit.
-            edit_field.setText('')
-            edit_field.setFrozen(False)
+        self._payto_e.clear()
+        self.amount_e.clear()
+        self._fiat_send_e.clear()
+        self._message_e.clear()
+        self._fee_e.clear()
+        self._fiat_fee_e.clear()
+
+        self._payto_e.setFrozen(False)
+        self.amount_e.setFrozen(False)
+        self._message_e.setFrozen(False)
+        self._fiat_send_e.setReadOnly(True)
+        self._fiat_send_e.setFrame(True)
 
         for tree in self.findChildren(QTreeView):
             tree.clear()
@@ -355,6 +529,7 @@ class SendView(QWidget):
         # TODO: Revisit what this does.
         self._main_window.update_status_bar()
         self.update_widgets()
+
 
     def set_paytomany_text(self, text: str) -> None:
         # Enable pay-to-many mode
@@ -411,9 +586,6 @@ class SendView(QWidget):
             self._require_fee_update = None
 
     def do_update_fee(self) -> None:
-        '''Recalculate the fee.  If the fee was manually input, retain it, but
-        still build the TX to see if there are enough funds.
-        '''
         amount = all if self._is_max else self.amount_e.get_amount()
         if amount is None:
             self._not_enough_funds = False
@@ -424,20 +596,32 @@ class SendView(QWidget):
             if not outputs:
                 output_script = self._payto_e.get_payee_script()
                 if output_script is None:
-                    output_script = self._account.get_dummy_script_template().to_script()
+                    return
+                    # output_script = self._account.get_dummy_script_template().to_script()
                 outputs = [XTxOutput(amount, output_script)]
 
             coins = self._get_coins()
             outputs.extend(self._account.create_extra_outputs(coins, outputs))
             try:
-                tx = self._account.make_unsigned_transaction(self._get_coins(), outputs,
-                    self._main_window.config, fee)
+                tx = self._account.make_unsigned_transaction(
+                    self._get_coins(),
+                    outputs,
+                    self._main_window.config,
+                    fee,
+                    self._fee_rate_e.get_amount()
+                )
+
                 self._not_enough_funds = False
+                self._fee_e.setAmount(tx.get_fee())
+                self._on_entry_changed()
+
             except NotEnoughFunds:
                 self._logger.debug("Not enough funds")
                 self._not_enough_funds = True
+                self._fee_e.clear()
                 self._on_entry_changed()
                 return
+
             except Exception:
                 self._logger.exception("transaction failure")
                 return
@@ -445,6 +629,9 @@ class SendView(QWidget):
             if self._is_max:
                 amount = tx.output_value()
                 self.amount_e.setAmount(amount)
+
+
+
 
     def _do_preview(self) -> None:
         self._do_send(preview=True)
@@ -469,9 +656,33 @@ class SendView(QWidget):
 
         outputs, fee, tx_desc, coins = r
         outputs.extend(self._account.create_extra_outputs(coins, outputs))
+
+        fee_rate = self._fee_rate_e.get_amount()
+        allow_high_fees = app_state.config.get('allow_high_fees', False)
+
+        print("HIGH FEE SETTING:", allow_high_fees)
+        print("FEE RATE:", fee_rate)
+
+        if fee_rate is not None:
+            if fee_rate > MAX_GUI_FEE_RATE:
+                self._main_window.show_warning(
+                    _("Fee rate cannot exceed 50,000 sat/kB.")
+                )
+                return
+
+            if fee_rate > 1000 and not allow_high_fees:
+                self._main_window.show_warning(
+                    _("Fee rate exceeds 1,000 sat/kB.\n\n"
+                      "Enable 'Allow high fee rates' in Preferences → Transactions "
+                      "if you need to use a higher fee rate.")
+                )
+                return
         try:
             tx = self._account.make_unsigned_transaction(coins, outputs, self._main_window.config,
-                fee)
+                fee, fee_rate)
+
+
+
         except NotEnoughFunds:
             self._main_window.show_message(_("Insufficient funds"))
             return
@@ -644,7 +855,9 @@ class SendView(QWidget):
             self.amount_e.textEdited.emit("")
 
     def payment_request_ok(self) -> None:
+        print("PAYMENT REQUEST OK")
         pr = self._payment_request
+
 
         service = self._account.invoices
         if pr.get_id() is None:
@@ -735,3 +948,4 @@ class SendView(QWidget):
 
     def set_fiat_ccy_enabled(self, flag: bool) -> None:
         self._fiat_send_e.setVisible(flag)
+        self._fiat_fee_e.setVisible(flag)

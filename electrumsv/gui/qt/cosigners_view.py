@@ -239,11 +239,11 @@ class CosignerList(QListWidget):
         # NOTE(rt12): If we do not set this to white, then opposite world things happen:
         # - The part of the text edit with the buttons has white background.
         # - The list has a strange white area on the right hand side sometimes.
-        self.setStyleSheet("""
-            QListWidget, QPlainTextEdit {
-                background-color: white;
-            }
-        """)
+        #self.setStyleSheet("""
+            #QListWidget, QPlainTextEdit {
+                #background-color: white;
+            #}
+        #""")
 
         self.setSortingEnabled(False)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)

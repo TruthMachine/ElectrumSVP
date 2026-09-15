@@ -69,6 +69,7 @@ class BaseWizard(QWizard):
 
         self.setOption(QWizard.IndependentPages, False)
         self.setOption(QWizard.NoDefaultButton, True)
+        self.setOption(QWizard.NoCancelButton, False)
         # The help button is either made visible or hidden when a page is entered, depending
         # on whether the page declares a `HELP_CONTEXT` value.
         self.setOption(QWizard.HaveHelpButton, True)
@@ -118,3 +119,4 @@ class BaseWizard(QWizard):
 class WizardFormSection(FormSectionWidget):
     show_help_label: bool = False
     minimum_label_width: int = 120
+

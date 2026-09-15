@@ -48,7 +48,7 @@ class ReceiveView(QWidget):
 
         vbox = QVBoxLayout(self)
         vbox.addLayout(form_layout)
-        vbox.addSpacing(20)
+        vbox.addSpacing(0)
         vbox.addWidget(request_container, 1)
         self.setLayout(vbox)
 
@@ -63,7 +63,8 @@ class ReceiveView(QWidget):
         # A 4-column grid layout.  All the stretch is in the last column.
         # The exchange rate plugin adds a fiat widget in column 2
         grid = QGridLayout()
-        grid.setSpacing(8)
+        grid.setHorizontalSpacing(8)
+        grid.setVerticalSpacing(4)
         grid.setColumnStretch(3, 1)
 
         self._receive_destination_e = ButtonsLineEdit()
@@ -96,7 +97,7 @@ class ReceiveView(QWidget):
         self._expires_combo = QComboBox()
         self._expires_combo.addItems([i[0] for i in expiration_values])
         self._expires_combo.setCurrentIndex(3)
-        self._expires_combo.setFixedWidth(self._receive_amount_e.width())
+        self._expires_combo.setMinimumWidth(120)
         msg = ' '.join([
             _('Expiration date of your request.'),
             _('This information is seen by the recipient if you send them '
@@ -115,24 +116,30 @@ class ReceiveView(QWidget):
         grid.addWidget(self._expires_label, 3, 1)
 
         self._save_request_button = EnterButton(_('Save request'), self._save_form_as_request)
-        self._new_request_button = EnterButton(_('New'), self._new_payment_request)
+        self._save_request_button.setMinimumHeight(25)
 
-        self._receive_qr = QRCodeWidget(fixedSize=200)
+        self._new_request_button = EnterButton(_('New'), self._new_payment_request)
+        self._new_request_button.setMinimumHeight(25)
+
+        self._receive_qr = QRCodeWidget(fixedSize=154)
         self._receive_qr.link_to_window(self._toggle_qr_window)
 
         buttons = QHBoxLayout()
+        buttons.setSpacing(4)
         buttons.addStretch(1)
         buttons.addWidget(self._save_request_button)
         buttons.addWidget(self._new_request_button)
         grid.addLayout(buttons, 4, 1, 1, 2)
+
 
         vbox_g = QVBoxLayout()
         vbox_g.addLayout(grid)
         vbox_g.addStretch()
 
         hbox = QHBoxLayout()
-        hbox.addLayout(vbox_g)
-        hbox.addWidget(self._receive_qr)
+        hbox.setSpacing(12)
+        hbox.addLayout(vbox_g, 1)
+        hbox.addWidget(self._receive_qr, 0, Qt.AlignTop)
 
         return hbox
 

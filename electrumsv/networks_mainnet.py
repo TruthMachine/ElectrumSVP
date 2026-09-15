@@ -55,12 +55,17 @@ class SVMainnet(object):
         'whatsonchain.com': (
             'https://whatsonchain.com',
             {'tx': 'tx', 'addr': 'address', 'script': 'script'},
-        ),        
+        ),
         'satoshi.io': (
             'https://satoshi.io',
             {'tx': 'tx', 'addr': 'address', 'script': 'script'},
         ),
+        'bananablocks.com': (
+            'https://bananablocks.com',
+            {'tx': 'tx', 'addr': 'address', 'script': 'script'},
+        ),
     }
+
 
     FAUCET_URL = "https://faucet.satoshisvision.network"
     KEEPKEY_DISPLAY_COIN_NAME = 'Bitcoin'

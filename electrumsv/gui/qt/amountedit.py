@@ -45,11 +45,14 @@ class MyLineEdit(QLineEdit):
 class AmountEdit(MyLineEdit):
     shortcut = pyqtSignal()
 
-    def __init__(self, base_unit_func, parent=None):
+    def __init__(self, base_unit_func, parent=None, prefix=''):
         super().__init__(parent)
         # This seems sufficient for hundred-BTC amounts with 8 decimals
         self.setFixedWidth(140)
         self.base_unit_func = base_unit_func
+        self.prefix = prefix
+        if self.prefix:
+            self.setTextMargins(16, 0, 0, 0)
         self.textChanged.connect(self.numbify)
         self.is_shortcut = False
         self.help_palette = QPalette()
@@ -77,14 +80,45 @@ class AmountEdit(MyLineEdit):
 
     def paintEvent(self, event):
         QLineEdit.paintEvent(self, event)
+
         if self.base_unit_func:
             panel = QStyleOptionFrame()
             self.initStyleOption(panel)
-            textRect = self.style().subElementRect(QStyle.SE_LineEditContents, panel, self)
-            textRect.adjust(2, 0, -10, 0)
+            textRect = self.style().subElementRect(
+                QStyle.SE_LineEditContents, panel, self
+            )
+
             painter = QPainter(self)
-            painter.setPen(self.help_palette.brush(QPalette.Disabled, QPalette.Text).color())
-            painter.drawText(textRect, Qt.AlignRight | Qt.AlignVCenter, self.base_unit_func())
+            painter.setPen(
+                self.help_palette.brush(
+                    QPalette.Disabled, QPalette.Text
+                ).color()
+            )
+
+            if self.prefix:
+                prefixRect = textRect.adjusted(2, 0, 0, 0)
+
+                original_font = painter.font()
+                prefix_font = original_font
+                prefix_font.setPointSize(prefix_font.pointSize() + 1)
+                painter.setFont(prefix_font)
+
+                painter.drawText(
+                    prefixRect,
+                    Qt.AlignLeft | Qt.AlignVCenter,
+                    self.prefix
+                )
+
+                painter.setFont(original_font)
+
+            textRect.adjust(2, 0, -10, 0)
+            painter.drawText(
+                textRect,
+                Qt.AlignRight | Qt.AlignVCenter,
+                self.base_unit_func()
+            )
+
+
 
     def get_amount(self):
         try:

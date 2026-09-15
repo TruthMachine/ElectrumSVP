@@ -26,7 +26,7 @@
 from typing import List, Optional
 import weakref
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QAbstractItemView, QMenu, QWidget
 
@@ -37,7 +37,7 @@ from electrumsv.util import profiler
 from electrumsv.wallet import AbstractAccount, UTXO
 
 from .main_window import ElectrumWindow
-from .util import SortableTreeWidgetItem, MyTreeWidget, ColorScheme
+from .util import SortableTreeWidgetItem, MyTreeWidget, ColorScheme, read_QIcon
 
 
 
@@ -46,7 +46,9 @@ class UTXOList(MyTreeWidget):
 
     def __init__(self, parent: QWidget, main_window: ElectrumWindow) -> None:
         MyTreeWidget.__init__(self, parent, main_window, self.create_menu, [
-            _('Output point'), _('Label'), _('Amount'), _('Height')], 1)
+            _('Output point'), _('Label'), _('Amount'), _('Height'), _('Frozen')], 1)
+
+        self.setAlternatingRowColors(False)
 
         self._main_window = weakref.proxy(main_window)
         self._wallet = main_window._wallet
@@ -57,9 +59,13 @@ class UTXOList(MyTreeWidget):
 
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSortingEnabled(True)
+        self.setIconSize(QSize(20, 20))
+        self.setUniformRowHeights(True)
+        self.setStyleSheet("QTreeWidget::item { height: 18px; }")
 
         self._monospace_font = QFont(platform.monospace_font)
-        
+        self._frozen_icon = read_QIcon("lockflake")
+
     def on_account_change(self, new_account_id: int) -> None:
         self._account_id = new_account_id
         self._account = self._main_window._wallet.get_account(new_account_id)
@@ -126,7 +132,24 @@ class UTXOList(MyTreeWidget):
                 amount = ""
 
             # Build the row item
-            utxo_item = SortableTreeWidgetItem([prevout_str, label, amount, height_str])
+            utxo_frozen = False
+            try:
+                utxo_frozen = self._account.is_frozen_utxo(utxo)
+            except Exception:
+                pass
+
+            utxo_item = SortableTreeWidgetItem([
+                prevout_str,
+                label,
+                amount,
+                height_str,
+                ""
+            ])
+
+            if utxo_frozen:
+                utxo_item.setIcon(4, self._frozen_icon)
+
+
             # set this here to avoid sorting based on Qt.UserRole+1
             utxo_item.DataRole = Qt.UserRole + 100
             for col in (0, 2):
@@ -135,11 +158,14 @@ class UTXOList(MyTreeWidget):
 
             # Highlight frozen coins
             try:
-                if self._account.is_frozen_utxo(utxo):
+                if utxo_frozen:
                     for col in range(self.columnCount()):
-                        utxo_item.setBackground(col, ColorScheme.ORANGE.as_color(True))
+                        utxo_item.setBackground(
+                            col,
+                            ColorScheme.ORANGE.as_color(True)
+                        )
             except Exception:
-                # ignore highlighting errors to avoid bailing out of the loop
+                # Ignore highlighting errors to avoid bailing out of the loop
                 pass
 
             # Add item and restore selection if needed
@@ -153,58 +179,112 @@ class UTXOList(MyTreeWidget):
 
     def create_menu(self, position) -> None:
         coins = self.get_selected()
-        if not coins:
-            return
         menu = QMenu()
-        menu.addAction(_("Spend"), lambda: self._main_window.spend_coins(coins))
 
-        def freeze_coins() -> None:
-            self.freeze_coins(coins, True)
-        def unfreeze_coins() -> None:
-            self.freeze_coins(coins, False)
+        # Existing coin-specific actions.
+        if coins:
 
-        any_c_frozen = any(self._account.is_frozen_utxo(coin) for coin in coins)
-        all_c_frozen = all(self._account.is_frozen_utxo(coin) for coin in coins)
+            # Only allow unfrozen UTXOs to be spent.
+            spendable_coins = [
+                coin for coin in coins
+                if not self._account.is_frozen_utxo(coin)
+            ]
 
-        if len(coins) == 1:
-            # single selection, offer them the "Details" option and also coin
-            # "freeze" status, if any
-            coin = list(coins)[0]
-            tx = self._account.get_transaction(coin.tx_hash)
-            menu.addAction(_("Details"), lambda: self._main_window.show_transaction(
-                self._account, tx))
-
-            # --- Simple Verification (BEEF Proof) ---
-            try:
-                from electrumsv import verification_utils
-                # get the QTreeWidgetItem for this coin
-                item = self.currentItem()
-                if item is not None:
-                    height_str = item.text(3)  # column 3 is height
-                    if height_str.isdigit() and int(height_str) > 0:
-                        menu.addAction(_("Simple Verify (BREAD)"), 
-                            lambda: verification_utils.open_simple_verification_window(
-                                self._main_window, self._account, tx)
-                        )
-            except Exception as e:
-                self._main_window.show_error(f"Verification feature unavailable: {e}")
-
-            needsep = True
-            if any_c_frozen:
-                menu.addSeparator()
-                menu.addAction(_("Coin is frozen"), lambda: None).setEnabled(False)
-                menu.addAction(_("Unfreeze Coin"), unfreeze_coins)
-                menu.addSeparator()
-                needsep = False
+            if spendable_coins:
+                menu.addAction(
+                    _("Spend from"),
+                    lambda: self._main_window.spend_coins(spendable_coins)
+                )
             else:
-                menu.addAction(_("Freeze Coin"), freeze_coins)
-        else:
-            # multi-selection
+                # All selected UTXOs are frozen.
+                spend_action = menu.addAction(_("Spend from"))
+                spend_action.setEnabled(False)
+
+            def freeze_coins() -> None:
+                self.freeze_coins(coins, True)
+
+            def unfreeze_coins() -> None:
+                self.freeze_coins(coins, False)
+
+            any_c_frozen = any(
+                self._account.is_frozen_utxo(coin) for coin in coins
+            )
+            all_c_frozen = all(
+                self._account.is_frozen_utxo(coin) for coin in coins
+            )
+
+            if len(coins) == 1:
+                # Single selection, offer "Details" and coin freeze status.
+                coin = list(coins)[0]
+                tx = self._account.get_transaction(coin.tx_hash)
+
+                menu.addAction(
+                    _("Details"),
+                    lambda: self._main_window.show_transaction(
+                        self._account, tx
+                    )
+                )
+
+                # --- Simple Verification (BEEF Proof) ---
+                try:
+                    from electrumsv import verification_utils
+
+                    menu.addAction(
+                        _("Simple Verify (BREAD)"),
+                        lambda: verification_utils.open_simple_verification_window(
+                            self._main_window,
+                            self._account,
+                            tx,
+                        )
+                    )
+
+                except Exception as e:
+                    self._main_window.show_error(
+                        f"Verification feature unavailable: {e}"
+                    )
+
+                if any_c_frozen:
+                    menu.addSeparator()
+                    menu.addAction(
+                        _("Unfreeze Coin"),
+                        unfreeze_coins
+                    )
+                else:
+                    menu.addAction(
+                        _("Freeze Coin"),
+                        freeze_coins
+                    )
+
+            else:
+                # Multi-selection.
+                menu.addSeparator()
+
+                if not all_c_frozen:
+                    menu.addAction(
+                        _("Freeze Coins"),
+                        freeze_coins
+                    )
+
+                if any_c_frozen:
+                    menu.addAction(
+                        _("Unfreeze Coins"),
+                        unfreeze_coins
+                    )
+
+        # Provide "Unfreeze All" only when there are frozen UTXOs.
+        all_coins = self._account.get_utxos()
+        frozen_coins = [
+            coin for coin in all_coins
+            if self._account.is_frozen_utxo(coin)
+        ]
+
+        if frozen_coins:
             menu.addSeparator()
-            if not all_c_frozen:
-                menu.addAction(_("Freeze Coins"), freeze_coins)
-            if any_c_frozen:
-                menu.addAction(_("Unfreeze Coins"), unfreeze_coins)
+
+            def unfreeze_all() -> None:
+                self.freeze_coins(frozen_coins, False)
+
+            menu.addAction(_("Unfreeze All"), unfreeze_all)
 
         menu.exec_(self.viewport().mapToGlobal(position))
 

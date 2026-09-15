@@ -59,7 +59,7 @@ dest.parent.mkdir(parents=True, exist_ok=True)
 if sys.platform.startswith("win"):
     dest = Path(os.environ.get("APPDATA", Path.home() / "AppData/Roaming")) / "ElectrumSV" / "headers"
 elif sys.platform == "darwin":  # macOS
-    dest = Path.home() / "Library" / "Application Support" / "ElectrumSV" / "headers"
+    dest = Path.home() / ".electrum-sv" / "headers"
 else:  # Linux / Unix
     dest = Path.home() / ".electrum-sv" / "headers"
 

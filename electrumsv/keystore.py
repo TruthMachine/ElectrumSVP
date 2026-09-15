@@ -415,6 +415,8 @@ class BIP32_KeyStore(Deterministic_KeyStore, Xpub):
         # restore seed and passphrase if present
         self.seed: Optional[str] = data.get('seed')
         self.passphrase: Optional[str] = data.get('passphrase')
+        self.derivation: Optional[str] = data.get('derivation')
+        self.bip39_words: Optional[str] = data.get('bip39_words')
 
     def type(self) -> KeystoreType:
         return KeystoreType.BIP32
@@ -1037,12 +1039,14 @@ def instantiate_keystore_from_text(text_type: KeystoreTextType, text_match: Unio
         passphrase: Optional[str]=None, watch_only: bool=False) -> KeyStore:
     derivation_type: Optional[DerivationType] = None
     data: Dict[str, Any] = {}
+
     if text_type == KeystoreTextType.EXTENDED_PUBLIC_KEY:
         derivation_type = DerivationType.BIP32
         assert isinstance(text_match, str)
         assert passphrase is None
         # `watch_only` is ignored.
         data['xpub'] = text_match
+
     elif text_type == KeystoreTextType.EXTENDED_PRIVATE_KEY:
         derivation_type = DerivationType.BIP32
         assert isinstance(text_match, str)
@@ -1052,55 +1056,71 @@ def instantiate_keystore_from_text(text_type: KeystoreTextType, text_match: Unio
             data['xprv'] = pw_encode(text_match, password)
         private_key = bip32_key_from_string(text_match)
         data['xpub'] = private_key.public_key.to_extended_key_string()
+
     elif text_type == KeystoreTextType.PRIVATE_KEYS:
         derivation_type = DerivationType.IMPORTED
         # watch_only?
+
     elif text_type == KeystoreTextType.ADDRESSES:
         derivation_type = DerivationType.IMPORTED
         # All address types have to be the same.
         pass
+
     elif text_type == KeystoreTextType.BIP39_SEED_WORDS:
         derivation_type = DerivationType.BIP32
         if derivation_text is None:
             derivation_text = bip44_derivation_cointype(0, 0)
+
         assert isinstance(text_match, str)
+
         bip32_seed = bip39_to_seed(text_match, passphrase)
         xprv = BIP32PrivateKey.from_seed(bip32_seed, Net.COIN)
+
         for n in bip32_decompose_chain_string(derivation_text):
             xprv = xprv.child_safe(n)
+
         if not watch_only:
             assert password is not None
             data['xprv'] = pw_encode(xprv.to_extended_key_string(), password)
             data['seed'] = pw_encode(text_match, password)
             if passphrase is not None:
                 data['passphrase'] = pw_encode(passphrase, password)
+
         data['derivation'] = derivation_text
         data['xpub'] = xprv.public_key.to_extended_key_string()
+
     elif text_type == KeystoreTextType.ELECTRUM_SEED_WORDS:
         derivation_type = DerivationType.BIP32
         assert isinstance(text_match, str)
+
         bip32_seed = Mnemonic.mnemonic_to_seed(text_match, passphrase or '')
         derivation_text = "m"
         xprv = BIP32PrivateKey.from_seed(bip32_seed, Net.COIN)
+
         for n in bip32_decompose_chain_string(derivation_text):
             xprv = private_key.child_safe(n)
+
         if not watch_only:
             assert password is not None
             data['xprv'] = pw_encode(xprv.to_extended_key_string(), password)
             data['seed'] = pw_encode(text_match, password)
             if passphrase is not None:
                 data['passphrase'] = pw_encode(passphrase, password)
+
         data['derivation'] = derivation_text
         data['xpub'] = xprv.public_key.to_extended_key_string()
+
     elif text_type == KeystoreTextType.ELECTRUM_OLD_SEED_WORDS:
         derivation_type = DerivationType.ELECTRUM_OLD
         assert isinstance(text_match, str)
         assert passphrase is None
-        # `watch_only` is ignored.
+
+        # watch_only is ignored.
         hex_seed = Old_KeyStore._seed_to_hex(text_match)
         assert password is not None
         data['seed'] = pw_encode(hex_seed, password)
         data['mpk'] = Old_KeyStore._mpk_from_hex_seed(hex_seed)
+
     else:
         raise NotImplementedError("Unsupported text match type", text_type)
 

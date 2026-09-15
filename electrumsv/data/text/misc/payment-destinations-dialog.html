@@ -1,43 +1,166 @@
-<h2>The Payment Destination window</h2>
-<p style="text-align: center"><i>Provisional in-wallet help</i></p>
+<h2>The Payment Destinations window</h2>
 
 <p>
-This window allows you to generate a list of fresh, unused payment destinations
-for the selected account. These destinations can be used for creating
-multi-output transactions (for example, splitting funds across many outputs).
+This window allows you to generate a list of fresh payment destinations
+for the selected account. These destinations can be used to create
+multi-output transactions, for example to split funds across multiple
+outputs or prepare funds for distribution.
 </p>
 
 <p>
-In some cases these will be standard Bitcoin addresses, and in other cases where
-the script type has no address form, the BIP276 standard will be used to present them.
+The dialog can also calculate transaction fees, select specific UTXOs to
+spend, and pass the generated destinations and selected coins to the
+Pay-to-Many feature.
+</p>
+
+<p>
+Depending on the script type used by the account, destinations may be
+shown as standard Bitcoin addresses or, where the script type does not
+have an address representation, using the BIP276 format.
 </p>
 
 <h3>How to use</h3>
+
 <ul>
-  <li><b>How many:</b> Choose the number of destinations (outputs) to generate.</li>
-  <li><b>Mode:</b> Select how amounts are assigned to each destination:
+  <li>
+    <b># of output destinations:</b>
+    Choose how many fresh destinations to generate. Up to 1,000 destinations
+    can be generated.
+  </li>
+
+  <li>
+    <b>Mode:</b>
+    Choose how the specified amount is distributed:
     <ul>
-      <li><b>Addresses only:</b> Generate destinations without amounts.</li>
-      <li><b>Equal split (total):</b> Enter a total amount which will be divided evenly across all destinations.</li>
-      <li><b>Fixed amount (per address):</b> Enter an amount that will be sent to each destination.</li>
-      <li><b>Random split (total):</b> Enter a total amount which will be distributed randomly across destinations.</li>
+      <li>
+        <b>Equal Split:</b>
+        Divide the specified total amount evenly between all destinations.
+      </li>
+      <li>
+        <b>Random Split:</b>
+        Distribute the specified total amount randomly between the
+        destinations while maintaining the minimum amount per output.
+      </li>
     </ul>
   </li>
-  <li><b>Amount:</b> The meaning of this field depends on the selected mode (total vs per-address).</li>
+
+  <li>
+    <b>Amount:</b>
+    Enter the total amount to distribute among the generated destinations.
+    The amount is interpreted according to the selected split mode.
+  </li>
+
+  <li>
+    <b>Max:</b>
+    Calculate the maximum amount that can be sent using the available
+    spendable coins, taking the transaction fee into account.
+    If specific coins have been selected using <b>Spend From</b>,
+    the maximum is calculated using those coins instead.
+  </li>
+
+  <li>
+    <b>Fee Rate:</b>
+    Set the transaction fee rate used when calculating the transaction.
+    Enable <b>Use recommended fee</b> to use the wallet's recommended
+    fee rate.
+  </li>
+
+  <li>
+    <b>Tx Fee Amount:</b>
+    Displays the calculated transaction fee when a transaction can be
+    constructed using the selected coins and generated outputs.
+  </li>
 </ul>
 
-<h3>Tips</h3>
+<h3>Coin Control</h3>
+
+<p>
+The <b>Unspent coins/UTXOs</b> section allows you to choose which wallet
+coins will be used to fund the transaction.
+</p>
+
 <ul>
-  <li>Each output has a minimum value of approximately <b>300 satoshis</b>. Values below this may not be accepted or may be uneconomical to spend.</li>
-  <li>You can use the <b>Pay-to-Many</b> feature to send funds to these destinations, including sending to your own wallet to split UTXOs.</li>
-  <li>Large numbers of outputs may result in large transactions, which can take longer to confirm or be rejected by some servers.</li>
-  <li>Very small outputs may be considered uneconomical to spend later.</li>
-  <li>This tool can be useful for splitting UTXOs or preparing funds for distribution.</li>
+  <li>
+    Select one or more individual UTXOs to use as funding.
+  </li>
+  <li>
+    You can select an address row to select all of its UTXOs.
+  </li>
+  <li>
+    Right-click selected coins to use <b>Spend From</b>, freeze them,
+    or unfreeze them.
+  </li>
+  <li>
+    Frozen UTXOs cannot be used by <b>Spend From</b> while they remain frozen.
+  </li>
+  <li>
+    <b>Unfreeze All</b> can be used to unfreeze all frozen UTXOs.
+  </li>
+  <li>
+    When specific coins are selected, the dialog uses those coins when
+    calculating the maximum available amount and transaction fee.
+  </li>
+</ul>
+
+<h3>Working with destinations</h3>
+
+<p>
+The generated destinations are displayed in the table along with their
+assigned amounts.
+</p>
+
+<ul>
+  <li>
+    <b>Copy:</b>
+    Copy all listed destinations and their amounts to the clipboard.
+  </li>
+  <li>
+    <b>Save:</b>
+    Save the listed destinations and their amounts to a text file.
+  </li>
+  <li>
+    <b>Send to Pay-to-Many:</b>
+    Open the Pay-to-Many send interface with the generated destinations.
+  </li>
+  <li>
+    <b>Preview Pay-to-Many:</b>
+    Open the Pay-to-Many interface so the transaction can be reviewed
+    before it is sent.
+  </li>
+</ul>
+
+<h3>Important information</h3>
+
+<ul>
+  <li>
+    Each output must contain at least approximately <b>300 satoshis</b>.
+    The dialog requires the total amount to be sufficient to provide the
+    minimum amount for every requested output.
+  </li>
+  <li>
+    Transaction fees are calculated separately from the amounts assigned
+    to the destinations. When using <b>Max</b>, the available amount is
+    reduced by the calculated transaction fee.
+  </li>
+  <li>
+    Creating a large number of outputs increases the size of the
+    transaction. More than 100 outputs will produce a warning, and very
+    large transactions may take longer to confirm or may be rejected by
+    some servers.
+  </li>
+  <li>
+    Very small outputs may be uneconomical to spend later because the
+    cost of spending an output can exceed its value.
+  </li>
 </ul>
 
 <h3>Possible dangers</h3>
+
 <p>
-The destinations listed here are not reserved. If you take them and use them
-elsewhere, there is no guarantee that ElectrumSV won't also proceed to use them
-in the course of its normal wallet usage on your behalf.
+The destinations generated by this dialog are not reserved by the wallet.
+If you copy or save a destination and use it elsewhere, ElectrumSV may
+still use that destination as part of its normal wallet operation.
+Therefore, destinations should generally be used for their intended
+purpose promptly rather than treated as permanently reserved addresses.
 </p>
+

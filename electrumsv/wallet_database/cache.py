@@ -269,6 +269,15 @@ class TransactionCache:
             self._txdata_cache.set(tx_hash, None)
             self._store.delete([ tx_hash ], completion_callback=completion_callback)
 
+    def get_proof(self, tx_hash: bytes) -> Optional[TxProof]:
+        rows = self._store.read_proof([tx_hash])
+
+        if not rows:
+            return None
+
+        _, proof = rows[0]
+        return proof
+
     def get_flags(self, tx_hash: bytes) -> Optional[TxFlags]:
         # We cache all metadata, so this can avoid touching the database.
         entry = self._cache.get(tx_hash)

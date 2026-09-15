@@ -344,31 +344,31 @@ class HistoryList(MyTreeWidget):
         # --- BEEF Proof (cache-aware, refresh only once on confirmation) ---
 
         def fetch_and_show_beef():
-            cached = verification_utils.CACHE.get(tx_id)
-            if cached:
-                # If cached but marked for refresh on confirmation
-                if height > 0 and not cached.get("_confirmed_cache", False):
-                    try:
-                        beef_data = verification_utils.build_beef(tx)
-                        beef_data["_confirmed_cache"] = True
-                        verification_utils.CACHE[tx_id] = beef_data
-                    except Exception:
-                        beef_data = {"format": "BREAD", "version": 1, "utxos": []}
-                else:
-                    beef_data = cached
-            else:
-                try:
-                    beef_data = verification_utils.build_beef(tx)
-                    if height > 0:
-                        beef_data["_confirmed_cache"] = True
-                    verification_utils.CACHE[tx_id] = beef_data
-                except Exception:
-                    beef_data = {"format": "BREAD", "version": 1, "utxos": []}
+            try:
+                beef_data = verification_utils.build_beef(
+                    tx,
+                    account,
+                    slim=False,
+                )
+            except Exception as e:
+                print(
+                    "BEEF BUILD ERROR:",
+                    repr(e),
+                )
+                beef_data = {
+                    "format": "BREAD",
+                    "version": 1,
+                    "utxos": [],
+                }
 
-            verification_utils.open_simple_verification_window(self._main_window, account, beef_data)
+            verification_utils.open_simple_verification_window(
+                self._main_window,
+                account,
+                beef_data,
+            )
 
-        if not is_unconfirmed:
-            menu.addAction(_("Simple Verify (BREAD)"), fetch_and_show_beef)
+        #if not is_unconfirmed:
+        menu.addAction(_("Simple Verify (BREAD)"), fetch_and_show_beef)
 
 
         if is_unconfirmed and tx:

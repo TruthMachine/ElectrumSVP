@@ -72,12 +72,12 @@ class QRCodeWidget(QWidget):
         qp.begin(self)
         r = qp.viewport()
 
-        margin = 10
+        margin = 0
         framesize = min(r.width(), r.height())
-        boxsize = int( (framesize - 2*margin)/k )
-        size = k*boxsize
-        left = (r.width() - size)/2
-        top = (r.height() - size)/2
+        boxsize = max(1, int((framesize - 2 * margin) / k))
+        size = k * boxsize
+        left = (r.width() - size)//2
+        top = (r.height() - size)//2
 
         # Make a white margin around the QR in case of dark theme use
         qp.setBrush(white)

@@ -34,7 +34,7 @@ from typing import Callable, Optional
 
 from aiorpcx import run_in_thread
 import PyQt5.QtCore as QtCore
-from PyQt5.QtCore import pyqtSignal, QObject, QTimer
+from PyQt5.QtCore import pyqtSignal, QObject, QTimer, QEvent
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QWidget, QDialog
 
@@ -53,6 +53,8 @@ from .label_sync import LabelSync
 from .log_window import SVLogWindow, SVLogHandler
 from .util import ColorScheme, get_default_language, MessageBox, read_QIcon
 from .wallet_wizard import WalletWizard
+from .theme import Theme, apply_theme, apply_windows_title_bar, wallet_window_style, theme_from_config
+
 
 
 logger = logs.get_logger('app')
@@ -102,17 +104,22 @@ class SVApplication(QApplication):
 
     def __init__(self, argv):
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
-        if hasattr(QtCore.Qt, "AA_ShareOpenGLContexts"):
-            QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
         if hasattr(QGuiApplication, 'setDesktopFileName'):
             QGuiApplication.setDesktopFileName('electrum-sv.desktop')
+
         super().__init__(argv)
+
+        self._theme = theme_from_config(app_state.config)
+        apply_theme(self, self._theme)
+
+
         self.windows = []
         self.log_handler = SVLogHandler()
         self.log_window = None
         self.net_dialog = None
         self.timer = QTimer()
         self.exception_hook = None
+
         # A floating point number, e.g. 129.1
         self.dpi = self.primaryScreen().physicalDotsPerInch()
 
@@ -130,9 +137,20 @@ class SVApplication(QApplication):
         logs.add_handler(self.log_handler)
         self._start()
 
+    def eventFilter(self, obj, event):
+        if (
+            event.type() == QEvent.Show
+            and isinstance(obj, QWidget)
+            and obj.isWindow()
+        ):           
+            apply_windows_title_bar(obj, self._theme)
+
+        return super().eventFilter(obj, event)
+
     def _start(self):
         self.setWindowIcon(read_QIcon("electrum-sv.png"))
         self.installEventFilter(OpenFileEventFilter(self.windows))
+        self.installEventFilter(self)
         self.create_new_window_signal.connect(self.start_new_window)
         self.async_tasks_done.connect(app_state.async_.run_pending_callbacks)
         self.num_zeros_changed.connect(partial(self._signal_all, 'on_num_zeros_changed'))
@@ -143,6 +161,24 @@ class SVApplication(QApplication):
         self.fiat_balance_changed.connect(partial(self._signal_all, 'on_fiat_balance_changed'))
         self.update_check_signal.connect(partial(self._signal_all, 'on_update_check'))
         ColorScheme.update_from_widget(QWidget())
+
+    def set_theme(self, theme: Theme) -> None:
+        self._theme = theme
+        dark = theme == Theme.DARK
+
+        app_state.config.set_key("theme", theme.value, True)
+
+        # Existing theme engine still uses the Boolean for now.
+        apply_theme(self, theme)
+
+        for window in self.windows:
+            window.setStyleSheet(wallet_window_style(theme))
+            apply_windows_title_bar(window, theme)            
+
+        if self.net_dialog is not None:
+            self.net_dialog.update_theme(theme)
+            apply_windows_title_bar(self.net_dialog, theme)
+
 
     def count_windows_for_wallet(self, wallet):
         """Return the number of open windows for a specific wallet."""
@@ -415,3 +451,4 @@ class SVApplication(QApplication):
         thread.
         '''
         return self.run_coro(run_in_thread, func, *args, on_done=on_done)
+

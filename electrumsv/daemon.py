@@ -241,8 +241,7 @@ class Daemon(DaemonThread):
         elif sub == 'load_wallet':
             path = config.get_cmdline_wallet_filepath()
             wallet = self.load_wallet(path) if path is not None else None
-            self.cmd_runner._wallet = wallet
-            response = True
+            response = wallet is not None
         elif sub == 'close_wallet':
             cmdline_wallet_filepath = config.get_cmdline_wallet_filepath()
             assert cmdline_wallet_filepath is not None

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 sweep_helper.py
 
@@ -19,13 +18,12 @@ import math
 import requests
 import socks
 import hashlib
-import ecdsa
-import ecdsa.util
 from bitcoinx import PrivateKey, Address, SigHash, Script
 from bip38 import BIP38
 from bip38.bip38 import ICryptocurrency
 
 from electrumsv.transaction import Transaction, XTxInput, XTxOutput
+from electrumsv.exceptions import ExcessiveFee
 from electrumsv.keystore import is_address_valid
 from electrumsv.networks import SVMainnet
 
@@ -128,6 +126,7 @@ def create_ssl_context(host: str) -> ssl.SSLContext:
             ctx.load_verify_locations(cafile=cafile)
     except Exception:
         logger.debug("Could not load certifi cafile")
+
     pem_path = os.path.join(PEM_DIR, f"{host}.pem")
     if os.path.exists(pem_path):
         try:
@@ -135,78 +134,253 @@ def create_ssl_context(host: str) -> ssl.SSLContext:
             ctx.check_hostname = False
         except Exception as e:
             logger.warning("Failed to load host PEM %s: %s", pem_path, e)
+
     return ctx
+
 
 # -------------------------
 # UTXO Normalizer
 # -------------------------
 def _normalize_utxo(u: Dict) -> Dict:
     out = dict(u)
-    out['txid'] = out.get('txid') or out.get('tx_hash') or out.get('tx_hash_hex')
-    out['vout'] = int(out.get('vout') or out.get('tx_pos') or out.get('position') or 0)
+
+    out['txid'] = (
+        out.get('txid')
+        or out.get('tx_hash')
+        or out.get('tx_hash_hex')
+    )
+
+    out['vout'] = int(
+        out.get('vout')
+        or out.get('tx_pos')
+        or out.get('position')
+        or 0
+    )
+
     if 'satoshis' not in out:
         if 'value' in out:
             out['satoshis'] = int(float(out['value']))
         elif 'amount' in out:
             out['satoshis'] = int(round(float(out['amount']) * 1e8))
-    out['scriptPubKey'] = out.get('scriptPubKey') or out.get('script_hex') or out.get('script')
+
+    out['scriptPubKey'] = (
+        out.get('scriptPubKey')
+        or out.get('script_hex')
+        or out.get('script')
+    )
+
     return out
+
 
 # -------------------------
 # Network Queries
 # -------------------------
-def get_utxos_whatsonchain(address: str) -> List[Dict]:
-    logger.info("Fetching UTXOs from WhatsonChain for %s", address)
-    url = f"https://api.whatsonchain.com/v1/bsv/main/address/{address}/unspent"
+
+def get_utxos_bananablocks(address: str) -> List[Dict]:
+    """
+    Fetch confirmed UTXOs from BananaBlocks.
+    """
+    logger.info("Fetching UTXOs from BananaBlocks for %s", address)
+
+    url = f"https://bananablocks.com/api/v1/address/{address}/utxos"
+
     proxies = None
-    if is_tor_proxy_running(SOCKS5_PROXY_HOST, SOCKS5_PROXY_PORT):
+
+    if is_tor_proxy_running(
+        SOCKS5_PROXY_HOST,
+        SOCKS5_PROXY_PORT
+    ):
         proxies = {
             'http': f'socks5h://{SOCKS5_PROXY_HOST}:{SOCKS5_PROXY_PORT}',
             'https': f'socks5h://{SOCKS5_PROXY_HOST}:{SOCKS5_PROXY_PORT}',
         }
-        logger.info("Using Tor proxy for WhatsonChain request")
-    r = requests.get(url, timeout=10, proxies=proxies)
+        logger.info("Using Tor proxy for BananaBlocks request")
+
+    r = requests.get(
+        url,
+        timeout=10,
+        proxies=proxies
+    )
+
     r.raise_for_status()
-    utxos = [_normalize_utxo(u) for u in r.json()]
-    logger.info("Fetched %d UTXOs from WhatsonChain", len(utxos))
+
+    data = r.json()
+
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"Unexpected BananaBlocks response: {data}"
+        )
+
+    raw_utxos = data.get("items", [])
+
+    if not isinstance(raw_utxos, list):
+        raise ValueError(
+            f"Unexpected BananaBlocks UTXO response: {data}"
+        )
+
+    utxos = []
+
+    for u in raw_utxos:
+        normalized = _normalize_utxo({
+            "txid": u.get("txid"),
+            "vout": u.get("vout"),
+            "value": u.get("value"),
+            "blockheight": u.get("block_height"),
+            "time": u.get("block_time"),
+        })
+
+        utxos.append(normalized)
+
+    logger.info(
+        "Fetched %d UTXOs from BananaBlocks",
+        len(utxos)
+    )
+
     return utxos
 
 
-def get_utxos_electrumx_socket_fallback(scripthash: str) -> List[Dict]:
-    use_socks = is_tor_proxy_running(SOCKS5_PROXY_HOST, SOCKS5_PROXY_PORT)
+def get_utxos_whatsonchain(address: str) -> List[Dict]:
+    """
+    Final external UTXO fallback using WhatsonChain.
+    """
+    logger.info(
+        "Fetching UTXOs from WhatsonChain for %s",
+        address
+    )
+
+    url = (
+        f"https://api.whatsonchain.com/v1/bsv/main/"
+        f"address/{address}/unspent"
+    )
+
+    proxies = None
+
+    if is_tor_proxy_running(
+        SOCKS5_PROXY_HOST,
+        SOCKS5_PROXY_PORT
+    ):
+        proxies = {
+            'http': (
+                f'socks5h://{SOCKS5_PROXY_HOST}:{SOCKS5_PROXY_PORT}'
+            ),
+            'https': (
+                f'socks5h://{SOCKS5_PROXY_HOST}:{SOCKS5_PROXY_PORT}'
+            ),
+        }
+
+        logger.info(
+            "Using Tor proxy for WhatsonChain request"
+        )
+
+    r = requests.get(
+        url,
+        timeout=10,
+        proxies=proxies
+    )
+
+    r.raise_for_status()
+
+    utxos = [
+        _normalize_utxo(u)
+        for u in r.json()
+    ]
+
+    logger.info(
+        "Fetched %d UTXOs from WhatsonChain",
+        len(utxos)
+    )
+
+    return utxos
+
+
+def get_utxos_electrumx_socket_fallback(
+    scripthash: str
+) -> List[Dict]:
+
+    use_socks = is_tor_proxy_running(
+        SOCKS5_PROXY_HOST,
+        SOCKS5_PROXY_PORT
+    )
+
     for host, port in ELECTRUMX_SERVERS:
         try:
-            sock = create_socket_with_optional_socks(SOCKS5_PROXY_HOST if use_socks else None,
-                                                     SOCKS5_PROXY_PORT if use_socks else None)
+            sock = create_socket_with_optional_socks(
+                SOCKS5_PROXY_HOST if use_socks else None,
+                SOCKS5_PROXY_PORT if use_socks else None
+            )
+
             sock.settimeout(8)
             sock.connect((host, port))
+
             if port == 50002:
                 ctx = create_ssl_context(host)
-                conn = ctx.wrap_socket(sock, server_hostname=host)
+                conn = ctx.wrap_socket(
+                    sock,
+                    server_hostname=host
+                )
             else:
                 conn = sock
-            req = json.dumps({"id": 1, "method": "blockchain.scripthash.listunspent",
-                              "params": [scripthash]}) + "\n"
+
+            req = json.dumps({
+                "id": 1,
+                "method": "blockchain.scripthash.listunspent",
+                "params": [scripthash]
+            }) + "\n"
+
             conn.sendall(req.encode())
+
             data = b''
+
             while True:
                 part = conn.recv(4096)
+
                 if not part:
                     break
+
                 data += part
+
                 if b'\n' in part:
                     break
+
             conn.close()
+
             resp = json.loads(data.decode())
-            if 'result' in resp and isinstance(resp['result'], list):
-                utxos = [_normalize_utxo(u) for u in resp['result']]
-                logger.info("Fetched %d UTXOs from ElectrumX %s:%d", len(utxos), host, port)
+
+            if (
+                'result' in resp
+                and isinstance(resp['result'], list)
+            ):
+                utxos = [
+                    _normalize_utxo(u)
+                    for u in resp['result']
+                ]
+
+                logger.info(
+                    "Fetched %d UTXOs from "
+                    "ElectrumX %s:%d",
+                    len(utxos),
+                    host,
+                    port
+                )
+
                 return utxos
+
         except Exception as e:
-            logger.warning("ElectrumX %s:%d failed: %s", host, port, e)
+            logger.warning(
+                "ElectrumX %s:%d failed: %s",
+                host,
+                port,
+                e
+            )
             continue
-    logger.info("ElectrumX servers failed, falling back to WhatsonChain API")
+
+    logger.info(
+        "ElectrumX servers failed, "
+        "falling back to BananaBlocks API"
+    )
+
     return []
+
 
 # -------------------------
 # Sweep Function
@@ -217,14 +391,17 @@ def sweep_single_privkey(
     network_service,
     wallet,
     network=SVMainnet,
-    fee_rate_sat_per_byte: float = 1.0,  # now accepts float
-    manual_fee: Optional[int] = None,  # allows user to override fee directly
+    fee_rate_sat_per_byte: float = 1.0,
+    manual_fee: Optional[int] = None,
     beef_utxos: Optional[List[Dict]] = None,
     bip38_passphrase: Optional[str] = None,
     use_uncompressed: bool = False,
 ) -> Transaction:
 
-    logger.info("Starting sweep for destination %s", destination)
+    logger.info(
+        "Starting sweep for destination %s",
+        destination
+    )
 
     if not is_address_valid(destination):
         raise ValueError("Invalid destination address")
@@ -232,21 +409,54 @@ def sweep_single_privkey(
     # handle BIP38
     if wif_privkey.startswith('6P'):
         if not bip38_passphrase:
-            raise ValueError("BIP38 key requires passphrase")
-        bip38_obj = BIP38(Bitcoin, network="mainnet")
+            raise ValueError(
+                "BIP38 key requires passphrase"
+            )
+
+        bip38_obj = BIP38(
+            Bitcoin,
+            network="mainnet"
+        )
+
         try:
-            wif_privkey = bip38_obj.decrypt(wif_privkey, bip38_passphrase)
-            logger.info("BIP38 decryption successful")
+            wif_privkey = bip38_obj.decrypt(
+                wif_privkey,
+                bip38_passphrase
+            )
+
+            logger.info(
+                "BIP38 decryption successful"
+            )
+
         except Exception as e:
-            raise ValueError(f"Failed to decrypt BIP38 key: {e}")
+            raise ValueError(
+                f"Failed to decrypt BIP38 key: {e}"
+            )
 
     privkey = PrivateKey.from_WIF(wif_privkey)
-    is_compressed = privkey.is_compressed() and not use_uncompressed
-    pubkey_bytes = privkey.public_key.to_bytes(compressed=is_compressed)
-    source_address = public_key_to_address(pubkey_bytes)
-    logger.info("Source address: %s (compressed=%s)", source_address, is_compressed)
 
-    # fetch UTXOs
+    is_compressed = (
+        privkey.is_compressed()
+        and not use_uncompressed
+    )
+
+    pubkey_bytes = privkey.public_key.to_bytes(
+        compressed=is_compressed
+    )
+
+    source_address = public_key_to_address(
+        pubkey_bytes
+    )
+
+    logger.info(
+        "Source address: %s (compressed=%s)",
+        source_address,
+        is_compressed
+    )
+
+    # -------------------------
+    # Fetch UTXOs
+    # -------------------------
     utxos: List[Dict] = []
 
     if beef_utxos:
@@ -254,64 +464,210 @@ def sweep_single_privkey(
             u_norm = _normalize_utxo(u)
             u_norm['address'] = source_address
             utxos.append(u_norm)
-        logger.info("Using %d UTXOs from BEEF JSON", len(utxos))
+
+        logger.info(
+            "Using %d UTXOs from BEEF JSON",
+            len(utxos)
+        )
+
     else:
-        scripthash = address_to_scripthash(source_address)
-        utxos = get_utxos_electrumx_socket_fallback(scripthash)
+        scripthash = address_to_scripthash(
+            source_address
+        )
+
+        # Primary source: ElectrumX
+        utxos = get_utxos_electrumx_socket_fallback(
+            scripthash
+        )
+
+        # First external fallback: BananaBlocks
         if not utxos:
-            utxos = get_utxos_whatsonchain(source_address)
+            try:
+                utxos = get_utxos_bananablocks(
+                    source_address
+                )
+            except Exception as e:
+                logger.warning(
+                    "BananaBlocks UTXO lookup failed: %s",
+                    e
+                )
+                utxos = []
+
+        # Second external fallback: WhatsonChain
+        if not utxos:
+            try:
+                utxos = get_utxos_whatsonchain(
+                    source_address
+                )
+            except Exception as e:
+                logger.warning(
+                    "WhatsonChain UTXO lookup failed: %s",
+                    e
+                )
+                utxos = []
 
     if not utxos:
-        raise ValueError("No funds found for this key")
+        raise ValueError(
+            "No funds found for this key"
+        )
 
-    total_value = sum(u['satoshis'] for u in utxos)
+    total_value = sum(
+        u['satoshis']
+        for u in utxos
+    )
 
-    # estimate transaction size: 148 bytes per input, 34 bytes per output, +10
-    estimated_size = 10 + len(utxos) * 148 + 34  # single output
-    fee_satoshis = manual_fee if manual_fee is not None else max(1, int(math.ceil(estimated_size * fee_rate_sat_per_byte)))
+    # estimate transaction size:
+    # 148 bytes per input, 34 bytes per output, +10
+    estimated_size = (
+        10
+        + len(utxos) * 148
+        + 34
+    )
+
+    fee_satoshis = (
+        manual_fee
+        if manual_fee is not None
+        else max(
+            1,
+            int(
+                math.ceil(
+                    estimated_size
+                    * fee_rate_sat_per_byte
+                )
+            )
+        )
+    )
 
     if total_value <= fee_satoshis:
-        raise ValueError(f"Not enough balance ({total_value} sats) to cover fee {fee_satoshis}")
+        raise ValueError(
+            f"Not enough balance ({total_value} sats) "
+            f"to cover fee {fee_satoshis}"
+        )
 
-    # build transaction
+    # -------------------------
+    # Build transaction
+    # -------------------------
     inputs: List[XTxInput] = []
     prevouts: List[tuple] = []
+
     for u in utxos:
-        tx_hash = bytes.fromhex(u['txid'])[::-1]
+        tx_hash = bytes.fromhex(
+            u['txid']
+        )[::-1]
+
         vout = int(u['vout'])
         satoshis = int(u['satoshis'])
-        script_bytes = bytes.fromhex(u.get('scriptPubKey') or "")
+
+        script_bytes = bytes.fromhex(
+            u.get('scriptPubKey') or ""
+        )
+
         if not script_bytes:
-            script_bytes = Address.from_string(source_address, SVMainnet.COIN).to_script_bytes()
-        inputs.append(XTxInput(tx_hash, vout, b'', 0xFFFFFFFF))
-        prevouts.append((script_bytes, satoshis))
+            script_bytes = (
+                Address.from_string(
+                    source_address,
+                    SVMainnet.COIN
+                ).to_script_bytes()
+            )
+
+        inputs.append(
+            XTxInput(
+                tx_hash,
+                vout,
+                b'',
+                0xFFFFFFFF
+            )
+        )
+
+        prevouts.append(
+            (script_bytes, satoshis)
+        )
 
     # Log UTXOs used
     for i, txin in enumerate(inputs):
-        script_pubkey_bytes, value_sats = prevouts[i]
-        line = f"txid={txin.prev_hash.hex()} vout={txin.prev_idx} sats={value_sats}"
-        logger.info("UTXO used in sweep: %s", line)
+        script_pubkey_bytes, value_sats = (
+            prevouts[i]
+        )
+
+        line = (
+            f"txid={txin.prev_hash.hex()} "
+            f"vout={txin.prev_idx} "
+            f"sats={value_sats}"
+        )
+
+        logger.info(
+            "UTXO used in sweep: %s",
+            line
+        )
 
     # compute output amount rounded to nearest satoshi
-    output_value = total_value - fee_satoshis
-    output_value = max(0, int(round(output_value)))
+    output_value = (
+        total_value
+        - fee_satoshis
+    )
 
-    outputs = [XTxOutput(output_value,
-                         Address.from_string(destination, SVMainnet.COIN).to_script_bytes())]
+    output_value = max(
+        0,
+        int(round(output_value))
+    )
 
-    tx = Transaction.from_io(inputs, outputs)
+    outputs = [
+        XTxOutput(
+            output_value,
+            Address.from_string(
+                destination,
+                SVMainnet.COIN
+            ).to_script_bytes()
+        )
+    ]
 
-    # sign
-    sk = ecdsa.SigningKey.from_string(privkey.to_bytes(), curve=ecdsa.SECP256k1)
+    tx = Transaction.from_io(
+        inputs,
+        outputs
+    )
+
+    # -------------------------
+    # Sign
+    # -------------------------
     for i, txin in enumerate(tx.inputs):
-        script_pubkey_bytes, value_sats = prevouts[i]
-        sighash = tx.signature_hash(i, value_sats, script_pubkey_bytes,
-                                    sighash=SigHash(SigHash.ALL | SigHash.FORKID))
-        der_sig = sk.sign_digest(sighash, sigencode=ecdsa.util.sigencode_der_canonize)
-        signature = der_sig + b"\x41"  # SigHash.ALL|FORKID
-        txin.script_sig = Script(bytes([len(signature)]) + signature +
-                                 bytes([len(pubkey_bytes)]) + pubkey_bytes)
+        script_pubkey_bytes, value_sats = (
+            prevouts[i]
+        )
 
-    logger.info("Sweep transaction created successfully: %s (fee %d sats)", tx.txid(), fee_satoshis)
+        sighash = tx.signature_hash(
+            i,
+            value_sats,
+            script_pubkey_bytes,
+            sighash=SigHash(
+                SigHash.ALL
+                | SigHash.FORKID
+            )
+        )
+
+        der_sig = privkey.sign(
+            sighash,
+            hasher=None
+        )
+
+        signature = (
+            der_sig
+            + b"\x41"
+        )
+
+        txin.script_sig = Script(
+            bytes([len(signature)])
+            + signature
+            + bytes([len(pubkey_bytes)])
+            + pubkey_bytes
+        )
+
+    # -------------------------
+    # Excessive fee safety check
+    # -------------------------
+    tx_size = len(tx.to_bytes())
+
+    if tx_size <= 0 or fee_satoshis > tx_size * 50:
+        raise ExcessiveFee()
+
     return tx
 

@@ -44,8 +44,15 @@ from electrumsv.i18n import _, languages
 import electrumsv.web as web
 from electrumsv.wallet import AbstractAccount, Wallet
 
-from .amountedit import BTCSatsByteEdit
 from .util import Buttons, CloseButton, FormSectionWidget, HelpButton, HelpLabel, MessageBox
+from .theme import (
+    apply_theme,
+    form_style,
+    wallet_window_style,
+    Theme,
+    theme_from_config,
+    apply_windows_title_bar,
+)
 
 if TYPE_CHECKING:
     from electrumsv.gui.qt.main_window import ElectrumWindow
@@ -61,6 +68,16 @@ class PreferencesDialog(QDialog):
         self._main_window = weakref.proxy(main_window)
         self.lay_out(wallet, account)
         self.initial_language = app_state.config.get('language', None)
+
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+
+
+        apply_windows_title_bar(
+            self,
+            theme_from_config(app_state.config)
+        )
+     
 
     def accept(self) -> None:
         if app_state.fx:
@@ -81,7 +98,7 @@ class PreferencesDialog(QDialog):
             (self.fiat_widgets, _('Fiat')),
             (partial(self.extensions_widgets, account), _('Extensions')),
         ]
-        tabs_info.append((partial(self._wallet_widgets, wallet), _('Wallet')))
+        tabs_info.append((partial(self._wallet_widgets, wallet, account), _('Wallet')))
         tabs_info.append((self.network_widgets, _('Network')))
         tabs_info.append((self.ui_widgets, _('UI')))
 
@@ -99,23 +116,6 @@ class PreferencesDialog(QDialog):
         self.setLayout(vbox)
 
     def tx_widgets(self, tab: QWidget) -> None:
-        def on_customfee(_text):
-            amt = customfee_e.get_amount()
-            # NOW: treat input as sat/kB directly (no scaling)
-            m = int(amt) if amt is not None else None
-            app_state.config.set_key('customfee', m)
-            app_state.app.custom_fee_changed.emit()
-
-        customfee_e = BTCSatsByteEdit()
-        
-        # IMPORTANT: remove /1000 scaling
-        customfee_e.setAmount(
-            app_state.config.custom_fee_rate()
-            if app_state.config.has_custom_fee_rate() else None
-        )
-
-        customfee_e.textChanged.connect(on_customfee)
-
         unconf_cb = QCheckBox(_('Spend only confirmed coins'))
         unconf_cb.setToolTip(_('Spend only confirmed inputs.'))
         unconf_cb.setChecked(app_state.config.get('confirmed_only', False))
@@ -125,15 +125,29 @@ class PreferencesDialog(QDialog):
 
         unconf_cb.stateChanged.connect(on_unconf)
 
+        high_fee_cb = QCheckBox(_('Allow high fee rates'))
+        high_fee_cb.setToolTip(
+            _('Allow transaction fee rates above 1,000 sat/kB.')
+        )
+        high_fee_cb.setChecked(
+            app_state.config.get('allow_high_fees', False)
+        )
+
+        def on_high_fee(state):
+            app_state.config.set_key(
+                'allow_high_fees',
+                state != Qt.Unchecked
+            )
+
+        high_fee_cb.stateChanged.connect(on_high_fee)
+
         options_box = QGroupBox()
         options_vbox = QVBoxLayout()
         options_box.setLayout(options_vbox)
         options_vbox.addWidget(unconf_cb)
+        options_vbox.addWidget(high_fee_cb)
 
         form = FormSectionWidget(minimum_label_width=120)
-
-        # 👇 Label updated to reflect sat/kB
-        form.add_row(_('Custom Fee Rate (sat/kB)'), customfee_e)
         form.add_row(_("Options"), options_box, True)
 
         vbox = QVBoxLayout()
@@ -153,6 +167,7 @@ class PreferencesDialog(QDialog):
         # lang_label.setEnabled(lang_modifiable)
 
         lang_combo = QComboBox()
+        lang_combo.view().setMinimumWidth(150)
         lang_combo.setEnabled(lang_modifiable)
         lang_combo.addItems(language_names)
         try:
@@ -189,6 +204,7 @@ class PreferencesDialog(QDialog):
         #     '1 BSV = 1,000 mBSV = 1,000,000 bits.',
         # )))
         unit_combo = QComboBox()
+        unit_combo.view().setMinimumWidth(165)
         unit_combo.addItems(app_state.base_units)
         unit_combo.setCurrentIndex(app_state.base_units.index(app_state.base_unit()))
         def on_unit(index):
@@ -200,6 +216,7 @@ class PreferencesDialog(QDialog):
         # block_ex_label = HelpLabel(_('Online Block Explorer') + ':', msg)
         block_explorers = web.BE_sorted_list()
         block_ex_combo = QComboBox()
+        block_ex_combo.view().setMinimumWidth(175)
         block_ex_combo.addItems(block_explorers)
         block_ex_combo.setCurrentIndex(block_ex_combo.findText(
             web.BE_from_config(app_state.config)))
@@ -210,12 +227,12 @@ class PreferencesDialog(QDialog):
         # qr_label = HelpLabel(_('Video Device') + ':',
         #                      _("Install the zbar package to enable this."))
         qr_combo = QComboBox()
+        qr_combo.view().setMinimumWidth(175)
         qr_combo.addItem("Default", "default")
         system_cameras = qrscanner.find_system_cameras()
         for camera, device in system_cameras.items():
             qr_combo.addItem(camera, device)
         qr_combo.setCurrentIndex(qr_combo.findData(app_state.config.get("video_device")))
-        qr_combo.setEnabled(qrscanner.libzbar is not None)
         def on_video_device(index):
             app_state.config.set_key("video_device", qr_combo.itemData(index), True)
         qr_combo.currentIndexChanged.connect(on_video_device)
@@ -257,7 +274,10 @@ class PreferencesDialog(QDialog):
         hist_checkbox = QCheckBox(_('Show historical rates'))
         fiat_balance_checkbox = QCheckBox(_('Show Fiat balance for addresses'))
         ccy_combo = QComboBox()
+        ccy_combo.view().setMinimumWidth(75)
+
         ex_combo = QComboBox()
+        ex_combo.view().setMinimumWidth(125)
 
         # FIXME: note main window tabs are not correctly hooked up to FX rate changes
         # to refresh when an update comes in from twiddling here
@@ -266,10 +286,18 @@ class PreferencesDialog(QDialog):
             fx = app_state.fx
             if fx:
                 currencies = sorted(fx.get_currencies())
+                current_currency = fx.get_currency()
+
+                ccy_combo.blockSignals(True)
                 ccy_combo.clear()
                 ccy_combo.addItems([_('None')] + currencies)
+
                 if fx.is_enabled():
-                    ccy_combo.setCurrentIndex(ccy_combo.findText(fx.get_currency()))
+                    index = ccy_combo.findText(current_currency)
+                    if index >= 0:
+                        ccy_combo.setCurrentIndex(index)
+
+                ccy_combo.blockSignals(False)
 
         def update_history_cb():
             fx = app_state.fx
@@ -318,6 +346,7 @@ class PreferencesDialog(QDialog):
             fx = app_state.fx
             if fx:
                 fx.set_history_config(state == Qt.Checked)
+                update_currencies()
                 update_exchanges()
                 app_state.app.fiat_history_changed.emit()
 
@@ -382,7 +411,32 @@ class PreferencesDialog(QDialog):
         vbox.addStretch(1)
         tab.setLayout(vbox)
 
-    def _wallet_widgets(self, wallet: Wallet, tab: QWidget) -> None:
+
+    def _wallet_widgets(self, wallet: Wallet,
+                        account: Optional[AbstractAccount],
+                        tab: QWidget) -> None:
+        # Gap limit
+        gap_limit = QSpinBox()
+        gap_limit.setAlignment(Qt.AlignRight)
+        gap_limit.setMinimum(1)
+        gap_limit.setMaximum(10000)
+
+        if account:
+            gap_limit.setValue(account.get_gap_limit_for_path((0,)))
+
+        def on_gap_limit():
+            value = gap_limit.value()
+
+            if account:
+                current = account.get_gap_limit_for_path((0,))
+
+                if value != current:
+                    account.set_gap_limit_for_path((0,), value)
+                    account.set_gap_limit_for_path((1,), value)
+                    account.synchronize()
+
+        gap_limit.valueChanged.connect(on_gap_limit)
+
         use_change_addresses_cb = QCheckBox(_('Use change addresses'))
         use_change_addresses_cb.setChecked(
             wallet.get_boolean_setting(WalletSettings.USE_CHANGE, True))
@@ -392,6 +446,7 @@ class PreferencesDialog(QDialog):
             _('Using a different change key each time improves your privacy by '
               'making it more difficult for others to analyze your transactions.')
         )
+
         def on_usechange(state: int):
             should_enable = state == Qt.Checked
             if wallet.get_boolean_setting(WalletSettings.USE_CHANGE, True) != should_enable:
@@ -437,23 +492,16 @@ class PreferencesDialog(QDialog):
 
         multiple_accounts_cb = QCheckBox(_('Enable multiple accounts'))
         multiple_accounts_cb.setChecked(
-            wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS))
-        multiple_accounts_cb.setToolTip('\n'.join([
-            _('Multiple accounts are to a large degree ready for use, but not tested to the level '
-              'where they are enabled for general use. Users who may wish to use these are warned '
-              'that they are in the experimental section for a reason.')
-        ]))
+            wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS, True))
+
         def on_multiple_accounts_toggled(state: int) -> None:
             should_enable = state == Qt.Checked
-            is_enabled = wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS)
+            is_enabled = wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS, True)
             if should_enable != is_enabled:
                 wallet.set_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS, should_enable)
         multiple_accounts_cb.stateChanged.connect(on_multiple_accounts_toggled)
 
-        experimental_box = QGroupBox()
-        experimental_vbox = QVBoxLayout()
-        experimental_box.setLayout(experimental_vbox)
-        experimental_vbox.addWidget(multiple_accounts_cb)
+        options_vbox.addWidget(multiple_accounts_cb)
 
         # Todo - add ability here to toggle deactivation of used keys - AustEcon
         transaction_cache_size = wallet.get_cache_size_for_tx_bytedata()
@@ -482,8 +530,8 @@ class PreferencesDialog(QDialog):
 
         form = FormSectionWidget(minimum_label_width=120)
         form.add_row(_('General options'), options_box, True)
-        form.add_row(_('Experimental options'), experimental_box, True)
         form.add_row(_('Transaction Cache Size'), tx_cache_layout)
+        form.add_row(_('Gap Limit'), gap_limit)
 
         vbox = QVBoxLayout()
         vbox.addWidget(form)
@@ -529,23 +577,83 @@ class PreferencesDialog(QDialog):
 
     def ui_widgets(self, tab: QWidget) -> None:
         modal_cb = QCheckBox(_('Disable MacOS sheets.'))
-        modal_cb.setToolTip(_("The Qt5 framework used for the user interface has bugs on MacOS\n"
-            "One of these is that in some rare occasions a blank drop down box may be left in\n"
-            "place and there is no way for ElectrumSV to know about it or to remove it. If you\n"
-            "set this option ElectrumSV will try and avoid using the drop down sheets, preventing\n"
-            "you from experiencing these problems."))
-        modal_cb.setChecked(app_state.config.get('ui_disable_modal_dialogs', False))
+        modal_cb.setToolTip(
+            _("The Qt5 framework used for the user interface has bugs on MacOS\n"
+              "One of these is that in some rare occasions a blank drop down box may be left in\n"
+              "place and there is no way for ElectrumSV to know about it or to remove it. If you\n"
+              "set this option ElectrumSV will try and avoid using the drop down sheets, preventing\n"
+              "you from experiencing these problems.")
+        )
+        modal_cb.setChecked(
+            app_state.config.get('ui_disable_modal_dialogs', False)
+        )
+
         def on_unconf(state):
-            app_state.config.set_key('ui_disable_modal_dialogs', state != Qt.Unchecked)
+            app_state.config.set_key(
+                'ui_disable_modal_dialogs',
+                state != Qt.Unchecked
+            )
+
         modal_cb.stateChanged.connect(on_unconf)
+
+        # Theme selection
+        theme_label = QLabel(_("Theme"))
+        theme_combo = QComboBox()
+        theme_combo.addItems([_("Light"), _("Dark"), _("Pink"), _("Orange")])        
+        theme_combo.view().setMinimumWidth(75)
+
+        theme = app_state.app._theme
+
+        if theme == Theme.DARK:
+            theme_combo.setCurrentIndex(1)
+        elif theme == Theme.PINK:
+            theme_combo.setCurrentIndex(2)
+        elif theme == Theme.ORANGE:
+            theme_combo.setCurrentIndex(3)
+        else:
+            theme_combo.setCurrentIndex(0)
 
         options_box = QGroupBox()
         options_vbox = QVBoxLayout()
         options_box.setLayout(options_vbox)
+
         options_vbox.addWidget(modal_cb)
+
+        theme_row = QHBoxLayout()
+        theme_row.addWidget(theme_label)
+        theme_row.addStretch(1)
+        theme_row.addWidget(theme_combo)
+        options_vbox.addLayout(theme_row)
 
         form = FormSectionWidget()
         form.add_row(_("Options"), options_box, stretch_field=True)
+
+        def on_theme_changed(index: int) -> None:
+
+            if index == 1:
+                theme = Theme.DARK
+            elif index == 2:
+                theme = Theme.PINK
+            elif index == 3:
+                theme = Theme.ORANGE
+            else:
+                theme = Theme.LIGHT
+
+            dark = theme == Theme.DARK
+
+            app_state.app.set_theme(theme)
+
+            self._main_window.setStyleSheet(
+                wallet_window_style(theme)
+            )
+
+            for form_widget in self.findChildren(FormSectionWidget):
+                form_widget.update_theme(theme)
+
+            apply_windows_title_bar(self, theme)
+
+
+        theme_combo.currentIndexChanged.connect(on_theme_changed)
 
         vbox = QVBoxLayout()
         vbox.addWidget(form)

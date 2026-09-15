@@ -77,7 +77,7 @@ from electrumsv.wallet_database.tables import InvoiceRow, KeyInstanceRow, Wallet
 import electrumsv.web as web
 
 from .amountedit import AmountEdit, BTCAmountEdit
-from .constants import CSS_WALLET_WINDOW_STYLE, UIBroadcastSource
+from .constants import UIBroadcastSource
 from .contact_list import ContactList, edit_contact_dialog
 from .qrcodewidget import QRDialog
 from .qrtextedit import ShowQRTextEdit
@@ -92,7 +92,9 @@ from .wallet_api import WalletAPI
 
 from .sweep_private_key_dialog import SweepPrivateKeyDialog
 
-PACKAGE_VERSION = "v0.1.0"  # override the packaged version
+from .theme import Theme, theme_from_config, apply_windows_title_bar, wallet_window_style
+
+PACKAGE_VERSION = "v0.2.0-beta.1"  # override the packaged version
 
 
 logger = logs.get_logger("mainwindow")
@@ -126,13 +128,20 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
     def __init__(self, wallet: Wallet):
         QMainWindow.__init__(self)
 
-        self.setStyleSheet(CSS_WALLET_WINDOW_STYLE)
+        theme = theme_from_config(app_state.config)
+        dark = theme == Theme.DARK
+
+        apply_windows_title_bar(self, dark)
+        self.setStyleSheet(wallet_window_style(theme))
+
         self._api = WalletAPI(self)
         self._logger = logger
         self.config = app_state.config
         self._wallet = wallet
         self._account: Optional[AbstractAccount] = wallet.get_default_account()
-        self._account_id: Optional[int] = (self._account.get_id() if self._account else None)
+        self._account_id: Optional[int] = (
+            self._account.get_id() if self._account else None
+        )
 
         self.network = app_state.daemon.network
         self.start_network_status_heartbeat()
@@ -314,7 +323,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
     def _on_ready(self) -> None:
         self._accounts_view.on_wallet_loaded()
 
-        use_multiple_accounts = self._wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS)
+        use_multiple_accounts = self._wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS, True)
         self._update_add_account_button(use_multiple_accounts)
         #self._present_notifications_tab()
 
@@ -365,6 +374,272 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         self._add_optional_tab(tabs, self.coinsplitting_tab, read_QIcon("tab_coins.png"),
             _("Coin Splitting"), "coinsplitter", False)
 
+
+
+    def reset_blockchain_headers(self):
+        import os
+        import platform
+        from PyQt5.QtWidgets import QMessageBox
+
+        system = platform.system()
+
+        if system == "Windows":
+            headers_path = os.path.join(
+                os.path.expanduser("~"),
+                "AppData",
+                "Roaming",
+                "ElectrumSV",
+                "Headers",
+            )
+
+        elif system == "Darwin":
+            headers_path = os.path.expanduser(
+                "~/.electrum-sv/headers"
+            )
+
+        else:
+            # Linux
+            headers_path = os.path.expanduser(
+                "~/.electrum-sv/headers"
+            )
+
+        print(
+            "HEADER RESET: resolved headers path:",
+            headers_path,
+        )
+
+        reply = QMessageBox.warning(
+            self,
+            "Reset Blockchain Headers",
+            "This will delete the local blockchain headers "
+            "and close ElectrumSVP.\n\n"
+            "Your wallet, keys, transactions, and BREAD data "
+            "will not be deleted.\n\n"
+            "The bundled headers will be restored automatically "
+            "when ElectrumSVP is launched again.\n\n"
+            "Do you want to continue?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+
+        if reply != QMessageBox.Yes:
+            return
+
+        try:
+            if os.path.exists(headers_path):
+                os.remove(headers_path)
+
+                print(
+                    "HEADER RESET: deleted headers file:",
+                    headers_path,
+                )
+            else:
+                print(
+                    "HEADER RESET: headers file does not exist:",
+                    headers_path,
+                )
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Reset Blockchain Headers",
+                f"Could not delete the headers file:\n\n{e}",
+            )
+            return
+
+        QMessageBox.information(
+            self,
+            "Reset Blockchain Headers",
+            "The local blockchain headers have been reset.\n\n"
+            "ElectrumSVP will now close.\n\n"
+            "Please launch ElectrumSVP again to restore the "
+            "preloaded headers and synchronize normally.",
+        )
+
+        self.close()
+
+
+    def export_breads(self):
+        import json
+        import os
+        from PyQt5.QtWidgets import QFileDialog, QMessageBox
+        from electrumsv.verification_utils import build_beef
+
+        cache_path = os.path.expanduser(
+            "~/.electrum-sv/cache/merkle_cache.json"
+        )
+
+        if not os.path.exists(cache_path):
+            QMessageBox.warning(
+                self,
+                "Export BREADs",
+                "No BREAD cache was found."
+            )
+            return
+
+        try:
+            with open(cache_path, "r") as f:
+                cache = json.load(f)
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Export BREADs",
+                f"Could not read BREAD cache:\n\n{e}"
+            )
+            return
+
+        # Get current wallet UTXOs.
+        try:
+            account = self._account
+            utxos = account.get_utxos()
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Export BREADs",
+                f"Could not get wallet UTXOs:\n\n{e}"
+            )
+            return
+
+        # Determine which wallet transaction IDs have cached BREADs.
+        wallet_txids = set()
+
+        for utxo in utxos:
+            try:
+                txid = utxo.tx_hash[::-1].hex()
+            except Exception:
+                continue
+
+            wallet_txids.add(txid)
+
+        cached_txids = set(cache.keys())
+
+        missing = wallet_txids - cached_txids
+        available = wallet_txids & cached_txids
+
+        # Build any missing BREADs before exporting.
+        if missing:
+            print(
+                f"BREAD EXPORT: {len(missing)} BREAD(s) missing from cache. "
+                f"Building them now."
+            )
+
+            for txid in sorted(missing):
+                try:
+                    print(f"BREAD EXPORT: building BREAD for {txid}")
+
+                    # The cache uses normal human-readable TXID byte order.
+                    # The wallet database uses the internal/reversed byte order.
+                    tx_hash = bytes.fromhex(txid)[::-1]
+
+                    # Get the transaction from the wallet's transaction cache.
+                    tx = account.get_transaction(tx_hash)
+
+                    if tx is None:
+                        print(
+                            f"BREAD EXPORT: transaction not found in wallet: "
+                            f"{txid}"
+                        )
+                        continue
+
+                    # Build the BREAD. build_beef() will use the wallet's
+                    # stored proof where available and write the resulting
+                    # BREAD into the JSON cache.
+                    build_beef(
+                        tx,
+                        account=account,
+                    )
+
+                    print(
+                        f"BREAD EXPORT: build_beef completed for {txid}"
+                    )
+
+                except Exception as e:
+                    print(
+                        f"BREAD EXPORT: exception building {txid}: {e}"
+                    )
+
+            # Reload the cache after build_beef() has populated it.
+            try:
+                with open(cache_path, "r") as f:
+                    cache = json.load(f)
+            except Exception as e:
+                QMessageBox.critical(
+                    self,
+                    "Export BREADs",
+                    f"Could not reload BREAD cache:\n\n{e}"
+                )
+                return
+
+            cached_txids = set(cache.keys())
+            missing = wallet_txids - cached_txids
+            available = wallet_txids & cached_txids
+
+        # Do not produce a partial export.
+        if missing:
+            QMessageBox.warning(
+                self,
+                "Export BREADs",
+                f"{len(missing)} wallet transaction(s) still do not "
+                f"have cached BREADs.\n\n"
+                f"{len(available)} BREAD(s) are available.\n\n"
+                f"Export will be cancelled because the export would "
+                f"otherwise be incomplete."
+            )
+            return
+
+        if not available:
+            QMessageBox.information(
+                self,
+                "Export BREADs",
+                "No cached BREADs were found for the wallet's UTXOs."
+            )
+            return
+
+        # Let the user choose both the directory and filename.
+        destination, _ = QFileDialog.getSaveFileName(
+            self,
+            "Export BREADs",
+            "wallet_breads.json",
+            "JSON files (*.json)",
+        )
+
+        if not destination:
+            return
+
+        # Consolidated export: one JSON file containing all BREADs.
+        try:
+            export_cache = {}
+
+            for txid in sorted(available):
+                bread = cache.get(txid)
+
+                if not isinstance(bread, dict):
+                    continue
+
+                export_cache[txid] = bread
+
+            with open(destination, "w") as f:
+                json.dump(
+                    export_cache,
+                    f,
+                    indent=2,
+                )
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Export BREADs",
+                f"Failed to export BREADs:\n\n{e}"
+            )
+            return
+
+        QMessageBox.information(
+            self,
+            "Export BREADs",
+            f"Successfully exported {len(export_cache)} BREAD(s).\n\n"
+            f"File:\n{destination}"
+        )
+
     def _add_optional_tab(self, tabs, tab, icon, description: str, name: str,
             default: bool=False) -> None:
         tab.tab_icon = icon
@@ -407,7 +682,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         account = self._wallet.get_account(new_account_id)
 
         # NOTE(rt12) single-account At this time we disallow more than one account.
-        setting_value = self._wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS)
+        setting_value = self._wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS, True)
         self._update_add_account_button(setting_value)
 
         self._wallet.create_gui_handler(self, account)
@@ -624,7 +899,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         if winpos is None:
             self.setGeometry(100, 100, 840, 400)
 
-        self.setMinimumSize(500, 400)
+        self.setMinimumSize(420, 395)
 
         splitter_sizes = self._wallet.get_storage().get("split-sizes-qt")
         self._accounts_view.init_geometry(splitter_sizes)
@@ -795,6 +1070,13 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         self._paytomany_menu = tools_menu.addAction(_("&Pay to many"), self.paytomany)
 
         tools_menu.addAction("Sweep Private Key", self.show_sweep_private_key_dialog)
+        tools_menu.addAction("Export BEEF/BREAD cache", self.export_breads)
+        #tools_menu.addAction("Export BEEF to Overlay", self.export_beef_to_overlay)
+
+        tools_menu.addAction(
+            "Reset Blockchain Headers",
+            self.reset_blockchain_headers,
+        )
 
 
 
@@ -848,7 +1130,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         self._add_account_action.triggered.connect(self.add_account)
         toolbar.addAction(self._add_account_action)
         self._add_account_action.setEnabled(
-            self._wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS))
+            self._wallet.get_boolean_setting(WalletSettings.MULTIPLE_ACCOUNTS, True))
 
         # make_payment_action = QAction(read_QIcon("icons8-initiate-money-transfer-80.png"),
         #     _("Make Payment"), self)
@@ -1143,11 +1425,17 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
     def format_fee_rate(self, fee_rate: int) -> str:
         return format_fee_satoshis(fee_rate/1000, app_state.num_zeros) + ' sat/B'
 
-    def connect_fields(self, btc_e: BTCAmountEdit, fiat_e: AmountEdit) -> None:
+    def connect_fields(
+        self,
+        btc_e: BTCAmountEdit,
+        fiat_e: AmountEdit,
+        fiat_precision: Optional[int] = None
+    ) -> None:
+
         def edit_changed(edit) -> None:
             if edit.in_event:
                 return
-            edit.setStyleSheet(ColorScheme.DEFAULT.as_stylesheet())
+            edit.setStyleSheet("")
             fiat_e.is_last_edited = edit == fiat_e
             amount = edit.get_amount()
             rate = app_state.fx.exchange_rate() if app_state.fx else None
@@ -1160,13 +1448,17 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
                 if edit is fiat_e:
                     btc_e.in_event = True
                     btc_e.setAmount(int(amount / Decimal(rate) * COIN))
-                    btc_e.setStyleSheet(ColorScheme.BLUE.as_stylesheet())
+                    #btc_e.setStyleSheet(ColorScheme.BLUE.as_stylesheet())
                     btc_e.in_event = False
                 else:
                     fiat_e.in_event = True
                     fiat_e.setText(
-                        app_state.fx.ccy_amount_str(amount * Decimal(rate) / COIN, False))
-                    fiat_e.setStyleSheet(ColorScheme.BLUE.as_stylesheet())
+                        app_state.fx.ccy_amount_str(
+                            amount * Decimal(rate) / COIN,
+                            False,
+                            fiat_precision if fiat_precision is not None else 8
+                        )
+                    )
                     fiat_e.in_event = False
 
         fiat_e.is_last_edited = False

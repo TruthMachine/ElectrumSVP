@@ -799,10 +799,11 @@ class AbstractAccount:
         app_state.app.on_keyinstance_label_change(self, key_id, text)
 
     def get_dummy_script_template(self, script_type: Optional[ScriptType] = None) -> ScriptTemplate:
-        public_keys_hex = [PrivateKey(os.urandom(32)).public_key.to_hex() for _ in range(self.m)]
+        m = getattr(self, 'm', 1)
+        public_keys_hex = [PrivateKey(os.urandom(32)).public_key.to_hex() for _ in range(m)]
         if script_type is None:
             script_type = self.get_default_script_type()
-        return make_script_template(public_keys_hex, script_type, self.m)
+        return make_script_template(public_keys_hex, script_type, m)
 
     def get_script_template_for_id(self, keyinstance_id: int,
             script_type: Optional[ScriptType] = None) -> ScriptTemplate:
@@ -1414,7 +1415,9 @@ class AbstractAccount:
         return dust_threshold(self._network)
 
     def make_unsigned_transaction(self, utxos: List[UTXO], outputs: List[XTxOutput],
-            config: SimpleConfig, fixed_fee: Optional[int]=None) -> Transaction:
+            config: SimpleConfig, fixed_fee: Optional[int]=None,
+            fee_rate: Optional[float]=None) -> Transaction:
+
 
         # check outputs
         all_index = None
@@ -1434,8 +1437,11 @@ class AbstractAccount:
         def fee_estimator(size):
             if fixed_fee is not None:
                 fee = fixed_fee
+            elif fee_rate is not None:
+                fee = int(fee_rate * size / 1000.)
             else:
                 fee = config.estimate_fee(size)
+
 
             # 🔥 enforce minimum fee safely
             if fee is None or fee <= 0:
@@ -2127,7 +2133,7 @@ class ImportedPrivkeyAccount(ImportedAccountBase):
         public_keys = self.get_public_keys_for_id(keyinstance_id)
         public_keys_hex = [pubkey.to_hex() for pubkey in public_keys]
         script_type = script_type or keyinstance.script_type
-        return make_script_template(public_keys_hex, script_type, self.m)  # <-- use the standalone function
+        return make_script_template(public_keys_hex, script_type)  # <-- use the standalone function
 
 class DeterministicAccount(AbstractAccount):
     def __init__(self, wallet: 'Wallet', row: AccountRow,
@@ -2602,7 +2608,25 @@ class Wallet(TriggeredCallbacks):
             return wallet_event_row
         return None
 
-    def create_account_from_keystore(self, keystore) -> AbstractAccount:
+    def create_account_from_keystore(self, keystore) -> Optional[AbstractAccount]:
+        if keystore.derivation_type == DerivationType.BIP32:
+            new_data = keystore.to_derivation_data()
+            new_xpub = new_data.get('xpub')
+            new_derivation = new_data.get('derivation')
+
+            for masterkey_row in self._masterkey_rows.values():
+                if masterkey_row.derivation_type != DerivationType.BIP32:
+                    continue
+
+                try:
+                    existing_data = json.loads(masterkey_row.derivation_data)
+                except Exception:
+                    continue
+
+                if (existing_data.get('xpub') == new_xpub and
+                        existing_data.get('derivation') == new_derivation):
+                    return None
+
         masterkey_row = self.create_masterkey_from_keystore(keystore)
         if masterkey_row.derivation_type == DerivationType.ELECTRUM_OLD:
             account_name = "Outdated Electrum account"
@@ -2648,18 +2672,47 @@ class Wallet(TriggeredCallbacks):
                 raw_keyinstance_rows.append(KeyInstanceRow(-1, -1,
                     None, DerivationType.PUBLIC_KEY_HASH, derivation_data,
                     ScriptType.P2PKH, KeyInstanceFlag.IS_ACTIVE, None))
+
+
+
         elif text_type == KeystoreTextType.PRIVATE_KEYS:
+            existing_public_keys = set()
+
+            for account in self.get_accounts():
+                for keyinstance_id in account.get_keyinstance_ids():
+                    existing_public_keys.update(
+                        account.get_public_keys_for_id(keyinstance_id)
+                    )
+
+            imported_public_keys = set()
+
             for private_key_text in entries:
                 private_key = PrivateKey.from_text(private_key_text)
-                pubkey_hex = private_key.public_key.to_hex()
+                public_key = private_key.public_key
+
+                # Skip private keys already imported elsewhere in this wallet.
+                if public_key in existing_public_keys:
+                    continue
+
+                # Also prevent duplicates within this import operation.
+                if public_key in imported_public_keys:
+                    continue
+
+                imported_public_keys.add(public_key)
+
                 ik_data = {
-                    "pub": pubkey_hex,
+                    "pub": public_key.to_hex(),
                     "prv": pw_encode(private_key_text, password),
                 }
                 derivation_data = json.dumps(ik_data).encode()
                 raw_keyinstance_rows.append(KeyInstanceRow(-1, -1,
                     None, DerivationType.PRIVATE_KEY, derivation_data,
                     ScriptType.P2PKH, KeyInstanceFlag.IS_ACTIVE, None))
+
+        if text_type == KeystoreTextType.PRIVATE_KEYS and not raw_keyinstance_rows:
+            return None
+
+
         basic_account_row = AccountRow(-1, None, script_type, account_name)
         account_row = self.add_accounts([ basic_account_row ])[0]
         keyinstance_rows = self.create_keyinstances(account_row.account_id, raw_keyinstance_rows)
@@ -2960,9 +3013,176 @@ class Wallet(TriggeredCallbacks):
         proof = TxProof(proof_position, proof_branch)
         self._transaction_cache.update_proof(tx_hash, proof)
 
+        # build BEEF immediately after the proof is stored.
+        try:
+            from electrumsv import verification_utils
+
+            for account in self._accounts.values():
+                try:
+                    tx = account.get_transaction(tx_hash)
+                    if tx is None:
+                        continue
+
+                    print(
+                        "BEEF TEST: proof stored, building BEEF for",
+                        hash_to_hex_str(tx_hash),
+                    )
+
+                    beef_data = verification_utils.build_beef(
+                        tx,
+                        account=account,
+                        slim=False,
+                    )
+
+                    print(
+                        "BEEF TEST: built successfully:",
+                        hash_to_hex_str(tx_hash),
+                    )
+
+                    break
+
+                except Exception as e:
+                    print(
+                        "BEEF TEST: account failed:",
+                        repr(e),
+                    )
+
+        except Exception as e:
+            print(
+                "BEEF TEST: automatic BEEF build failed:",
+                repr(e),
+            )
+
         height, conf, _timestamp = self.get_tx_height(tx_hash)
         self._logger.debug("add_transaction_proof %d %d %d", height, conf, timestamp)
         self.trigger_callback('verified', tx_hash, height, conf, timestamp)
+
+
+    def _build_beef_after_proof(self, tx_hash: bytes) -> None:
+        """Automatic BREAD generation after a transaction proof is stored."""
+        try:
+            from electrumsv import verification_utils
+
+            tx_id = hash_to_hex_str(tx_hash)
+
+            self._logger.info(
+                "Attempting automatic BREAD build for %s",
+                tx_id,
+            )
+
+            tx = self.get_transaction(tx_hash)
+
+            if tx is None:
+                self._logger.warning(
+                    "Transaction not available for BREAD build: %s",
+                    tx_id,
+                )
+                return
+
+            for account in self._accounts.values():
+                self._logger.info(
+                    "Building BREAD for %s using account %d",
+                    tx_id,
+                    account.get_id(),
+                )
+
+                verification_utils.build_beef(
+                    tx,
+                    account=account,
+                    slim=False,
+                )
+
+            self._logger.info(
+                "Automatic BREAD build completed for %s",
+                tx_id,
+            )
+
+        except Exception:
+            self._logger.exception(
+                "Automatic BREAD build failed for %s",
+                hash_to_hex_str(tx_hash),
+            )
+
+
+    def prepare_beef_export(self, account):
+        """
+        Ensure that currently active wallet transactions have BEEF entries
+        in the verification cache.
+        """
+        from .verification_utils import CACHE, build_beef
+
+        print("\n========== BEEF EXPORT TEST ==========")
+
+        # Get the account's currently active UTXOs.
+        utxos = account.get_utxos()
+
+        print(f"Active UTXOs found: {len(utxos)}")
+
+        txids = set()
+
+        for utxo in utxos:
+            tx_hash = getattr(utxo, "tx_hash", None)
+
+            if tx_hash is None:
+                continue
+
+            if isinstance(tx_hash, bytes):
+                txid = tx_hash.hex()
+            else:
+                txid = str(tx_hash)
+
+            txids.add(txid)
+
+        print(f"Unique UTXIDs found: {len(txids)}")
+
+        missing = []
+
+        for txid in txids:
+            cached = CACHE.get(txid)
+
+            if cached and cached.get("utxos"):
+                print(f"BEEF cache HIT: {txid}")
+            else:
+                print(f"BEEF cache MISS: {txid}")
+                missing.append(txid)
+
+        print(f"Missing BEEFs: {len(missing)}")
+
+        # Build any missing BEEFs using the existing proven path.
+        for txid in missing:
+            try:
+                tx = account.get_transaction(txid)
+
+                if tx is None:
+                    print(f"Could not obtain transaction: {txid}")
+                    continue
+
+                print(f"Building missing BEEF: {txid}")
+
+                build_beef(
+                    tx=tx,
+                    account=account,
+                    slim=False,
+                )
+
+                if CACHE.get(txid):
+                    print(f"BEEF successfully cached: {txid}")
+                else:
+                    print(f"BEEF still missing after build: {txid}")
+
+            except Exception as e:
+                print(f"Failed to build BEEF for {txid}: {e}")
+
+        print(f"Final cached BEEF entries: {len(CACHE)}")
+        print("=====================================\n")
+
+        return CACHE
+
+
+    def get_transaction_proof(self, tx_hash: bytes):
+        return self._transaction_cache.get_proof(tx_hash)
+
+
 
     def synchronize_incomplete_transaction(self, tx: Transaction) -> None:
         if tx.is_complete():

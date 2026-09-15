@@ -225,7 +225,7 @@ class AccountsView(QSplitter):
         self._import_invoices_action.setEnabled(False)
         # self._import_invoices_action.setEnabled(main_window.is_send_view_active())
 
-        ed_action = menu.addAction(_("Generate address batch"),
+        ed_action = menu.addAction(_("Coin/UTXO Split"),
             partial(self._generate_destinations, account_id))
         keystore = account.get_keystore()
         ed_action.setEnabled(keystore is not None and
