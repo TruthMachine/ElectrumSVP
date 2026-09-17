@@ -456,8 +456,6 @@ class BIP32_KeyStore(Deterministic_KeyStore, Xpub):
             d['seed_type'] = self.seed_type
         if hasattr(self, 'derivation') and self.derivation is not None:
             d['derivation'] = self.derivation
-        if hasattr(self, 'bip39_words') and self.bip39_words:
-            d['bip39_words'] = self.bip39_words
         if hasattr(self, 'seed') and self.seed is not None:
             d['seed'] = self.seed
         if hasattr(self, 'passphrase') and self.passphrase:

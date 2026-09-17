@@ -2430,6 +2430,23 @@ class Wallet(TriggeredCallbacks):
         self._transaction_table = TransactionTable(self._db_context)
         self._transaction_cache.set_store(self._transaction_table)
 
+    def _contains_legacy_bip39_words(self, data: Any) -> bool:
+        if isinstance(data, dict):
+            if "bip39_words" in data:
+                return True
+            return any(
+                self._contains_legacy_bip39_words(value)
+                for value in data.values()
+            )
+
+        if isinstance(data, (list, tuple)):
+            return any(
+                self._contains_legacy_bip39_words(value)
+                for value in data
+            )
+
+        return False
+
     def load_state(self) -> None:
         if self._db_context is None:
             return
@@ -2451,8 +2468,13 @@ class Wallet(TriggeredCallbacks):
             # shouldn't be, if they are managed separately.
             self._transaction_descriptions = dict(table.read_descriptions())
 
+        legacy_bip39_masterkeys = []
+
         with MasterKeyTable(self._db_context) as table:
             for row in sorted(table.read(), key=lambda t: 0 if t[1] is None else t[1]):
+                data: Dict[str, Any] = json.loads(row.derivation_data)
+                if self._contains_legacy_bip39_words(data):
+                    legacy_bip39_masterkeys.append(row.masterkey_id)
                 self._realize_keystore(row)
 
         with KeyInstanceTable(self._db_context) as table:
@@ -2486,6 +2508,9 @@ class Wallet(TriggeredCallbacks):
                     else:
                         raise WalletLoadError(_("Account corrupt, types: %s"), found_types)
                 self.register_account(row.account_id, account)
+
+        for masterkey_id in legacy_bip39_masterkeys:
+            self.update_masterkey_derivation_data(masterkey_id)
 
     def register_account(self, account_id: int, account: AbstractAccount) -> None:
         self._accounts[account_id] = account

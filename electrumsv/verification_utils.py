@@ -87,19 +87,9 @@ def get_headers_path():
     """Dynamically find headers file each time (fixes stale path issue)."""
     return find_headers_file()
 
-# Cache paths (use DATA_DIR caches by default; fall back to legacy if they exist)
+# Cache paths under the platform-specific application data directory.
 MERKLE_CACHE_PATH = os.path.join(CACHE_DIR, "merkle_cache.json")
 ADDRESS_BEEF_CACHE_PATH = os.path.join(CACHE_DIR, "merkle_address_cache.json")
-
-# If legacy cache locations exist, prefer them
-legacy_merkle = os.path.expanduser("~/.electrum-sv/cache/merkle_cache.json")
-legacy_addr_cache = os.path.expanduser("~/.electrum-sv/cache/merkle_address_cache.json")
-if os.path.exists(legacy_merkle):
-    MERKLE_CACHE_PATH = legacy_merkle
-    os.makedirs(os.path.dirname(MERKLE_CACHE_PATH), exist_ok=True)
-if os.path.exists(legacy_addr_cache):
-    ADDRESS_BEEF_CACHE_PATH = legacy_addr_cache
-    os.makedirs(os.path.dirname(ADDRESS_BEEF_CACHE_PATH), exist_ok=True)
 
 # --- Utilities ---
 def extract_time_from_header(header_bytes: bytes) -> int:

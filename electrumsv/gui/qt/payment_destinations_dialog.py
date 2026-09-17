@@ -422,23 +422,25 @@ class PaymentDestinationsDialog(QDialog):
         self._fee_update_timer.start(500)
 
     def _on_max_button_click(self) -> None:
-
-        coins = self._account.get_spendable_coins(
-            None,
-            self._main_window.config
-        )
+        # If the user has explicitly selected UTXOs with "Spend From",
+        # calculate Max using only those UTXOs. Otherwise use all
+        # spendable UTXOs as before.
+        if self._selected_spend_coins:
+            coins = list(self._selected_spend_coins)
+        else:
+            coins = self._account.get_spendable_coins(
+                None,
+                self._main_window.config
+            )
 
         if not coins:
             self._amount_input.clear()
-            self._selected_spend_coins = []
             return
 
+        # Keep the selected Spend From coins intact. If there was no
+        # previous Spend From selection, this establishes the normal
+        # unrestricted Max selection.
         self._selected_spend_coins = list(coins)
-
-        self._from_list.clear()
-        self._from_list.setHidden(True)
-        self._clear_from_button.setHidden(True)
-        self._from_table.clearSelection()
 
         count = self._quantity_widget.value()
         keyinstances = self._get_receiving_keys(count)
@@ -480,6 +482,28 @@ class PaymentDestinationsDialog(QDialog):
         self._amount_input.setText(
             self._format_amount(max_amount)
         )
+
+        # Preserve and display the selected Spend From UTXOs.
+        if self._selected_spend_coins:
+            self._redraw_from_list()
+            self._clear_from_button.setHidden(False)
+
+        # Keep the selected UTXOs highlighted in the coin-control table.
+        self._from_table.clearSelection()
+
+        for i in range(self._from_table.topLevelItemCount()):
+            address_item = self._from_table.topLevelItem(i)
+
+            for j in range(address_item.childCount()):
+                utxo_item = address_item.child(j)
+                utxo = utxo_item.data(0, Qt.UserRole)
+
+                if utxo in self._selected_spend_coins:
+                    utxo_item.setSelected(True)
+                    address_item.setExpanded(True)
+
+        self._refresh()
+
 
 
     def _get_max_coins(self):

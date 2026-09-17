@@ -8,11 +8,9 @@ ElectrumSVP is developed and maintained independently as a continuation of the E
 Current Release
 ---------------
 
-**ElectrumSVP 0.2.0-beta.1**
+**ElectrumSVP 0.2.0**
 
-This is a **beta release** intended for testing and feedback. Users should report bugs, unexpected behavior, and compatibility issues encountered during testing.
-
-**Do not use beta software to store significant funds.**
+This is the current official release of ElectrumSVP. Users should report bugs, unexpected behavior, and compatibility issues encountered while using the software.
 
 Download the latest release from the official GitHub releases page:
 
@@ -27,7 +25,7 @@ Release Verification
 
 ElectrumSVP release artifacts are published with SHA-256 checksums and PGP signatures.
 
-For ElectrumSVP 0.2.0-beta.1, the release signing key fingerprint is::
+For ElectrumSVP 0.2.0, the release signing key fingerprint is::
 
     E9BA FA19 B15E 6C2C 158C DD40 0DB1 6C74 A9CA 7CF6
 

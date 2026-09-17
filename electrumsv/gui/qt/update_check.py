@@ -159,7 +159,7 @@ class UpdateCheckDialog(WindowModalDialog):
                 # If we are stable.  We show later unstable releases.
                 # If we are unstable.  We show later unstable releases.
                 unstable_result = result["unstable"]
-                unstable_signers = get_identified_release_signers(result["stable"])
+                unstable_signers = get_identified_release_signers(unstable_result)
                 release_date, current_date = get_update_check_dates(unstable_result["date"])
                 if unstable_signers and release_date > current_date:
                     message += _(MSG_BODY_UNSTABLE_AVAILABLE).format(

@@ -298,7 +298,7 @@ class SplashScreenPage(QWizardPage):
         # Version label
         #version_label = QLabel(f"<b><big>v{PACKAGE_VERSION}</big></b>")
         #change for beta version
-        version_label = QLabel("<b><big>ElectrumSVP v0.2.0-beta.1</big></b><br><small>(based on ElectrumSV 1.3.16)</small>")
+        version_label = QLabel("<b><big>ElectrumSVP v0.2.0</big></b><br><small>(based on ElectrumSV 1.3.16)</small>")
         #version_label = QLabel("<b><big>ElectrumSVP v0.1.0 (based on ElectrumSV 1.3.16)</big></b>")
         version_label.setAlignment(Qt.AlignHCenter)
         version_label.setTextFormat(Qt.RichText)

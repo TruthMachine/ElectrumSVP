@@ -443,16 +443,12 @@ class AddAccountWizardPage(QWizardPage):
         derivation = bip44_derivation_cointype(Net.BIP44_COIN_TYPE, 0)
         keystore = from_bip39_seed(seed_phrase, bip39_passphrase, derivation)
 
-        # Store BIP39 words inside keystore for GUI display
-        keystore.bip39_words = seed_phrase
-
         # Encrypt/update keystore password
         keystore.update_password(password)
 
         # Return result to wizard
         wizard.set_keystore_result(ResultType.NEW, keystore)
         wizard.accept()
-
 
 
     def _get_entry_detail(self, entry=None):
@@ -806,6 +802,8 @@ class ImportWalletTextPage(QWizardPage):
                     main_window.show_error(
                         _("This account is already present in this wallet."))
                 return False
+
+        return True
 
 
 class ImportWalletTextCustomPage(QWizardPage):

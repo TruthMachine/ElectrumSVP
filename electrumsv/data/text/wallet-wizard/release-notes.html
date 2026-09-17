@@ -1,19 +1,18 @@
 <html>
     <body>
         <p style="color:#d17a00; font-weight:bold;">
-            <b>ElectrumSVP 0.2.0-beta.1:</b> Beta release for testing.
+            <b>ElectrumSVP 0.2.0:</b> Official release.
         </p>
 
         <p>
-            This beta release focuses on improved security, verification,
-            transaction control, reliability, and usability. Users are
-            encouraged to test the release and report any problems before
-            the next official release.
+            This release includes improvements to security, verification,
+            transaction control, reliability, platform compatibility, and
+            usability.
         </p>
 
         <p>
             For the full release overview, please refer to the
-            <a href="https://electrumsv.io/articles/2026/electrumsvp-0_2_0-beta-1.html" target="_blank">
+            <a href="https://electrumsv.io/articles/2026/electrumsvp-0_2_0.html" target="_blank">
                 official release article
             </a>.
         </p>
@@ -22,6 +21,8 @@
             <li><b>Header security & reliability:</b> Improved header integrity checks, synchronization reliability, and recovery tools, including a new Refresh Headers option.</li>
 
             <li><b>BREAD verification:</b> Faster verification using locally stored proof data, with improved support for unconfirmed transactions and BREAD JSON export.</li>
+
+            <li><b>BREAD export on Windows:</b> Fixed the BREAD export cache path so cached verification data is stored and accessed correctly on Windows.</li>
 
             <li><b>Fee system improvements:</b> Overhauled fee handling and display with greater control, transparency, and additional fee safeguards.</li>
 
@@ -37,15 +38,17 @@
 
             <li><b>Security fixes:</b> Fixed a nonce issue affecting sweep signing and added various transaction and verification safeguards.</li>
 
+            <li><b>Seed storage security:</b> Fixed a security issue that could cause BIP39 mnemonic seed words to be stored in plaintext in wallet metadata. Existing affected wallets are migrated to remove the plaintext seed data.</li>
+
             <li><b>Platform compatibility:</b> Fixed several Python 3.10 compatibility issues and Linux segmentation faults affecting recent Ubuntu and Arch-based environments.</li>
 
             <li><b>Bug fixes & UI:</b> Fixed Windows QR scanning and macOS wallet data-path issues, along with numerous smaller interface and reliability improvements.</li>
         </ul>
 
         <p>
-            This is a beta release and additional testing is strongly encouraged.
-            Please report crashes, verification problems, transaction issues, or
-            other unexpected behavior with as much detail as possible.
+            This is an official release. Please report crashes, verification
+            problems, transaction issues, or other unexpected behavior with as
+            much detail as possible.
         </p>
     </body>
 </html>

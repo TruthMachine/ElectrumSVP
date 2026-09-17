@@ -94,7 +94,7 @@ from .sweep_private_key_dialog import SweepPrivateKeyDialog
 
 from .theme import Theme, theme_from_config, apply_windows_title_bar, wallet_window_style
 
-PACKAGE_VERSION = "v0.2.0-beta.1"  # override the packaged version
+PACKAGE_VERSION = "v0.2.0"  # override the packaged version
 
 
 logger = logs.get_logger("mainwindow")
@@ -463,11 +463,12 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         import json
         import os
         from PyQt5.QtWidgets import QFileDialog, QMessageBox
-        from electrumsv.verification_utils import build_beef
-
-        cache_path = os.path.expanduser(
-            "~/.electrum-sv/cache/merkle_cache.json"
+        from electrumsv.verification_utils import (
+            build_beef,
+            MERKLE_CACHE_PATH,
         )
+
+        cache_path = MERKLE_CACHE_PATH
 
         if not os.path.exists(cache_path):
             QMessageBox.warning(
