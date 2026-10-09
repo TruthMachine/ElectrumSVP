@@ -608,7 +608,6 @@ class Transaction(Tx):
                                .format(len(self.inputs), len(signatures)))
         for txin, signature in zip(self.inputs, signatures):
             full_sig = signature + bytes([self.nHashType()])
-            logger.warning(f'Signature: {full_sig.hex()}')
             if full_sig in txin.signatures:
                 continue
             pubkeys = [x_pubkey.to_public_key() for x_pubkey in txin.x_pubkeys]

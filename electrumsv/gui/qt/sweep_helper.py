@@ -303,6 +303,8 @@ def get_utxos_electrumx_socket_fallback(
     )
 
     for host, port in ELECTRUMX_SERVERS:
+        conn = None
+        sock = None
         try:
             sock = create_socket_with_optional_socks(
                 SOCKS5_PROXY_HOST if use_socks else None,
@@ -342,8 +344,6 @@ def get_utxos_electrumx_socket_fallback(
                 if b'\n' in part:
                     break
 
-            conn.close()
-
             resp = json.loads(data.decode())
 
             if (
@@ -373,6 +373,17 @@ def get_utxos_electrumx_socket_fallback(
                 e
             )
             continue
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            elif sock is not None:
+                try:
+                    sock.close()
+                except Exception:
+                    pass
 
     logger.info(
         "ElectrumX servers failed, "
