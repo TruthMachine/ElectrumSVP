@@ -943,23 +943,33 @@ def bip44_derivation(account_id: int) -> str:
 def bip44_derivation_cointype(cointype: int, account_id: int) -> str:
     return f"m/44'/{cointype:d}'/{account_id:d}'"
 
+
 def from_seed(seed, passphrase):
     t = seed_type(seed)
     if t == 'old':
         return Old_KeyStore.from_seed(seed)
 
-    # Prefer BIP39 first
+    # Prefer BIP39 when its checksum is valid.
     checksum_valid, wordlist_valid = bip39_is_checksum_valid(seed)
-    if wordlist_valid:
-        return from_bip39_seed(seed, passphrase, bip44_derivation_cointype(Net.BIP44_COIN_TYPE, 0))
+    if wordlist_valid and checksum_valid:
+        return from_bip39_seed(
+            seed,
+            passphrase,
+            bip44_derivation_cointype(Net.BIP44_COIN_TYPE, 0),
+        )
 
-    if t in ['standard']:
+    # Electrum seeds use their own seed-version validation.
+    if t == 'standard':
         ks = BIP32_KeyStore({})
         ks.add_seed(seed)
         ks.passphrase = passphrase
         bip32_seed = Mnemonic.mnemonic_to_seed(seed, passphrase)
         ks.add_xprv_from_seed(bip32_seed, "m")
         return ks
+
+    # Reject phrases that look like BIP39 but have an invalid checksum.
+    if wordlist_valid:
+        raise InvalidSeed()
 
     raise InvalidSeed()
 
