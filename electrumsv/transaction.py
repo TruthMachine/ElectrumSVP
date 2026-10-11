@@ -251,7 +251,7 @@ class XPublicKey:
         raise ValueError("invalid key data")
 
     def to_address(self) -> Address:
-        return self.to_public_key().to_address(coin=Net.COIN)
+        return self.to_public_key().to_address(network=Net.COIN)
 
     def is_compressed(self) -> bool:
         if self._bip32_xpub:
@@ -369,6 +369,7 @@ class XTxOutput(TxOutput):
 def _script_GetOp(_bytes):
     i = 0
     blen = len(_bytes)
+
     while i < blen:
         vch = None
         opcode = _bytes[i]
@@ -376,22 +377,32 @@ def _script_GetOp(_bytes):
 
         if opcode <= Ops.OP_PUSHDATA4:
             nSize = opcode
+
             if opcode == Ops.OP_PUSHDATA1:
-                nSize = _bytes[i] if i < blen else 0
+                if i + 1 > blen:
+                    raise ValueError("truncated OP_PUSHDATA1 length")
+                nSize = _bytes[i]
                 i += 1
+
             elif opcode == Ops.OP_PUSHDATA2:
-                # tolerate truncated script
-                (nSize,) = struct.unpack_from('<H', _bytes, i) if i+2 <= blen else (0,)
+                if i + 2 > blen:
+                    raise ValueError("truncated OP_PUSHDATA2 length")
+                (nSize,) = struct.unpack_from('<H', _bytes, i)
                 i += 2
+
             elif opcode == Ops.OP_PUSHDATA4:
-                (nSize,) = struct.unpack_from('<I', _bytes, i) if i+4 <= blen else (0,)
+                if i + 4 > blen:
+                    raise ValueError("truncated OP_PUSHDATA4 length")
+                (nSize,) = struct.unpack_from('<I', _bytes, i)
                 i += 4
-            # array slicing here never throws exception even if truncated script
+
+            if i + nSize > blen:
+                raise ValueError("truncated push-data payload")
+
             vch = _bytes[i:i + nSize]
             i += nSize
 
         yield opcode, vch, i
-
 
 def _match_decoded(decoded, to_match):
     if len(decoded) != len(to_match):
@@ -511,16 +522,34 @@ def parse_script_sig(script: bytes, kwargs: Dict[str, Any]) -> None:
         return
 
     nested_script = decoded[-1][1]
-    dec2 = [ x for x in _script_GetOp(nested_script) ]
-    x_pubkeys = [XPublicKey.from_bytes(x[1]) for x in dec2[1:-2]]
-    m, n, match_multisig = _extract_multisig_pattern(dec2)
-    if not _match_decoded(dec2, match_multisig):
-        logger.error("cannot find address in input script %s", script.hex())
+    try:
+        dec2 = list(_script_GetOp(nested_script))
+        if len(dec2) < 4:
+            raise ValueError("multisig redeem script is too short")
+
+        m, n, match_multisig = _extract_multisig_pattern(dec2)
+        if not (1 <= m <= n <= 16):
+            raise ValueError("invalid multisig threshold or key count")
+        if not _match_decoded(dec2, match_multisig):
+            logger.error("cannot find address in input script %s", script.hex())
+            return
+
+        x_pubkeys = [XPublicKey.from_bytes(x[1]) for x in dec2[1:-2]]
+        if len(x_pubkeys) != n:
+            raise ValueError("multisig public-key count does not match script")
+
+        address = P2SH_Address(hash160(multisig_script(x_pubkeys, m)), Net.COIN)
+    except Exception as e:
+        logger.error(
+            "cannot parse multisig redeem script in input script %s: %s",
+            script.hex(), e,
+        )
         return
+
     kwargs['script_type'] = ScriptType.MULTISIG_P2SH
     kwargs['x_pubkeys'] = x_pubkeys
     kwargs['threshold'] = m
-    kwargs['address'] = P2SH_Address(hash160(multisig_script(x_pubkeys, m)), Net.COIN)
+    kwargs['address'] = address
     kwargs['signatures'] = [x[1] for x in decoded[1:-1]]
     return
 
@@ -608,7 +637,6 @@ class Transaction(Tx):
                                .format(len(self.inputs), len(signatures)))
         for txin, signature in zip(self.inputs, signatures):
             full_sig = signature + bytes([self.nHashType()])
-            logger.warning(f'Signature: {full_sig.hex()}')
             if full_sig in txin.signatures:
                 continue
             pubkeys = [x_pubkey.to_public_key() for x_pubkey in txin.x_pubkeys]

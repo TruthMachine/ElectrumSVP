@@ -841,7 +841,7 @@ class Multisig_KeyStore(DerivablePaths, KeyStore):
         return all(k.is_watching_only() for k in self.get_cosigner_keystores())
 
     def can_change_password(self) -> bool:
-        return all(k.is_watching_only() for k in self.get_cosigner_keystores())
+        return any(not k.is_watching_only() for k in self.get_cosigner_keystores())
 
     def check_password(self, password: Optional[str]) -> None:
         if self.is_watching_only():
@@ -905,10 +905,12 @@ def bip39_is_checksum_valid(mnemonic):
     calculated_checksum = hashed >> (256 - checksum_length)
     return checksum == calculated_checksum, True
 
-def from_bip39_seed(seed: str, passphrase: Optional[str], derivation_text: str) -> BIP32_KeyStore:
+def from_bip39_seed(seed: str, passphrase: Optional[str],
+        derivation_text: str) -> BIP32_KeyStore:
     k = BIP32_KeyStore({})
     k.seed = pw_encode(seed, '')  # optional: encrypt with empty password
     k.add_xprv_from_seed(bip39_to_seed(seed, passphrase), derivation_text)
+    k.derivation = derivation_text
     return k
 
 

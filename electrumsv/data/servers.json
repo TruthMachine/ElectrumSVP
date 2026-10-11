@@ -5,13 +5,19 @@
         "t": "50001",
         "version": "1.4"
     },
-    "sv.electrumr.sv'": {
+    "sv.electrumr.sv": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
         "version": "1.4"
     },
-    "sv2.electrumr.sv'": {
+    "sv3.satoshi.io": {
+        "pruning": "-",
+        "s": "50002",
+        "t": "50001",
+        "version": "1.4"
+    },
+    "sv2.electrumr.sv": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
@@ -34,12 +40,7 @@
         "s": "50002",        
         "version": "1.4"
     },
-    "electrum.server.sv": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.4"
-    },
+
     "bsv.aftrek.org": {
         "pruning": "-",
         "s": "50002",

@@ -1,7 +1,7 @@
 import sys
 from enum import Enum
 
-from PyQt5.QtGui import QCursor, QPalette
+from PyQt5.QtGui import QColor, QCursor, QPalette
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QMainWindow
 from PyQt5.QtCore import QEvent, QObject, QTimer
 
@@ -1902,7 +1902,14 @@ def apply_theme(app, theme: Theme) -> None:
 
     app.setStyleSheet(stylesheet)
 
+    palette = app.palette()
+    if theme == Theme.DARK:
+        palette.setColor(QPalette.Link, QColor("#70B7FF"))
+        palette.setColor(QPalette.LinkVisited, QColor("#70B7FF"))
+    app.setPalette(palette)
+
     dark = theme == Theme.DARK
+
 
     # Remember the current theme for newly-created windows.
     app._dark_theme = dark

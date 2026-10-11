@@ -122,6 +122,7 @@ class SendView(QWidget):
 
         self.amount_e = BTCAmountEdit(self)
         self.amount_e.setFixedHeight(20)
+        self.amount_e.setMinimumWidth(170)
         self._payto_e = PayToEdit(self)
         self._payto_e.setFixedHeight(26)
 
@@ -232,6 +233,7 @@ class SendView(QWidget):
             prefix='≈'
         )
         self._fiat_send_e.setFixedHeight(20)
+        self._fiat_send_e.setMinimumWidth(200)
         self._fiat_send_e.setReadOnly(True)
         self._fiat_send_e.setFrame(True)
         self.set_fiat_ccy_enabled(bool(app_state.fx and app_state.fx.is_enabled()))
@@ -659,9 +661,6 @@ class SendView(QWidget):
 
         fee_rate = self._fee_rate_e.get_amount()
         allow_high_fees = app_state.config.get('allow_high_fees', False)
-
-        print("HIGH FEE SETTING:", allow_high_fees)
-        print("FEE RATE:", fee_rate)
 
         if fee_rate is not None:
             if fee_rate > MAX_GUI_FEE_RATE:

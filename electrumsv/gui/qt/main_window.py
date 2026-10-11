@@ -1091,7 +1091,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         help_menu = menubar.addMenu(_("&Help"))
         help_menu.addAction(_("&About"), self.show_about)
         help_menu.addAction(_("&Check for updates"), self.show_update_check)
-        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("http://electrumsv.io"))
+        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("https://electrumsv.io"))
         help_menu.addSeparator()
         help_menu.addAction(_("Documentation"), self._open_documentation).setShortcut(
             QKeySequence.HelpContents)
@@ -2213,7 +2213,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
                 return
         else:
             public_key = account.get_public_keys_for_id(key_id)[0]
-            address = public_key.to_address(coin=Net.COIN)
+            address = public_key.to_address(network=Net.COIN)
 
         message = message.toPlainText().strip()
         try:
@@ -2383,21 +2383,31 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
                     txin.value = my_coins[my_index].value
         return tx
 
+
     def read_tx_from_qrcode(self) -> Optional[Transaction]:
         data = qrscanner.scan_barcode(self.config.get_video_device())
+
         if not data:
             return
+
         # if the user scanned a bitcoin URI
         if web.is_URI(data):
             self.pay_to_URI(data)
             return
+
         # else if the user scanned an offline signed tx
         data = bitcoin.base_decode(data, length=None, base=43)
+
         if data.startswith(b"\x1f\x8b"):
             text = gzip.decompress(data).decode()
         else:
             text = bh2u(data)
-        return self.tx_from_text(text)
+
+        tx = self.tx_from_text(text)
+
+        return tx
+
+
 
     def read_tx_from_file(self) -> Optional[Transaction]:
         fileName = self.getOpenFileName(_("Select your transaction file"),
@@ -2411,8 +2421,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
     def do_process_from_qrcode(self):
         try:
             tx = self.read_tx_from_qrcode()
+
             if tx:
                 self.show_transaction(self._account, tx)
+
         except Exception as reason:
             self._logger.exception(reason)
             self.show_critical(_("ElectrumSV was unable to read the transaction:") +

@@ -428,10 +428,14 @@ def get_payment_request(url: str) -> PaymentRequest:
     response = None
     data: Any = None
     u = urllib.parse.urlparse(url)
-    if u.scheme in ['http', 'https']:
+
+    if u.scheme == 'https' and u.hostname:
         try:
-            response = requests.request('GET', url, headers=REQUEST_HEADERS)
+            response = requests.request(
+                'GET', url, headers=REQUEST_HEADERS, timeout=30, verify=ca_path
+            )
             response.raise_for_status()
+
             # Guard against `bitcoin:`-URIs with invalid payment request URLs
             contentType = response.headers.get("Content-Type", "")
             if "application/json" not in contentType:
@@ -440,15 +444,17 @@ def get_payment_request(url: str) -> PaymentRequest:
                 error = "payment URL not pointing to a bitcoinSV payment request handling server"
             else:
                 data = response.content
+
             logger.debug('fetched payment request \'%s\' (%d)', url, len(response.content))
+
         except requests.exceptions.RequestException:
             data = None
             if response is not None:
-                error = response.content.decode()
+                error = response.content.decode(errors="replace")
             else:
-                error = "payment URL not pointing to a valid server"
+                error = "payment URL not pointing to a valid HTTPS server"
     else:
-        error = f"unknown scheme {url}"
+        error = "Payment request URL must use HTTPS"
 
     if error:
         raise Bip270Exception(error)

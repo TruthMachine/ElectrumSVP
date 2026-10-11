@@ -2027,25 +2027,21 @@ class ImportedAddressAccount(ImportedAccountBase):
     def get_enabled_script_types(self) -> Sequence[ScriptType]:
         return (ScriptType.P2PKH,)
 
+
     def get_possible_scripts_for_id(self, keyinstance_id: int) -> list:
-        public_keys = self.get_public_keys_for_id(keyinstance_id)
-        public_keys_hex = [pubkey.to_hex() for pubkey in public_keys]
+        address_string = self._hashes[keyinstance_id]
+        address = Address.from_string(address_string, network=Bitcoin)
         return [
-            (script_type, make_script_template(public_keys_hex, script_type, getattr(self, 'm', 1)).to_script())
-            for script_type in self.get_enabled_script_types()
+            (ScriptType.P2PKH, address.to_script())
         ]
 
     def get_script_template_for_id(self, keyinstance_id: int,
             script_type: Optional[ScriptType] = None):
-        keyinstance = self._keyinstances[keyinstance_id]
-        public_keys = self.get_public_keys_for_id(keyinstance_id)
-        public_keys_hex = [pubkey.to_hex() for pubkey in public_keys]
-        script_type = (
-            script_type
-            if script_type is not None or keyinstance.script_type == ScriptType.NONE
-            else keyinstance.script_type
-        )
-        return make_script_template(public_keys_hex, script_type, getattr(self, 'm', 1))
+        if script_type not in (None, ScriptType.P2PKH):
+            raise ValueError("Unsupported script type for imported address")
+
+        address_string = self._hashes[keyinstance_id]
+        return Address.from_string(address_string, network=Bitcoin)
 
 
 class ImportedPrivkeyAccount(ImportedAccountBase):
@@ -3038,7 +3034,7 @@ class Wallet(TriggeredCallbacks):
         proof = TxProof(proof_position, proof_branch)
         self._transaction_cache.update_proof(tx_hash, proof)
 
-        # build BEEF immediately after the proof is stored.
+        # Build BEEF immediately after the proof is stored.
         try:
             from electrumsv import verification_utils
 
@@ -3048,34 +3044,24 @@ class Wallet(TriggeredCallbacks):
                     if tx is None:
                         continue
 
-                    print(
-                        "BEEF TEST: proof stored, building BEEF for",
-                        hash_to_hex_str(tx_hash),
-                    )
-
-                    beef_data = verification_utils.build_beef(
+                    verification_utils.build_beef(
                         tx,
                         account=account,
                         slim=False,
                     )
 
-                    print(
-                        "BEEF TEST: built successfully:",
-                        hash_to_hex_str(tx_hash),
-                    )
-
                     break
 
-                except Exception as e:
-                    print(
-                        "BEEF TEST: account failed:",
-                        repr(e),
+                except Exception:
+                    self._logger.exception(
+                        "Failed to build BEEF for account %d",
+                        account.get_id(),
                     )
 
-        except Exception as e:
-            print(
-                "BEEF TEST: automatic BEEF build failed:",
-                repr(e),
+        except Exception:
+            self._logger.exception(
+                "Automatic BEEF build failed for %s",
+                tx_id,
             )
 
         height, conf, _timestamp = self.get_tx_height(tx_hash)

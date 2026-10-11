@@ -7,12 +7,51 @@ from bitcoinx import (
 
 from electrumsv.bitcoin import address_from_string
 from electrumsv.keystore import Old_KeyStore, BIP32_KeyStore
-from electrumsv.transaction import XPublicKey, Transaction, TransactionContext, NO_SIGNATURE
+from electrumsv.transaction import (
+    XPublicKey, Transaction, TransactionContext, NO_SIGNATURE, parse_script_sig,
+)
 
 
 unsigned_blob = '010000000149f35e43fefd22d8bb9e4b3ff294c6286154c25712baf6ab77b646e5074d6aed010000005701ff4c53ff0488b21e0000000000000000004f130d773e678a58366711837ec2e33ea601858262f8eaef246a7ebd19909c9a03c3b30e38ca7d797fee1223df1c9827b2a9f3379768f520910260220e0560014600002300feffffffd8e43201000000000118e43201000000001976a914e158fb15c888037fdc40fb9133b4c1c3c688706488ac5fbd0700'
 signed_blob = '010000000149f35e43fefd22d8bb9e4b3ff294c6286154c25712baf6ab77b646e5074d6aed010000006a473044022025bdc804c6fe30966f6822dc25086bc6bb0366016e68e880cf6efd2468921f3202200e665db0404f6d6d9f86f73838306ac55bb0d0f6040ac6047d4e820f24f46885412103b5bbebceeb33c1b61f649596b9c3611c6b2853a1f6b48bce05dd54f667fa2166feffffff0118e43201000000001976a914e158fb15c888037fdc40fb9133b4c1c3c688706488ac5fbd0700'
 v2_blob = "0200000001191601a44a81e061502b7bfbc6eaa1cef6d1e6af5308ef96c9342f71dbf4b9b5000000006b483045022100a6d44d0a651790a477e75334adfb8aae94d6612d01187b2c02526e340a7fd6c8022028bdf7a64a54906b13b145cd5dab21a26bd4b85d6044e9b97bceab5be44c2a9201210253e8e0254b0c95776786e40984c1aa32a7d03efa6bdacdea5f421b774917d346feffffff026b20fa04000000001976a914024db2e87dd7cfd0e5f266c5f212e21a31d805a588aca0860100000000001976a91421919b94ae5cefcdf0271191459157cdb41c4cbf88aca6240700"
+
+
+class TestParseScriptSigMalformed:
+    @pytest.mark.parametrize("redeem_script", [
+        b"",
+        b"\x51",  # OP_1 alone is not a multisig script.
+        b"\x00\xae",  # Invalid multisig threshold.
+        b"\x51\x00\x51\xae",  # Empty public-key push.
+        b"\x51\x21\x02\x51\x51",  # Truncated 33-byte public-key push.
+    ])
+    def test_malformed_nested_multisig_does_not_raise_or_mutate_kwargs(
+            self, redeem_script):
+        # OP_0, then a push containing the supplied redeem script.
+        script_sig = b"\x00" + bytes([len(redeem_script)]) + redeem_script
+        kwargs = {"existing": "preserved"}
+
+        parse_script_sig(script_sig, kwargs)
+
+        assert kwargs == {"existing": "preserved"}
+
+
+class TestScriptGetOpMalformed:
+    @pytest.mark.parametrize("script", [
+        b"\x02\x01",                  # Truncated direct push.
+        b"\x4c",                      # Missing OP_PUSHDATA1 length.
+        b"\x4c\x02\x01",              # Truncated OP_PUSHDATA1 payload.
+        b"\x4d\x01",                  # Truncated OP_PUSHDATA2 length.
+        b"\x4d\x02\x00\x01",          # Truncated OP_PUSHDATA2 payload.
+        b"\x4e\x01\x00\x00",          # Truncated OP_PUSHDATA4 length.
+        b"\x4e\x02\x00\x00\x00\x01",  # Truncated OP_PUSHDATA4 payload.
+    ])
+    def test_truncated_push_raises_value_error(self, script):
+        from electrumsv.transaction import _script_GetOp
+
+        with pytest.raises(ValueError):
+            list(_script_GetOp(script))
+
 
 
 class TestTransaction:
@@ -279,8 +318,8 @@ class TestXPublicKey:
         # assert x_pubkey.to_hex() == raw_hex
         assert not x_pubkey.is_bip32_key()
         assert x_pubkey.to_public_key() == public_key
-        assert x_pubkey.to_address() == public_key.to_address(coin=coin)
-        assert x_pubkey.to_address().coin() is coin
+        assert x_pubkey.to_address() == public_key.to_address(network=coin)
+        assert x_pubkey.to_address().network() is coin
 
     @pytest.mark.parametrize("raw_hex, path", (
         (
@@ -307,8 +346,8 @@ class TestXPublicKey:
         assert x_pubkey.is_bip32_key()
         assert x_pubkey.bip32_extended_key_and_path() == (xpub, path)
         assert x_pubkey.to_public_key() == True_10_public_key
-        assert x_pubkey.to_address() == True_10_public_key.to_address(coin=coin)
-        assert x_pubkey.to_address().coin() is coin
+        assert x_pubkey.to_address() == True_10_public_key.to_address(network=coin)
+        assert x_pubkey.to_address().network() is coin
 
     @pytest.mark.parametrize("raw_hex, public_key_hex", (
         ('fee9d4b7866dd1e91c862aebf62a49548c7dbf7bcc6e4b7b8c9da820c7737968df9c09d'
@@ -331,8 +370,8 @@ class TestXPublicKey:
         assert not x_pubkey.is_bip32_key()
         assert x_pubkey.to_public_key() == public_key
         assert x_pubkey.to_public_key().is_compressed() is False
-        assert x_pubkey.to_address() == public_key.to_address(coin=coin)
-        assert x_pubkey.to_address().coin() is coin
+        assert x_pubkey.to_address() == public_key.to_address(network=coin)
+        assert x_pubkey.to_address().network() is coin
 
     def test_fd_read_write(self):
         tx_hex = ('010000000111111111111111111111111111111111111111111111111111111111111111111b'

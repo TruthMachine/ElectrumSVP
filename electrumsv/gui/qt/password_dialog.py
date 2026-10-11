@@ -187,11 +187,11 @@ class PasswordLayout(object):
             self.pw_changed()
 
         def enable_OK() -> None:
-            new_password = self.new_pw.text().strip()
-            confirm_password = self.conf_pw.text().strip()
-            ok = len(new_password) and new_password == confirm_password
+            new_password = self.new_pw.text()
+            confirm_password = self.conf_pw.text()
+            ok = bool(new_password) and new_password == confirm_password
             if password_valid_fn is not None:
-                existing_password = self.pw.text().strip()
+                existing_password = self.pw.text()
                 ok = ok and password_valid_fn(existing_password)
             self._state_change_fn(ok)
 

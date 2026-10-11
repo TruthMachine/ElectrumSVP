@@ -32,7 +32,7 @@ from bitcoinx import Bitcoin
 from bitcoinx.errors import MissingHeader
 
 from .async_ import ASync
-from .constants import MAX_INCOMING_ELECTRUMX_MESSAGE_MB
+from .constants import MAX_INCOMING_ELECTRUMX_MESSAGE_MB, PRELOADED_HEADERS
 from .logs import logs
 from .simple_config import SimpleConfig
 from .util import format_satoshis

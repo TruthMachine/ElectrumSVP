@@ -1,7 +1,7 @@
 import os
 from typing import Callable, TYPE_CHECKING
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QColor, QCursor, QPainter
 from PyQt5.QtWidgets import (
     QApplication, QVBoxLayout, QTextEdit, QHBoxLayout, QPushButton, QWidget)
@@ -9,6 +9,7 @@ import qrcode
 
 from electrumsv.i18n import _
 from electrumsv.app_state import app_state
+from electrumsv.qrtransport import create_frames
 
 from .util import WindowModalDialog
 
@@ -18,11 +19,11 @@ if TYPE_CHECKING:
 
 class QRCodeWidget(QWidget):
 
-    def __init__(self, data = None, fixedSize=False):
+    def __init__(self, data=None, fixedSize=False):
         QWidget.__init__(self)
         self.data = None
         self.qr = None
-        self.fixedSize=fixedSize
+        self.fixedSize = fixedSize
         if fixedSize:
             self.setFixedSize(fixedSize, fixedSize)
         self.setData(data)
@@ -38,12 +39,14 @@ class QRCodeWidget(QWidget):
     def setData(self, data) -> None:
         if self.data != data:
             self.data = data
+
         if self.data:
             self.qr = qrcode.QRCode()
             self.qr.add_data(self.data)
+
             if not self.fixedSize:
                 k = len(self.qr.get_matrix())
-                self.setMinimumSize(k*5,k*5)
+                self.setMinimumSize(k * 5, k * 5)
         else:
             self.qr = None
 
@@ -68,46 +71,85 @@ class QRCodeWidget(QWidget):
 
         matrix = self.qr.get_matrix()
         k = len(matrix)
+
         qp = QPainter()
         qp.begin(self)
+
         r = qp.viewport()
 
         margin = 0
         framesize = min(r.width(), r.height())
         boxsize = max(1, int((framesize - 2 * margin) / k))
         size = k * boxsize
-        left = (r.width() - size)//2
-        top = (r.height() - size)//2
+        left = (r.width() - size) // 2
+        top = (r.height() - size) // 2
 
-        # Make a white margin around the QR in case of dark theme use
         qp.setBrush(white)
         qp.setPen(white)
-        qp.drawRect(left-margin, top-margin, size+(margin*2), size+(margin*2))
+        qp.drawRect(
+            left - margin,
+            top - margin,
+            size + (margin * 2),
+            size + (margin * 2)
+        )
+
         qp.setBrush(black)
         qp.setPen(black)
 
-        for r in range(k):
-            for c in range(k):
-                if matrix[r][c]:
-                    qp.drawRect(left+c*boxsize, top+r*boxsize, boxsize - 1, boxsize - 1)
-        qp.end()
+        for row in range(k):
+            for column in range(k):
+                if matrix[row][column]:
+                    qp.drawRect(
+                        left + column * boxsize,
+                        top + row * boxsize,
+                        boxsize - 1,
+                        boxsize - 1
+                    )
 
+        qp.end()
 
 
 class QRDialog(WindowModalDialog):
 
-    def __init__(self, data, parent=None, title = "", show_text=False):
+    def __init__(self, data, parent=None, title="", show_text=False):
         WindowModalDialog.__init__(self, parent, title)
 
         vbox = QVBoxLayout()
-        qrw = QRCodeWidget(data)
+
+        # Use a single static QR for smaller payloads.
+        # Larger payloads use animated QR transport.
+        STATIC_QR_MAX_BYTES = 1200
+
+        if len(data.encode("utf-8")) <= STATIC_QR_MAX_BYTES:
+            frames = [data]
+        else:
+            frames = create_frames(data)
+
+        print("QR payload bytes:", len(data.encode("utf-8")))
+        print("QR frame count:", len(frames))
+
+        self.frames = frames
+        self.frame_index = 0
+
+        qrw = QRCodeWidget(frames[0])
         qscreen = QApplication.primaryScreen()
         vbox.addWidget(qrw, 1)
+
+        frame_label = None
+
+        if len(frames) > 1:
+            frame_label = QPushButton(
+                _("Frame 1 of {}".format(len(frames)))
+            )
+            frame_label.setEnabled(False)
+            vbox.addWidget(frame_label)
+
         if show_text:
             text = QTextEdit()
             text.setText(data)
             text.setReadOnly(True)
             vbox.addWidget(text)
+
         hbox = QHBoxLayout()
         hbox.addStretch(1)
 
@@ -138,3 +180,32 @@ class QRDialog(WindowModalDialog):
 
         vbox.addLayout(hbox)
         self.setLayout(vbox)
+
+        # Animate multipart QR frames.
+        self.animation_timer = None
+
+        if len(frames) > 1:
+            self.animation_timer = QTimer(self)
+            self.animation_timer.timeout.connect(
+                lambda: advance_frame()
+            )
+
+            self.animation_timer.start(250)
+
+        def advance_frame():
+            self.frame_index += 1
+
+            if self.frame_index >= len(self.frames):
+                self.frame_index = 0
+
+            qrw.setData(self.frames[self.frame_index])
+
+            if frame_label is not None:
+                frame_label.setText(
+                    _("Frame {} of {}".format(
+                        self.frame_index + 1,
+                        len(self.frames)
+                    ))
+                )
+
+        self._qr_widget = qrw

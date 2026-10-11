@@ -52,6 +52,15 @@ def create_database_file(wallet_path: str) -> None:
 
     update_database_file(wallet_path)
 
+    # The wallet database holds encrypted secrets; make sure it (and the SQLite
+    # WAL/SHM sidecars) are not world-readable wherever the user saved it.
+    for suffix in ("", "-wal", "-shm"):
+        try:
+            os.chmod(db_path + suffix, 0o600)
+        except OSError:
+            pass
+
+
 def update_database(db: sqlite3.Connection) -> None:
     # This will error if the database has not been created correctly with the metadata.
     version = _get_migration(db)

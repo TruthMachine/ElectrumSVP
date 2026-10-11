@@ -8,7 +8,7 @@ from collections import namedtuple
 import os
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-PRELOADED_HEADERS = os.path.join(BASE_PATH, 'headersloaded', 'headers')
+PRELOADED_HEADERS = os.path.join(BASE_PATH, 'resources', 'headersloaded', 'headers')
 
 
 CheckPoint = namedtuple("CheckPoint", "height block_hash header_hash")

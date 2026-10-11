@@ -35,17 +35,20 @@ logger = logging.getLogger("sweep")
 ELECTRUMX_SERVERS = [
     ('electrumx.gorillapool.io', 50002),
     ('sv2.satoshi.io', 50002),
-    ('neptune.api.sv', 50002),
+    ('sv.electrumr.sv', 50002),
+    ('sv2.electrumr.sv', 50002),
+    #('neptune.api.sv', 50002),
     ('esv.bitails.io', 50002),
     ('bsv.aftrek.org', 50002),
-    ('alpha-esv.api.sv', 50002),
-    ('electrum.api.sv', 50002),
+    ('sv3.satoshi.io', 50002),
+    #('alpha-esv.api.sv', 50002),
+    #('electrum.api.sv', 50002),
     ('sv.satoshi.io', 50001),
     ('bsv.aftrek.org', 50001),
     ('sv2.satoshi.io', 50001),
-    ('neptune.api.sv', 50001),
-    ('electrum.api.sv', 50001),
-    ('alpha-esv.api.sv', 50001),
+    #('neptune.api.sv', 50001),
+    #('electrum.api.sv', 50001),
+    #('alpha-esv.api.sv', 50001),
 ]
 
 PEM_DIR = os.path.join(os.path.dirname(__file__), 'pemcerts')
@@ -293,6 +296,7 @@ def get_utxos_whatsonchain(address: str) -> List[Dict]:
     return utxos
 
 
+
 def get_utxos_electrumx_socket_fallback(
     scripthash: str
 ) -> List[Dict]:
@@ -303,6 +307,9 @@ def get_utxos_electrumx_socket_fallback(
     )
 
     for host, port in ELECTRUMX_SERVERS:
+        sock = None
+        conn = None
+
         try:
             sock = create_socket_with_optional_socks(
                 SOCKS5_PROXY_HOST if use_socks else None,
@@ -342,8 +349,6 @@ def get_utxos_electrumx_socket_fallback(
                 if b'\n' in part:
                     break
 
-            conn.close()
-
             resp = json.loads(data.decode())
 
             if (
@@ -373,6 +378,18 @@ def get_utxos_electrumx_socket_fallback(
                 e
             )
             continue
+
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            elif sock is not None:
+                try:
+                    sock.close()
+                except Exception:
+                    pass
 
     logger.info(
         "ElectrumX servers failed, "

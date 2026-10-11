@@ -144,7 +144,7 @@ class SVTestnet(object):
 
     BLOCK_EXPLORERS = {        
         'whatsonchain.com': (
-            'http://test.whatsonchain.com',
+            'https://test.whatsonchain.com',
             {'tx': 'tx', 'addr': 'address', 'script': 'script'},
         ),
         'satoshi.io': (
@@ -196,7 +196,7 @@ class SVScalingTestnet(object):
             {'tx': 'tx', 'addr': 'address'},
         ),
         'whatsonchain.com': (
-            'http://stn.whatsonchain.com',
+            'https://stn.whatsonchain.com',
             {'tx': 'tx', 'addr': 'address'},
         ),
         'satoshi.io': (

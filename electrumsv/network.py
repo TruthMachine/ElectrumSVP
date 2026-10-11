@@ -1710,8 +1710,9 @@ class Network(TriggeredCallbacks):
             #('alpha-esv.api.sv', {'s': '50002'}),
             ('sv.satoshi.io', {'s': '50002'}),
             ('sv2.satoshi.io', {'s': '50002'}),
+            ('sv3.satoshi.io', {'s': '50002'}),
             ('esv.bitails.io', {'s': '50002'}),
-            ('electrum.server.sv', {'s': '50002'}),            
+            #('electrum.server.sv', {'s': '50002'}),
             ('bsv.aftrek.org', {'s': '50002'}),
         ]
 

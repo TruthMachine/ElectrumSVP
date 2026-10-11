@@ -182,32 +182,38 @@ def base_encode(v, base):
 
 def base_decode(v, length, base):
     """ decode v into a string of len bytes."""
-    # assert_bytes(v)
     v = to_bytes(v, 'ascii')
     assert base == 43
+
     chars = __b43chars
+    char_values = {char: index for index, char in enumerate(chars)}
+
     long_value = 0
-    for (i, c) in enumerate(v[::-1]):
-        long_value += chars.find(bytes([c])) * (base**i)
+    for c in v:
+        long_value = long_value * base + char_values[c]
+
     result = bytearray()
     while long_value >= 256:
         div, mod = divmod(long_value, 256)
         result.append(mod)
         long_value = div
+
     result.append(long_value)
+
     nPad = 0
     for c in v:
         if c == chars[0]:
             nPad += 1
         else:
             break
+
     result.extend(b'\x00' * nPad)
+
     if length is not None and len(result) != length:
         return None
+
     result.reverse()
     return bytes(result)
-
-
 ########### end pywallet functions #######################
 
 ScriptTemplate = Union[OP_RETURN_Output, P2MultiSig_Output, P2PK_Output, P2PKH_Address,
