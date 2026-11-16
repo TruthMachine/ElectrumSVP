@@ -1,10 +1,25 @@
-# Personal Universal macOS build
+# Personal macOS builds
 
-This recipe builds a single `ElectrumSV.app` with arm64 and x86_64
-slices. It uses Python 3.10.20 and PyInstaller 6.22.3, with the dependency snapshot
+This recipe builds `ElectrumSV.app` for any of three targets: `universal2`
+(both architectures), `arm64` (Apple Silicon), or `x86_64` (Intel).
+`ELECTRUMSV_TARGET_ARCH` selects the target and defaults to `universal2`. It uses Python 3.10.20 and PyInstaller 6.22.3, with the dependency snapshot
 in `requirements-local.txt`. It is separate from the inherited release script:
 no global Python switch, old Intel USB bottle, Developer ID or notarization is
 required. Do not use this recipe as a signed release certification.
+
+## Targets
+
+| Target | Machines | Python environment | Artifact suffix |
+|---|---|---|---|
+| `universal2` (default) | Apple Silicon and Intel | Merged Universal | `macos-universal2.zip` |
+| `arm64` | Apple Silicon | arm64 | `macos-arm64.zip` |
+| `x86_64` | Intel | x86_64 | `macos-x86_64.zip` |
+
+All targets keep the same app name, version and wallet behavior. Use separate build/output
+folders for each target. A single-architecture build uses its matching dependency environment;
+only Universal needs merged Python and package trees. This separation lets a future release
+stop producing Intel artifacts without changing the arm64 recipe. No automatic retirement
+policy or version cutoff is introduced here.
 
 ## Prepare dependencies
 
@@ -20,7 +35,7 @@ For the Intel dependency install, set `ARCHFLAGS`, `CFLAGS` and `LDFLAGS` to
 `-arch x86_64` so source-built extensions target Intel too. Keep these variables
 scoped to that install command. Do not change the existing development environment.
 
-Use `merge_universal.py ARM_TREE INTEL_TREE NEW_OUTPUT_TREE` twice: once on the
+**For Universal only**, use `merge_universal.py ARM_TREE INTEL_TREE NEW_OUTPUT_TREE` twice: once on the
 matching Python distribution roots, and once on their environments' `site-packages`
 directories. Create a new environment with the merged Python and place the merged
 packages in its `site-packages`. The helper refuses an existing output directory,
@@ -29,7 +44,9 @@ must have identical package versions and Python source files. Intel-only optiona
 AES-NI/CLMUL accelerators are omitted; PyCryptodome's portable AES/GHASH libraries
 remain available on both architectures.
 
-Build libusb 1.0.30 from its official release source using:
+Build libusb 1.0.30 from its official release source using the following Universal flags.
+For a native build, keep only the matching `-arch arm64` or `-arch x86_64`; an existing
+Universal libusb is also accepted and PyInstaller extracts the selected slice:
 
 ```sh
 CFLAGS='-arch arm64 -arch x86_64 -mmacosx-version-min=11.0' \
@@ -53,13 +70,36 @@ ELECTRUMSV_LIBUSB=/absolute/path/to/libusb/.libs/libusb-1.0.0.dylib \
 codesign --verify --deep --strict '/absolute/path/outside-synced-folders/ElectrumSV.app'
 ```
 
+For the two additional targets, use the matching Python environment:
+
+```sh
+ELECTRUMSV_TARGET_ARCH=arm64 ELECTRUMSV_LIBUSB=/absolute/path/to/libusb-1.0.0.dylib \
+  /absolute/path/to/arm64-env/bin/python -m PyInstaller --noconfirm \
+  --distpath /absolute/path/out/arm64 --workpath build/local-arm64 contrib/osx/local.spec
+ELECTRUMSV_TARGET_ARCH=x86_64 ELECTRUMSV_LIBUSB=/absolute/path/to/libusb-1.0.0.dylib \
+  /absolute/path/to/x86_64-env/bin/python -m PyInstaller --noconfirm \
+  --distpath /absolute/path/out/x86_64 --workpath build/local-x86_64 contrib/osx/local.spec
+```
+
+Audit each result with the corresponding target (also accepts `universal2`):
+
+```sh
+python contrib/osx/check_local_bundle.py /absolute/path/out/arm64/ElectrumSV.app --arch arm64
+python contrib/osx/check_local_bundle.py /absolute/path/out/x86_64/ElectrumSV.app --arch x86_64
+```
+
+The checker requires every Mach-O to contain exactly the requested architecture set and runs
+strict bundle signature verification. New bundles also record the target in `Info.plist`.
+Use `arch -arm64` for arm64 startup checks and `arch -x86_64` for Intel checks; Universal
+must pass both. Intel execution on an Apple Silicon host needs Rosetta.
+
 Build outside cloud-synchronized folders: macOS file-provider attributes can invalidate
 framework signatures when a bundle is built inside Documents. Archive the checked
 bundle for transport rather than changing Gatekeeper settings.
 
-`local.spec` explicitly requests `target_arch='universal2'`. Do not merge two
+`local.spec` passes the selected architecture to PyInstaller. Do not merge two
 finished PyInstaller executables with lipo: their embedded archives do not merge.
-Check **all** Mach-O files in the bundle, not only its launcher, for both slices.
+Check **all** Mach-O files in the bundle, not only its launcher, for exactly the selected slices.
 The app uses Qt's current QR scanner and includes zxing-cpp; the obsolete native
 CalinsQRReader helper is not needed by `scan_barcode()`.
 
@@ -77,8 +117,11 @@ For a portable archive of the app (preserving its framework symlinks):
 
 ```sh
 ditto -c -k --keepParent '/absolute/path/outside-synced-folders/ElectrumSV.app' \
-  'dist/local/ElectrumSVP-universal.zip'
+  'dist/local/ElectrumSVP-VERSION-macos-universal2-SOURCE_COMMIT.zip'
 ```
+
+For native archives, replace `universal2` with `arm64` or `x86_64` and use the
+corresponding checked bundle. Replace `VERSION` and `SOURCE_COMMIT` with actual values.
 
 The app keeps the original `ElectrumSV.app` name, version-number executable and
 `io.electrumsv.ElectrumSV` bundle identifier. Normal launches use the existing

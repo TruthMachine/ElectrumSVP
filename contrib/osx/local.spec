@@ -9,6 +9,10 @@ import subprocess
 
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
+target_arch = os.environ.get('ELECTRUMSV_TARGET_ARCH', 'universal2')
+if target_arch not in ('universal2', 'arm64', 'x86_64'):
+    raise SystemExit('ELECTRUMSV_TARGET_ARCH must be universal2, arm64 or x86_64.')
+
 root = Path(SPECPATH).resolve().parents[1]
 version = runpy.run_path(str(root / 'electrumsv/version.py'))['PACKAGE_VERSION']
 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
@@ -39,7 +43,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, exclude_binaries=True, name=version,
-    target_arch='universal2', console=False, strip=False, upx=False)
+    target_arch=target_arch, console=False, strip=False, upx=False)
 coll = COLLECT(exe, a.binaries, a.datas, name='ElectrumSV-local', strip=False, upx=False)
 app = BUNDLE(coll, name='ElectrumSV.app',
     icon=str(root / 'contrib/osx/ElectrumSV.icns'),
@@ -48,6 +52,7 @@ app = BUNDLE(coll, name='ElectrumSV.app',
         'CFBundleDisplayName': 'ElectrumSV',
         'LSMinimumSystemVersion': '11.0',
         'ElectrumSVPSourceCommit': commit,
+        'ElectrumSVPTargetArchitecture': target_arch,
         'NSHighResolutionCapable': True,
         'NSSupportsAutomaticGraphicsSwitching': True,
         'NSCameraUsageDescription': 'Scan payment and transaction QR codes.',
