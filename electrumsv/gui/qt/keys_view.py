@@ -64,11 +64,6 @@ from .util import read_QIcon, get_source_index, ColorScheme
 
 from PyQt5.QtGui import QColor, QBrush
 
-from electrumsv.verification_utils import (
-    build_beef,
-    build_beef_for_address,
-    open_simple_verification_window,
-)
 from .theme import Theme, theme_from_config
 
 
@@ -1199,6 +1194,7 @@ class KeyView(QTableView):
                             address = keyinstance.address
 
                     if address:
+                        from electrumsv.verification_utils import open_simple_verification_window
                         menu.addAction(
                             _("Simple Verify (BREAD)"),
                             lambda addr=address: open_simple_verification_window(
