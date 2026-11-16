@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import pyqtSignal, QSize, Qt
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QHBoxLayout, QToolButton, QWidget
 
@@ -16,6 +16,13 @@ class TableTopButtonLayout(QHBoxLayout):
     def __init__(self, parent: Optional[QWidget]=None, filter_placeholder_text: str="") -> None:
         super().__init__(parent)
 
+        row = QWidget()
+        row.setProperty("theme_role", "table_toolbar")
+        row.setAttribute(Qt.WA_StyledBackground, True)
+        self._row_layout = QHBoxLayout(row)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.addWidget(row)
+
         # The offset to insert the next button at.
         self._button_index = 0
 
@@ -29,22 +36,27 @@ class TableTopButtonLayout(QHBoxLayout):
         self._filter_box.setPlaceholderText(filter_placeholder_text)
         self._filter_box.hide()
 
-        self.setSpacing(2)
-        self.setContentsMargins(0, 2, 0, 2)
+        self._row_layout.setSpacing(4)
+        self._row_layout.setContentsMargins(4, 3, 4, 3)
         self.add_refresh_button()
         self._filter_button = self.add_filter_button()
-        self.addWidget(self._filter_box, 1)
-        self.addStretch(1)
+        self._row_layout.addWidget(self._filter_box, 1)
+        self._row_layout.addStretch(1)
 
         # Find the stretch QSpacerItem and hold a reference so we can add and remove it.
         # The reason we do this is that otherwise the stretch item prevents the search box from
         # expanding.
-        self._stretch_item = self.takeAt(self.count()-1)
-        self.addItem(self._stretch_item)
+        self._stretch_item = self._row_layout.takeAt(self._row_layout.count()-1)
+        self._row_layout.addItem(self._stretch_item)
 
     def _create_button(self, icon_name: str, on_click: Callable[[], None], tooltip: str) \
             -> QToolButton:
         button = QToolButton()
+        button.setProperty("theme_role", "table_action")
+        button.setIconSize(QSize(16, 16))
+        button.setMinimumSize(24, 24)
+        button.setFocusPolicy(Qt.StrongFocus)
+        button.setAccessibleName(tooltip)
         button.setIcon(read_QIcon(icon_name))
         button.setToolTip(tooltip)
         button.setCursor(QCursor(Qt.PointingHandCursor))
@@ -57,7 +69,7 @@ class TableTopButtonLayout(QHBoxLayout):
         if position is None:
             position = self._button_index
             self._button_index += 1
-        self.insertWidget(position, button)
+        self._row_layout.insertWidget(position, button)
         return button
 
     def add_refresh_button(self, tooltip: Optional[str]=None) -> QToolButton:
@@ -86,10 +98,10 @@ class TableTopButtonLayout(QHBoxLayout):
             # Activate filtering and show the text field.
             self._filter_button.setIcon(read_QIcon("icons8-clear-filters-32-windows.png"))
             self._filter_box.show()
-            self.removeItem(self._stretch_item)
+            self._row_layout.removeItem(self._stretch_item)
             self._filter_box.setFocus(1)
         else:
-            self.addItem(self._stretch_item)
+            self._row_layout.addItem(self._stretch_item)
             # Deactivate filtering and hide the text field.
             self._filter_button.setIcon(read_QIcon("icons8-filter-edit-32-windows.png"))
             self._filter_box.setText('')

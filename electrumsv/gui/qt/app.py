@@ -35,7 +35,7 @@ from typing import Callable, Optional
 from aiorpcx import run_in_thread
 import PyQt5.QtCore as QtCore
 from PyQt5.QtCore import pyqtSignal, QObject, QTimer, QEvent
-from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtGui import QFontDatabase, QGuiApplication
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QWidget, QDialog
 
 from electrumsv.app_state import app_state
@@ -53,7 +53,8 @@ from .label_sync import LabelSync
 from .log_window import SVLogWindow, SVLogHandler
 from .util import ColorScheme, get_default_language, MessageBox, read_QIcon
 from .wallet_wizard import WalletWizard
-from .theme import Theme, apply_theme, apply_windows_title_bar, wallet_window_style, theme_from_config
+from .theme import (Theme, ThemeController, apply_windows_title_bar, wallet_window_style,
+    theme_preference_from_config)
 
 
 
@@ -104,19 +105,22 @@ class SVApplication(QApplication):
 
     def __init__(self, argv):
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
+        QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps)
         if hasattr(QGuiApplication, 'setDesktopFileName'):
             QGuiApplication.setDesktopFileName('electrum-sv.desktop')
 
         super().__init__(argv)
+        self.setFont(QFontDatabase.systemFont(QFontDatabase.GeneralFont))
 
-        self._theme = theme_from_config(app_state.config)
-        apply_theme(self, self._theme)
+        self._theme_controller = ThemeController(self, theme_preference_from_config(app_state.config))
+        self._theme = self._theme_controller.effective
 
 
         self.windows = []
         self.log_handler = SVLogHandler()
         self.log_window = None
         self.net_dialog = None
+        self._theme_controller.changed.connect(self._on_theme_changed)
         self.timer = QTimer()
         self.exception_hook = None
 
@@ -163,13 +167,12 @@ class SVApplication(QApplication):
         ColorScheme.update_from_widget(QWidget())
 
     def set_theme(self, theme: Theme) -> None:
-        self._theme = theme
-        dark = theme == Theme.DARK
-
         app_state.config.set_key("theme", theme.value, True)
+        self._theme_controller.select(theme)
 
-        # Existing theme engine still uses the Boolean for now.
-        apply_theme(self, theme)
+    def _on_theme_changed(self, theme: Theme) -> None:
+        self._theme = theme
+        ColorScheme.update_from_widget(QWidget())
 
         for window in self.windows:
             window.setStyleSheet(wallet_window_style(theme))

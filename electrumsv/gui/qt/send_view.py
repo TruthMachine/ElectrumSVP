@@ -54,9 +54,9 @@ from . import dialogs
 from .invoice_list import InvoiceList
 from .paytoedit import PayToEdit
 from .table_widgets import TableTopButtonLayout
+from .form_scroll_area import FormScrollArea
 from .util import (ColorScheme, EnterButton, HelpDialogButton, HelpLabel, MyTreeWidget,
     UntrustedMessageDialog, update_fixed_tree_height)
-from .theme import Theme, theme_from_config
 
 if TYPE_CHECKING:
     from .main_window import ElectrumWindow
@@ -116,15 +116,13 @@ class SendView(QWidget):
         grid.setRowMinimumHeight(5, 24)
         grid.setRowMinimumHeight(6, 24)
         grid.setHorizontalSpacing(8)
-        grid.setVerticalSpacing(2)
+        grid.setVerticalSpacing(10)
         # This ensures all columns are stretched over the full width of the last tab.
         grid.setColumnStretch(4, 1)
 
         self.amount_e = BTCAmountEdit(self)
-        self.amount_e.setFixedHeight(20)
-        self.amount_e.setMinimumWidth(170)
         self._payto_e = PayToEdit(self)
-        self._payto_e.setFixedHeight(26)
+        self._payto_e.setFixedHeight(max(32, self.fontMetrics().height() + 14))
 
         # From fields row.
         # This is enabled by "spending" coins in the coins tab.
@@ -148,7 +146,7 @@ class SendView(QWidget):
         payto_label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         grid.addWidget(payto_label, 2, 0)
         payto_layout = QVBoxLayout()
-        payto_layout.setContentsMargins(0, 1, 0, 0)
+        payto_layout.setContentsMargins(0, 0, 0, 0)
         payto_layout.addWidget(self._payto_e)
         grid.addLayout(payto_layout, 2, 1, 1, -1)
 
@@ -160,8 +158,9 @@ class SendView(QWidget):
                + _('Keyboard shortcut: type "!" to send all your coins.'))
         amount_label = HelpLabel(_('Amount'), msg, self)
         grid.addWidget(amount_label, 3, 0)
-        amount_layout = QVBoxLayout()
-        amount_layout.setContentsMargins(0, 3, 0, 0)
+        amount_layout = QHBoxLayout()
+        amount_layout.setSpacing(8)
+        amount_layout.setContentsMargins(0, 0, 0, 0)
         amount_layout.addWidget(self.amount_e)
         grid.addLayout(amount_layout, 3, 1)
 
@@ -169,10 +168,9 @@ class SendView(QWidget):
         grid.addWidget(fee_rate_label, 4, 0)
 
         self._fee_rate_e = BTCSatsByteEdit(self)
-        self._fee_rate_e.setFixedHeight(20)
         self._fee_rate_e.setAmount(app_state.config.fee_per_kb())
         fee_rate_layout = QVBoxLayout()
-        fee_rate_layout.setContentsMargins(0, 3, 0, 0)
+        fee_rate_layout.setContentsMargins(0, 0, 0, 0)
         fee_rate_layout.addWidget(self._fee_rate_e)
         grid.addLayout(fee_rate_layout, 4, 1)
 
@@ -180,11 +178,10 @@ class SendView(QWidget):
         grid.addWidget(fee_label, 5, 0)
 
         self._fee_e = BTCAmountEdit(self)
-        self._fee_e.setFixedHeight(20)
         self._fee_e.setReadOnly(True)
 
         fee_layout = QVBoxLayout()
-        fee_layout.setContentsMargins(0, 3, 0, 0)
+        fee_layout.setContentsMargins(0, 0, 0, 0)
         fee_layout.addWidget(self._fee_e)
         grid.addLayout(fee_layout, 5, 1)
 
@@ -193,11 +190,10 @@ class SendView(QWidget):
             self,
             prefix='≈'
         )
-        self._fiat_fee_e.setFixedHeight(20)
         self._fiat_fee_e.setReadOnly(True)
 
         fiat_fee_layout = QVBoxLayout()
-        fiat_fee_layout.setContentsMargins(0, 3, 0, 0)
+        fiat_fee_layout.setContentsMargins(0, 0, 0, 0)
         fiat_fee_layout.addWidget(self._fiat_fee_e)
         grid.addLayout(fiat_fee_layout, 5, 2)
 
@@ -216,9 +212,9 @@ class SendView(QWidget):
             _('Use the recommended transaction fee rate.')
         )
         recommended_fee_layout = QVBoxLayout()
-        recommended_fee_layout.setContentsMargins(0, 3, 0, 0)
+        recommended_fee_layout.setContentsMargins(0, 0, 0, 0)
         recommended_fee_layout.addWidget(self._recommended_fee_checkbox)
-        grid.addLayout(recommended_fee_layout, 4, 2)
+        grid.addLayout(recommended_fee_layout, 4, 2, 1, 3)
 
         self._fee_rate_e.textEdited.connect(self._on_fee_rate_edited)
         self._fee_rate_e.editingFinished.connect(self._on_fee_rate_editing_finished)
@@ -232,14 +228,12 @@ class SendView(QWidget):
             self,
             prefix='≈'
         )
-        self._fiat_send_e.setFixedHeight(20)
-        self._fiat_send_e.setMinimumWidth(200)
         self._fiat_send_e.setReadOnly(True)
         self._fiat_send_e.setFrame(True)
         self.set_fiat_ccy_enabled(bool(app_state.fx and app_state.fx.is_enabled()))
 
         fiat_layout = QVBoxLayout()
-        fiat_layout.setContentsMargins(0, 3, 0, 0)
+        fiat_layout.setContentsMargins(0, 0, 0, 0)
         fiat_layout.addWidget(self._fiat_send_e)
         grid.addLayout(fiat_layout, 3, 2)
 
@@ -247,11 +241,7 @@ class SendView(QWidget):
 
         self._max_button.setMinimumHeight(22)
         self._max_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
-        self._max_button.setStyleSheet("font-size: 11px;")
-        max_layout = QVBoxLayout()
-        max_layout.setContentsMargins(0, 2, 3, 0)
-        max_layout.addWidget(self._max_button)
-        grid.addLayout(max_layout, 3, 3)
+        amount_layout.addWidget(self._max_button)
 
         completer = QCompleter()
         completer.setCaseSensitivity(False)
@@ -264,7 +254,6 @@ class SendView(QWidget):
         description_label = HelpLabel(_('Description'), msg, self)
         grid.addWidget(description_label, 6, 0)
         self._message_e = MyLineEdit(self)
-        self._message_e.setFixedHeight(26)
         description_layout = QVBoxLayout()
         description_layout.setContentsMargins(0, 0, 0, 0)
         description_layout.addWidget(self._message_e)
@@ -287,15 +276,12 @@ class SendView(QWidget):
 
         self._help_button = HelpDialogButton(self, "misc", "send-tab", _("Help"))
         self._help_button.setMinimumHeight(24)
-        self._help_button.setStyleSheet("font-size: 11px;")
         self._preview_button = EnterButton(_("Preview"), self._do_preview, self)
         self._preview_button.setMinimumHeight(24)
-        self._preview_button.setStyleSheet("font-size: 11px;")
         self._preview_button.setToolTip(
             _('Display the details of your transactions before signing it.'))
         self._send_button = EnterButton(_("Send"), self._do_send, self)
         self._send_button.setMinimumHeight(24)
-        self._send_button.setStyleSheet("font-size: 11px;")
         if self._main_window.network is None:
             self._send_button.setEnabled(False)
             self._send_button.setToolTip(_('You are using ElectrumSV in offline mode; restart '
@@ -303,16 +289,14 @@ class SendView(QWidget):
         self._send_button.setVisible(not self._account.is_watching_only())
         self._clear_button = EnterButton(_("Clear"), self.clear, self)
         self._clear_button.setMinimumHeight(24)
-        self._clear_button.setStyleSheet("font-size: 11px;")
 
         buttons = QHBoxLayout()
-        buttons.setSpacing(4)
+        buttons.setSpacing(8)
         buttons.addStretch(1)
         buttons.addWidget(self._help_button)
         buttons.addWidget(self._clear_button)
         buttons.addWidget(self._preview_button)
         buttons.addWidget(self._send_button)
-        buttons.addStretch(1)
         grid.addLayout(buttons, 8, 0, 1, -1)
 
 
@@ -339,10 +323,6 @@ class SendView(QWidget):
 
         self._invoice_list = InvoiceList(self, self._main_window.reference())
 
-        vbox0 = QVBoxLayout()
-        vbox0.addLayout(grid)
-        hbox = QHBoxLayout()
-        hbox.addLayout(vbox0)
 
         invoice_layout = QVBoxLayout()
         invoice_layout.setSpacing(0)
@@ -352,16 +332,17 @@ class SendView(QWidget):
 
         invoice_box = QGroupBox()
         invoice_box.setTitle(_('Invoices'))
-        invoice_box.setAlignment(Qt.AlignCenter)
+        invoice_box.setAlignment(Qt.AlignLeft)
         invoice_box.setContentsMargins(0, 0, 0, 0)
         invoice_box.setLayout(invoice_layout)
-        invoice_box.setMaximumHeight(100)
+        invoice_box.setMinimumHeight(150)
 
 
         vbox = QVBoxLayout(self)
-        vbox.addLayout(hbox, 1)
-        vbox.addSpacing(0)
-        vbox.addWidget(invoice_box, 0)
+        vbox.setContentsMargins(16, 16, 16, 16)
+        vbox.setSpacing(20)
+        vbox.addWidget(FormScrollArea(grid, self))
+        vbox.addWidget(invoice_box, 1)
 
         return vbox
 
@@ -430,14 +411,12 @@ class SendView(QWidget):
                     _("are frozen") +
                     ")"
                 )
-            amt_color = "#ff6666"
-        elif theme_from_config(app_state.config) == Theme.DARK:
-            amt_color = "#d0d3d7"
+            amt_color = "palette(bright-text)"
         else:
-            amt_color = "#333333"
+            amt_color = None
 
         self._main_window.statusBar().showMessage(text)
-        self.amount_e.setStyleSheet(f"color: {amt_color};")
+        self.amount_e.setStyleSheet(f"color: {amt_color};" if amt_color else '')
 
 
     def lock_amount(self, flag: bool) -> None:

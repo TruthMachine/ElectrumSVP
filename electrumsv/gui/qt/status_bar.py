@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 import weakref
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPainter, QPixmap
+from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import (QGridLayout, QHBoxLayout, QLabel, QSizePolicy, QStatusBar,
     QStyle, QStyleOptionToolButton, QToolButton, QWidget, QWidgetAction)
 
@@ -10,6 +10,7 @@ from electrumsv.app_state import app_state
 from electrumsv.i18n import _
 
 from .util import icon_path, read_QIcon
+from .theme_icons import PaletteIconLabel
 
 
 class XToolButton(QToolButton):
@@ -32,7 +33,7 @@ class XToolButton(QToolButton):
         Rect = opt.rect
         h = Rect.height()
         w = Rect.width()
-        iconSize = max(h, w) # - 2 * self.pad
+        iconSize = max(16, min(h, w) - 2 * self.pad)
         opt.iconSize = QSize(iconSize, iconSize)
         # Draw
         self.style().drawComplexControl(QStyle.CC_ToolButton, opt, qp, self)
@@ -137,16 +138,14 @@ class StatusBar(QStatusBar):
         balance_widget = QToolButton()
         balance_widget.setAutoRaise(True)
         balance_widget.setPopupMode(QToolButton.MenuButtonPopup)
-        balance_icon_label = QLabel("")
-        balance_icon_label.setPixmap(QPixmap(icon_path("sb_balance.png")))
+        balance_icon_label = PaletteIconLabel(icon_path("sb_balance.png"))
         hbox = QHBoxLayout()
         hbox.setSpacing(2)
         hbox.setSizeConstraint(hbox.SetFixedSize)
         hbox.addWidget(balance_icon_label)
         self._balance_bsv_label = QLabel("")
         hbox.addWidget(self._balance_bsv_label)
-        self._balance_equals_label = QLabel("")
-        self._balance_equals_label.setPixmap(QPixmap(icon_path("sb_approximate")))
+        self._balance_equals_label = PaletteIconLabel(icon_path("sb_approximate.png"))
         hbox.addWidget(self._balance_equals_label)
         self._balance_fiat_label = QLabel("")
         hbox.addWidget(self._balance_fiat_label)
@@ -159,16 +158,14 @@ class StatusBar(QStatusBar):
 
         self._fiat_widget = QWidget()
         self._fiat_widget.setVisible(False)
-        estimate_icon_label = QLabel("")
-        estimate_icon_label.setPixmap(QPixmap(icon_path("sb_fiat.png")))
+        estimate_icon_label = PaletteIconLabel(icon_path("sb_fiat.png"))
         hbox = QHBoxLayout()
         hbox.setSpacing(2)
         hbox.setSizeConstraint(hbox.SetFixedSize)
         hbox.addWidget(estimate_icon_label)
         self._fiat_bsv_label = QLabel("")
         hbox.addWidget(self._fiat_bsv_label)
-        approximate_icon_label = QLabel("")
-        approximate_icon_label.setPixmap(QPixmap(icon_path("sb_approximate")))
+        approximate_icon_label = PaletteIconLabel(icon_path("sb_approximate.png"))
         hbox.addWidget(approximate_icon_label)
         self._fiat_value_label = QLabel("")
         fm = self._fiat_bsv_label.fontMetrics()
@@ -179,8 +176,7 @@ class StatusBar(QStatusBar):
         self.addPermanentWidget(self._fiat_widget)
 
         network_widget = QWidget()
-        network_icon_label = QLabel("")
-        network_icon_label.setPixmap(QPixmap(icon_path("sb_network.png")))
+        network_icon_label = PaletteIconLabel(icon_path("sb_network.png"))
         hbox = QHBoxLayout()
         hbox.setSpacing(2)
         hbox.addWidget(network_icon_label)

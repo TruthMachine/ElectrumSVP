@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/lucide-icons/lucide",
+  "commit": "86d323875837015ddf74d044df1f4c09e99c6885",
+  "license": "ISC; Feather-derived icons retain the included MIT notice",
+  "sha256": {
+    "rotate-ccw-clock": "a98ff758157910b9fc9d42d5d5dc80c2f4e037afa5f8ea4dee5f5649f03d438d",
+    "list": "ff97a7379eb962ddc3863bb59f0f45875ac8da91aac8a38a67361e7118d2d627",
+    "send": "a489257f447b808ab6b258ae888fa49686885bbc30a7a2774d97a01f11f9cd5e",
+    "arrow-down-left": "a0e72a3f47e9a8803ddfce675e3caf9119ef041b38c103065ec707af15d90202",
+    "contact-round": "626df5e99895ce1b0c8c62f80d6ff2aef227bf7e1b937d3898edb389656ce574",
+    "bell": "394889e9631fe3a9a63be9a479a95b451b708e432d895978d21d9130b5ee5dbe",
+    "coins": "bcfec9236fd10d0aadbf90951f61dd31ec7cedc72dd38d2639f95c2b8437b9f1",
+    "terminal": "4f9b6488b237757d5cb615ccd07502fa99774826839e2a99017784bdb2596f1a",
+    "folder-plus": "76d62eb7796ce6c7e303c437464923de2d1ae19a5c8d010f8b36dfc1d6180890",
+    "logs": "86ea68bf946c5717c5a873d6e679c0ce90b95e04fb91164e3f978d0cab783fc8",
+    "network": "626be730feea1e5ea7539fbf78b4a3fcb927ce5d7dc43364f2216908672ac792",
+    "settings": "0ae27fd0f81999229e3127ac96c5b32edfea448e291d509e76212b917551d66b",
+    "refresh-cw": "2e10dd403c85a24f163d59fc6151aa21147fe9402e1305dfc8979208caee8944",
+    "funnel": "288f869330602e29a640099ffc5d6ac01caadad2ef6f8aac1138b8bf91ccd752",
+    "funnel-x": "5ca130d8023ef23446758c107c74b85b44c1d2d913f67568bc0bd2a14feed594",
+    "download": "3daeee13ded5a3afa2198b1bb4e2262d163922f97d96ac6ff9953e8ed4fe039d",
+    "banknote": "212d628014554424ec0041ab56e8869149d255b7077cfd6977d4ab2be32e8cb1",
+    "globe": "82c6b8fa0b8e8d775ec9becd86f74a4e50bff7bee4c81f7362de45348504f14d",
+    "equal-approximately": "5287d3e8f856372697f2ec218b719823c46b0a8ce6fabae8e0e01d3570fb14fb",
+    "qr-code": "920cb79ab4b2fd23c36a16de3ca533c4896cb989adb823eb7dec97fd840d30f5",
+    "file": "499039795d7412d67664ff79d2eb6b7412e746b24c18c8fd8aba383c24ddada0",
+    "usb": "6d3feae2abc694973d7dc8000a7016688306b82530426288c163257ac90d3e21",
+    "circle-question-mark": "8cfdf0cbb7a743e2fa0efe5d7f90c31729dc071057d7f95f2363bfb773997f7e",
+    "check": "7f33acc9a77a61659531044525fc008edebe215bf4dcf1c789c8674ad3277db0",
+    "circle-exclamation-point": "ce3e98b7a03b78c0071131df42466e4e1ff5187fccad30e739ec9ce951cf685a",
+    "copy": "ea80e566c7a12628a447cb53179b19aea4f60b9143e2becd0d0f20bf260e5718"
+  }
+}
