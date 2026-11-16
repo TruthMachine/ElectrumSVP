@@ -287,7 +287,7 @@ def script_bytes_to_asm(script: Script) -> str:
     parts = []
     try:
         for op in script.ops():
-            parts.append(op_to_asm_word(op))
+            parts.append(op_to_asm_word(op, False))
     except TruncatedScriptError:
         parts.insert(0, "[decoding error]")
         parts.append("[script truncated]")
