@@ -152,9 +152,10 @@ msgstr "&Đã mở gần đây"
 msgid "&Report Bug"
 msgstr "&Báo cáo lỗi"
 
-#: electrumsv/gui/qt/account_wizard.py:886
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "&Rescan"
-msgstr ""
+msgstr "&Quét lại"
 
 #: electrumsv/gui/qt/main_window.py:564
 msgid "&Save Copy"
@@ -360,9 +361,11 @@ msgstr ""
 msgid "An uninitialized Digital Bitbox is detected."
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:934
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
 msgid "An unnamed {}"
-msgstr ""
+msgstr "Một {0} chưa được đặt tên"
 
 #: electrumsv/devices/keepkey/qt.py:458 electrumsv/devices/trezor/qt.py:447
 msgid "Apply"
@@ -517,11 +520,11 @@ msgstr ""
 msgid "Cancel"
 msgstr "Huỷ bỏ"
 
-#: electrumsv/devices/ledger/ledger.py:277
-#: electrumsv/devices/ledger/ledger.py:291
-#: electrumsv/devices/ledger/ledger.py:404
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Cancelled by user"
-msgstr ""
+msgstr "Bị người dùng hủy"
 
 #: electrumsv/devices/hw_wallet/qt.py:229
 msgid "Cannot find python library for"
@@ -671,9 +674,11 @@ msgstr ""
 msgid "Confirm Toggle Passphrase Protection"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:366
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Confirm Transaction on your Ledger device..."
-msgstr ""
+msgstr "Xác nhận giao dịch trên thiết bị Ledger của bạn..."
 
 #: electrumsv/devices/keepkey/client.py:194
 #: electrumsv/devices/trezor/client.py:25
@@ -744,9 +749,11 @@ msgstr ""
 msgid "Confirmed"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:392
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Confirmed. Signing Transaction..."
-msgstr ""
+msgstr "Đã xác nhận. Ký giao dịch..."
 
 #: electrumsv/gui/qt/main_window.py:1007
 msgid "Connected"
@@ -872,13 +879,15 @@ msgstr ""
 msgid "Date: {}"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:979
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages"
-msgstr ""
+msgstr "Thông báo gỡ lỗi"
 
-#: electrumsv/gui/qt/account_wizard.py:1211
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages:"
-msgstr ""
+msgstr "Thông báo gỡ lỗi:"
 
 #: electrumsv/gui/qt/main_window.py:2348
 msgid "Decrypt"
@@ -902,10 +911,10 @@ msgstr "Xoá"
 msgid "Delete invoice?"
 msgstr "Xoá hoá đơn?"
 
-#: electrumsv/gui/qt/account_wizard.py:757
-#: electrumsv/gui/qt/account_wizard.py:1173
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Derivation path"
-msgstr ""
+msgstr "Đường dẫn xuất phát"
 
 #: electrumsv/gui/qt/main_window.py:1133 electrumsv/gui/qt/main_window.py:1430
 #: electrumsv/gui/qt/transaction_dialog.py:280
@@ -942,9 +951,11 @@ msgstr ""
 msgid "Device communication error. Please unplug and replug your Digital Bitbox."
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:199
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Device not in Bitcoin Cash mode"
-msgstr ""
+msgstr "Thiết bị không ở chế độ Bitcoin Cash"
 
 #: electrumsv/devices/keepkey/qt.py:512 electrumsv/devices/trezor/qt.py:525
 msgid "Disable PIN"
@@ -1126,10 +1137,12 @@ msgstr "Đã được mã hoá"
 msgid "Encryption and decryption are not implemented by {}"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:259
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:453
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
 msgid "Encryption and decryption are not supported for {}"
-msgstr ""
+msgstr "Mã hóa và giải mã không được hỗ trợ cho {0}"
 
 #: electrumsv/i18n.py:50
 msgid "English"
@@ -1326,11 +1339,11 @@ msgstr ""
 msgid "External party"
 msgstr ""
 
-#: electrumsv/devices/trezor/trezor.py:248
-#: electrumsv/devices/ledger/ledger.py:494
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:705
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Failed to create a client for this device."
-msgstr ""
+msgstr "Không tạo được ứng dụng khách cho thiết bị này."
 
 #: electrumsv/exceptions.py:39 electrumsv/exceptions.py:44
 msgid "Failed to import file."
@@ -1473,9 +1486,10 @@ msgstr ""
 msgid "Identity Type"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:72
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "If any problems were encountered during the scan, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
-msgstr ""
+msgstr "Nếu gặp phải bất kỳ vấn đề nào trong quá trình quét, chúng sẽ được hiển thị bên dưới. Nếu không có dấu hiệu nào cho thấy tại sao không tìm thấy ví phần cứng của bạn, hãy nhấn nút 'Trợ giúp' để được hướng dẫn thêm."
 
 #: electrumsv/gui/qt/account_wizard.py:78
 msgid "If any problems were encountered during the setup attempt, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
@@ -1541,10 +1555,10 @@ msgstr ""
 msgid "Import Account From Text With Customizations"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:866
-#: electrumsv/gui/qt/account_wizard.py:1093
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Import a Hardware Wallet as an Account"
-msgstr ""
+msgstr "Nhập Ví phần cứng làm tài khoản"
 
 #: electrumsv/gui/qt/accounts_view.py:120
 #: electrumsv/gui/qt/accounts_view.py:163
@@ -1765,13 +1779,17 @@ msgstr "Ngôn ngữ"
 msgid "Latvian"
 msgstr ""
 
-#: electrumsv/devices/ledger/qt.py:48
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "Ledger Status"
-msgstr ""
+msgstr "Trạng thái Ledger"
 
-#: electrumsv/devices/ledger/auth2fa.py:39
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "Ledger Wallet Authentication"
-msgstr ""
+msgstr "Xác thực Ledger Wallet"
 
 #: electrumsv/devices/keepkey/keepkey.py:231
 #: electrumsv/devices/trezor/trezor.py:163
@@ -1822,11 +1840,11 @@ msgstr ""
 msgid "Lower-case letters"
 msgstr ""
 
-#: electrumsv/devices/trezor/trezor.py:249
-#: electrumsv/devices/ledger/ledger.py:495
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:706
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Make sure it is in the correct state."
-msgstr ""
+msgstr "Hãy chắc chắn rằng nó ở đúng trạng thái."
 
 #: electrumsv/devices/hw_wallet/plugin.py:109
 #: electrumsv/devices/hw_wallet/qt.py:230
@@ -2316,9 +2334,10 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:913
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Please wait for hardware wallets to be located."
-msgstr ""
+msgstr "Vui lòng đợi ví phần cứng được định vị."
 
 #: electrumsv/gui/qt/wallet_wizard.py:707
 msgid "Please wait while your wallet is backed up and migrated to the new format."
@@ -2573,9 +2592,10 @@ msgstr ""
 msgid "Seed type"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:945
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Select a device"
-msgstr ""
+msgstr "Chọn một thiết bị"
 
 #: electrumsv/gui/qt/wallet_wizard.py:366
 msgid "Select an existing wallet"
@@ -2721,9 +2741,11 @@ msgstr ""
 msgid "Show/Hide"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:428
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Showing address ..."
-msgstr ""
+msgstr "Đang hiển thị địa chỉ ..."
 
 #: electrumsv/gui/qt/main_window.py:2264
 #: electrumsv/gui/qt/transaction_dialog.py:107
@@ -2850,10 +2872,10 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: electrumsv/gui/qt/network_dialog.py:319 electrumsv/gui/qt/request_list.py:50
-#: electrumsv/gui/qt/invoice_list.py:46
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
 msgid "Status"
-msgstr ""
+msgstr "Trạng thái"
 
 #: electrumsv/gui/qt/transaction_dialog.py:282
 msgid "Status:"
@@ -2996,9 +3018,11 @@ msgstr ""
 msgid "This blockchain is used to verify the transactions sent by your transaction server."
 msgstr ""
 
-#: electrumsv/devices/ledger/qt.py:81
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "This button does nothing."
-msgstr ""
+msgstr "Nút này không làm gì cả."
 
 #: electrumsv/gui/qt/main_window.py:1154
 msgid "This information is seen by the recipient if you send them a signed payment request."
@@ -3522,9 +3546,11 @@ msgstr ""
 msgid "Your Ledger Wallet wants to tell you a one-time PIN code.<br><br>For best security you should unplug your device, open a text editor on another computer, put your cursor into it, and plug your device into that computer. It will output a summary of the transaction being signed and a one-time PIN.<br><br>Verify the transaction summary and type the PIN code here.<br><br>Before pressing enter, plug the device back into this computer.<br>"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:85
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Your Ledger is locked. Please unlock it."
-msgstr ""
+msgstr "Ledger của bạn đã bị khóa. Hãy mở khóa nó."
 
 #: electrumsv/gui/qt/coinsplitting_tab.py:248
 msgid "Your browser will open to a faucet that can provide you with a small amount of SV coin. Once you have operated the faucet, and obtained it, ElectrumSV will detect it."
@@ -3653,9 +3679,10 @@ msgstr ""
 msgid "fee is absurdly high"
 msgstr ""
 
-#: electrumsv/device.py:305 electrumsv/gui/qt/account_wizard.py:933
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "initialized"
-msgstr ""
+msgstr "khởi tạo"
 
 #: electrumsv/network.py:73
 msgid "insufficient fees or priority"
@@ -3753,9 +3780,10 @@ msgstr ""
 msgid "very small \"dust\" payments"
 msgstr ""
 
-#: electrumsv/device.py:305 electrumsv/gui/qt/account_wizard.py:933
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "wiped"
-msgstr ""
+msgstr "xóa sạch"
 
 #: electrumsv/gui/qt/transaction_dialog.py:434
 msgid "{:,d} confirmations (in block {:,d})"
@@ -3773,3 +3801,865 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid "Install the dependencies and reopen the wallet to sign."
+msgstr "Cài đặt các phụ thuộc và mở lại ví để ký."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid "The connected device does not match this wallet. Select the correct device and passphrase, then retry."
+msgstr "Thiết bị được kết nối không khớp với ví này. Chọn đúng thiết bị và cụm mật khẩu, sau đó thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Device disconnected. Please reconnect and try again."
+msgstr "Đã ngắt kết nối thiết bị. Vui lòng kết nối lại và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "A hardware wallet operation is already in progress. Finish or reject it on the device, then try again."
+msgstr "Một hoạt động ví phần cứng đang được tiến hành. Hãy hoàn tất hoặc từ chối nó trên thiết bị, sau đó thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Address display is unavailable for this account."
+msgstr "Hiển thị địa chỉ không có sẵn cho tài khoản này."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Choose an account derivation path."
+msgstr "Chọn đường dẫn phái sinh tài khoản."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Connect the device, unlock it and refresh. No USB interface was found; this alone does not establish whether it is locked."
+msgstr "Kết nối thiết bị, mở khóa và làm mới. Không tìm thấy giao diện USB; riêng điều này không xác định liệu nó có bị khóa hay không."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device attempted to replace an existing signature."
+msgstr "Thiết bị đã cố gắng thay thế chữ ký hiện có."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device did not return an extended public key."
+msgstr "Thiết bị không trả về khóa công khai mở rộng."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an invalid message signature."
+msgstr "Thiết bị trả về chữ ký tin nhắn không hợp lệ."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected input count."
+msgstr "Thiết bị trả về số lượng đầu vào không mong muốn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected signature count."
+msgstr "Thiết bị trả về số lượng chữ ký không mong muốn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Enter a message between 1 and 65535 UTF-8 bytes."
+msgstr "Nhập tin nhắn từ 1 đến 65535 byte UTF-8."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Hardware signing requires SIGHASH_ALL | FORKID (0x41)."
+msgstr "Việc ký phần cứng yêu cầu SIGHASH_ALL | FORKID (0x41)."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Initialize this device with its manufacturer application before importing it. Never enter its recovery seed into ElectrumSVP."
+msgstr "Khởi tạo thiết bị này bằng ứng dụng của nhà sản xuất trước khi nhập thiết bị. Không bao giờ nhập hạt giống khôi phục của nó vào ElectrumSVP."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Install the optional {} dependencies."
+msgstr "Cài đặt các phụ thuộc {0} tùy chọn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Optional previous-transaction verification is implemented for Ledger only."
+msgstr "Xác minh giao dịch trước tùy chọn chỉ được triển khai cho Ledger."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a device of the same brand as this hardware account."
+msgstr "Chọn một thiết bị cùng nhãn hiệu với tài khoản phần cứng này."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Selecting individual inputs is implemented for Ledger only."
+msgstr "Việc chọn đầu vào riêng lẻ chỉ được triển khai cho Ledger."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "The selected device is unavailable. Refresh and retry."
+msgstr "Thiết bị đã chọn không khả dụng. Làm mới và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "This adapter supports BSV mainnet only."
+msgstr "Bộ điều hợp này chỉ hỗ trợ mạng chính BSV."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "This device does not match the current account. Check the selected device, account path and passphrase."
+msgstr "Thiết bị này không khớp với tài khoản hiện tại. Kiểm tra thiết bị đã chọn, đường dẫn tài khoản và cụm mật khẩu."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Unknown hardware wallet: {}"
+msgstr "Ví phần cứng không xác định: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "USB device found. Import or select its account to verify wallet pairing. Firmware and signing readiness have not been checked."
+msgstr "Đã tìm thấy thiết bị USB. Nhập hoặc chọn tài khoản của nó để xác minh việc ghép nối ví. Firmware và sự sẵn sàng ký kết chưa được kiểm tra."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/qt.py
+msgid "Hardware wallet connection status"
+msgstr "Trạng thái kết nối ví phần cứng"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Initialize the device with its manufacturer application."
+msgstr "Khởi tạo thiết bị với ứng dụng của nhà sản xuất."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "A complete previous transaction is unavailable."
+msgstr "Một giao dịch hoàn chỉnh trước đó không có sẵn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Input/output count exceeds this model’s verification budget."
+msgstr "Số lượng đầu vào/đầu ra vượt quá ngân sách xác minh của mô hình này."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction amount does not match the requested input."
+msgstr "Số tiền giao dịch trước đó không khớp với thông tin đầu vào được yêu cầu."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction does not match the requested input."
+msgstr "Giao dịch trước đó không khớp với đầu vào được yêu cầu."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction script does not match the requested input."
+msgstr "Tập lệnh giao dịch trước đó không khớp với đầu vào được yêu cầu."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transactions exceed this model’s byte, script or communication budget."
+msgstr "Các giao dịch trước đó vượt quá ngân sách byte, tập lệnh hoặc truyền thông của mô hình này."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "This app version is outside the trusted-input route."
+msgstr "Phiên bản ứng dụng này nằm ngoài tuyến đầu vào đáng tin cậy."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Bitcoin Cash is open. Wallet pairing is checked separately before use."
+msgstr "Bitcoin Cash đang mở. Việc ghép nối ví được kiểm tra riêng trước khi sử dụng."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Cannot open Ledger. Close Ledger Wallet, browser device sessions and other wallet applications, then reconnect, unlock and retry."
+msgstr "Không thể mở Ledger. Đóng Ledger Wallet, phiên thiết bị trình duyệt và các ứng dụng ví khác, sau đó kết nối lại, mở khóa và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Enter the PIN on this device, then refresh."
+msgstr "Nhập PIN trên thiết bị này rồi làm mới."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Full verification of {} inputs will send {:.1f} KiB of previous transactions to your Ledger. Verification and signing may take several minutes. Keep the device connected and review the transaction on its screen when prompted. Continue with full verification?"
+msgstr "Việc xác minh đầy đủ các đầu vào {0} sẽ gửi {1:.1f} KiB của các giao dịch trước đó tới Ledger của bạn. Việc xác minh và ký có thể mất vài phút. Giữ thiết bị được kết nối và xem lại giao dịch trên màn hình khi được nhắc. Tiếp tục xác minh đầy đủ?"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Ledger is locked. Enter your PIN on the device and retry."
+msgstr "Ledger đã bị khóa. Nhập PIN của bạn trên thiết bị và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Open the Bitcoin Cash app on your Ledger (currently: {})."
+msgstr "Mở ứng dụng Bitcoin Cash trên Ledger của bạn (hiện tại: {0})."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Opening Bitcoin Cash on the selected Ledger. Confirm on the device if requested."
+msgstr "Mở Bitcoin Cash trên Ledger đã chọn. Xác nhận trên thiết bị nếu được yêu cầu."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Previous-transaction verification was switched off for this signing operation."
+msgstr "Xác minh giao dịch trước đó đã bị tắt đối với thao tác ký này."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts are unverified."
+msgstr "Xem lại giao dịch trên Ledger của bạn. Số lượng đầu vào chưa được xác minh."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts were checked against previous transactions; chain status and coinbase maturity are checked by the wallet."
+msgstr "Xem lại giao dịch trên Ledger của bạn. Số tiền đầu vào đã được kiểm tra so với các giao dịch trước đó; trạng thái chuỗi và thời gian đáo hạn của coinbase được kiểm tra bằng ví."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Signing input {} of {} on your Ledger..."
+msgstr "Đang ký đầu vào {0} của {1} trên Ledger của bạn..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The Ledger app rejected this message. Check the derivation path and try a shorter message supported by your app version."
+msgstr "Ứng dụng Ledger đã từ chối thông báo này. Kiểm tra đường dẫn phái sinh và thử tin nhắn ngắn hơn được phiên bản ứng dụng của bạn hỗ trợ."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The address displayed by the Ledger does not match this wallet. Check the selected device and account."
+msgstr "Địa chỉ được hiển thị bởi Ledger không khớp với ví này. Kiểm tra thiết bị và tài khoản đã chọn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The device cannot verify input amounts against previous transactions. It may show \"unverified inputs\". Continue with this reduced verification?"
+msgstr "Thiết bị không thể xác minh số tiền đầu vào so với các giao dịch trước đó. Nó có thể hiển thị \"unverified inputs\". Tiếp tục với mức xác minh đã giảm này?"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Unlock this device before signing. The wallet can request opening Bitcoin Cash on the selected device; confirm there if asked."
+msgstr "Mở khóa thiết bị này trước khi ký. Ví có thể yêu cầu mở Bitcoin Cash trên thiết bị đã chọn; xác nhận ở đó nếu được hỏi."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Verifying input {} of {} on your Ledger..."
+msgstr "Đang xác minh đầu vào {0} của {1} trên Ledger của bạn..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Verifying previous transactions on your Ledger..."
+msgstr "Đang xác minh các giao dịch trước đó trên Ledger của bạn..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger did not reconnect with the expected app. Unlock it, close other wallet applications and select it again."
+msgstr "Ledger đã chọn không kết nối lại với ứng dụng dự kiến. Mở khóa nó, đóng các ứng dụng ví khác và chọn lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger is locked. Enter the PIN on that device and retry."
+msgstr "Ledger đã chọn đã bị khóa. Nhập PIN trên thiết bị đó và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Cannot write to Ledger. Close Ledger Wallet and retry."
+msgstr "Không thể ghi vào Ledger. Đóng Ledger Wallet và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger connection is closed. Reconnect and try again."
+msgstr "Kết nối Ledger bị đóng. Hãy kết nối lại và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger did not respond. Finish or reject the request on the device, reconnect it, close other wallet applications and retry."
+msgstr "Ledger không phản hồi. Hoàn tất hoặc từ chối yêu cầu trên thiết bị, kết nối lại, đóng các ứng dụng ví khác và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger is busy with another request. Finish it and try again."
+msgstr "Ledger đang bận với một yêu cầu khác. Hãy hoàn thành nó và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger returned an incomplete response."
+msgstr "Ledger trả về phản hồi không đầy đủ."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "This adapter requires a Ledger Nano USB device."
+msgstr "Bộ chuyển đổi này yêu cầu thiết bị Ledger Nano USB."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Connect hardware wallet"
+msgstr "Kết nối ví phần cứng"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Use an initialized Ledger, Trezor, KeepKey or BitBox01. Keep the recovery seed on your device. Ledger requires the Bitcoin Cash app. These adapters are experimental; check the tested-version list before use."
+msgstr "Sử dụng Ledger, Trezor, KeepKey hoặc BitBox01 đã khởi tạo. Giữ hạt giống khôi phục trên thiết bị của bạn. Ledger yêu cầu ứng dụng Bitcoin Cash. Những bộ chuyển đổi này chỉ mang tính thử nghiệm; kiểm tra danh sách phiên bản thử nghiệm trước khi sử dụng."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account check cancelled. Select the device and retry."
+msgstr "Kiểm tra tài khoản đã bị hủy. Chọn thiết bị và thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Amount (satoshis)"
+msgstr "Số tiền (satoshi)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Application / version"
+msgstr "Ứng dụng/phiên bản"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Bitcoin Cash open"
+msgstr "Bitcoin Cash mở"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose inputs to sign"
+msgstr "Chọn đầu vào để ký"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and check current account"
+msgstr "Kết nối và kiểm tra tài khoản hiện tại"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connected; pairing unchecked"
+msgstr "Đã kết nối; đã bỏ chọn ghép nối"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Continue to device"
+msgstr "Tiếp tục đến thiết bị"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Current account paths: {}"
+msgstr "Đường dẫn tài khoản hiện tại: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Device"
+msgstr "Thiết bị"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Follow the instructions on your device.\n"
+"To cancel, reject the request on the device."
+msgstr ""
+"Làm theo hướng dẫn trên thiết bị của bạn.\n"
+"Để hủy, hãy từ chối yêu cầu trên thiết bị."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet"
+msgstr "Ví phần cứng"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet dependencies unavailable"
+msgstr "Phụ thuộc ví phần cứng không có sẵn"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Hardware wallets"
+msgstr "Ví phần cứng"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Input"
+msgstr "đầu vào"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger may display only a message hash. Compare it with this SHA-256 of the exact UTF-8 message, including spaces and newlines. The device has not displayed the message text."
+msgstr "Ledger chỉ có thể hiển thị hàm băm thông báo. So sánh nó với SHA-256 này của thông báo UTF-8 chính xác, bao gồm cả dấu cách và dòng mới. Máy chưa hiển thị nội dung tin nhắn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger signing options"
+msgstr "Tùy chọn ký Ledger"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Locked"
+msgstr "Đã khóa"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Matches a hardware key in the current account. The complete account public key was checked. It will be checked again before use."
+msgstr "Khớp với khóa phần cứng trong tài khoản hiện tại. Khóa công khai đầy đủ của tài khoản đã được kiểm tra. Nó sẽ được kiểm tra lại trước khi sử dụng."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "No hardware account is selected. Connection status is available below."
+msgstr "Không có tài khoản phần cứng nào được chọn. Trạng thái kết nối có sẵn bên dưới."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Not detected"
+msgstr "Không được phát hiện"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Only checked inputs will receive new signatures. Existing signatures will be kept. Ledger still reviews the whole transaction: each new signature uses SIGHASH_ALL | FORKID (0x41), committing to all inputs and outputs. Save the incomplete transaction as JSON to pass it to another signer."
+msgstr "Chỉ những đầu vào được kiểm tra mới nhận được chữ ký mới. Các chữ ký hiện có sẽ được giữ lại. Ledger vẫn xem xét toàn bộ giao dịch: mỗi chữ ký mới sử dụng SIGHASH_ALL | FORKID (0x41), cam kết tất cả đầu vào và đầu ra. Lưu giao dịch chưa hoàn tất dưới dạng JSON để chuyển nó cho người ký khác."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Open Bitcoin Cash to sign"
+msgstr "Mở Bitcoin Cash để ký"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Outpoint"
+msgstr "Điểm ngoài"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh"
+msgstr "Làm cho khỏe lại"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh to read connection status. This does not sign anything."
+msgstr "Làm mới để đọc trạng thái kết nối. Điều này không ký bất cứ điều gì."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "To add an account, choose Add account → Connect hardware wallet. For an existing account, use its Keys tab to display an address or sign a message."
+msgstr "Để thêm tài khoản, chọn Thêm tài khoản → Kết nối ví phần cứng. Đối với tài khoản hiện có, hãy sử dụng tab Khóa của tài khoản đó để hiển thị địa chỉ hoặc ký tin nhắn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Unavailable"
+msgstr "Không có sẵn"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Unlock the selected device on its own screen. Confirm any app-opening request. Then the account public key will be checked."
+msgstr "Mở khóa thiết bị đã chọn trên màn hình riêng của nó. Xác nhận mọi yêu cầu mở ứng dụng. Sau đó, khóa công khai của tài khoản sẽ được kiểm tra."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify previous transactions on the device (recommended)"
+msgstr "Xác minh các giao dịch trước đó trên thiết bị (khuyến nghị)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "When disabled, complete previous transactions are not sent. The device may show “unverified inputs” and cannot independently verify the fee. The current transaction’s inputs and outputs are still sent, and every requested input still needs its own signature. This may therefore remain slow."
+msgstr "Khi bị vô hiệu hóa, các giao dịch hoàn chỉnh trước đó sẽ không được gửi. Thiết bị có thể hiển thị “unverified inputs” và không thể xác minh khoản phí một cách độc lập. Đầu vào và đầu ra của giao dịch hiện tại vẫn được gửi và mọi đầu vào được yêu cầu vẫn cần có chữ ký riêng. Do đó, điều này có thể vẫn còn chậm."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "When enabled, available complete previous transactions are sent to the device to verify input amounts. Large transactions may take several minutes. If data is missing or exceeds the device model’s work budget, you will be asked before continuing with reduced verification."
+msgstr "Khi được bật, các giao dịch hoàn chỉnh trước đó có sẵn sẽ được gửi đến thiết bị để xác minh số tiền đầu vào. Các giao dịch lớn có thể mất vài phút. Nếu dữ liệu bị thiếu hoặc vượt quá ngân sách hoạt động của kiểu thiết bị, bạn sẽ được hỏi trước khi tiếp tục xác minh giảm bớt."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "{} inputs · {} outputs"
+msgstr "Đầu vào {0} · Đầu ra {1}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "A scan has been unable to locate any connected hardware wallets. Connect and unlock your hardware wallet, close other wallet applications, then press the 'Rescan' button to try again."
+msgstr "Quá trình quét không thể tìm thấy bất kỳ ví phần cứng nào được kết nối. Kết nối và mở khóa ví phần cứng của bạn, đóng các ứng dụng ví khác, sau đó nhấn nút 'Quét lại' để thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Choose the account derivation path. When reopening an existing account, use its original path: a different account path gives different addresses even on the same device."
+msgstr "Chọn đường dẫn phái sinh tài khoản. Khi mở lại tài khoản hiện có, hãy sử dụng đường dẫn ban đầu của tài khoản đó: đường dẫn tài khoản khác sẽ cung cấp các địa chỉ khác nhau ngay cả trên cùng một thiết bị."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "Connected to your {} hardware wallet."
+msgstr "Đã kết nối với ví phần cứng {0} của bạn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Device setup was cancelled. Go back to try again."
+msgstr "Quá trình thiết lập thiết bị đã bị hủy. Hãy quay lại để thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "The default {} matches traditional BTC/BSV accounts. BCH accounts commonly use m/44'/145'/0'. Keep the original path when checking an existing balance."
+msgstr "{0} mặc định khớp với các tài khoản BTC/BSV truyền thống. Tài khoản BCH thường sử dụng m/44'/145'/0'. Giữ đường dẫn ban đầu khi kiểm tra số dư hiện có."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "The selected device is not ready. Unlock it on its own screen, close other wallet applications, then choose Try again. Ledger can request opening Bitcoin Cash; confirm on the device if asked. To select a different device, go back."
+msgstr "Thiết bị được chọn chưa sẵn sàng. Mở khóa trên màn hình riêng, đóng các ứng dụng ví khác, sau đó chọn Thử lại. Ledger có thể yêu cầu mở Bitcoin Cash; xác nhận trên thiết bị nếu được hỏi. Để chọn một thiết bị khác, hãy quay lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Try again"
+msgstr "Thử lại"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Phần thưởng khai thác không được xác minh trên chuỗi đã chọn"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/keys_view.py
+msgid "Show address on device"
+msgstr "Hiển thị địa chỉ trên thiết bị"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Select an address in the Keys tab and choose Sign/verify message."
+msgstr "Chọn một địa chỉ trong tab Khóa và chọn Ký/xác minh tin nhắn."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "To sign, select an address in the Keys tab and choose Sign/verify message. You can verify any address here."
+msgstr "Để ký, hãy chọn một địa chỉ trong tab Khóa và chọn Ký/xác minh tin nhắn. Bạn có thể xác minh bất kỳ địa chỉ nào ở đây."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Sign selected inputs…"
+msgstr "Ký tên đầu vào đã chọn…"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/i18n.py
+msgid "Chinese (Traditional)"
+msgstr "Tiếng Trung (truyền thống)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "A selected coin depends on an unverified or immature mining reward on the selected chain. Refresh chain data and wait for maturity, then select coins again."
+msgstr "Đồng tiền được chọn phụ thuộc vào phần thưởng khai thác chưa được xác minh hoặc chưa trưởng thành trên chuỗi đã chọn. Làm mới dữ liệu chuỗi và chờ đến hạn, sau đó chọn lại tiền."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "An input depends on an unverified or immature mining reward on the selected chain. Refresh chain data before retrying."
+msgstr "Đầu vào phụ thuộc vào phần thưởng khai thác chưa được xác minh hoặc chưa trưởng thành trên chuỗi đã chọn. Làm mới dữ liệu chuỗi trước khi thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Input selection is currently available for Ledger accounts only."
+msgstr "Lựa chọn đầu vào hiện chỉ khả dụng cho tài khoản Ledger."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Select at least one valid input to sign."
+msgstr "Chọn ít nhất một đầu vào hợp lệ để ký."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Preparing the current transaction ({} inputs) on your Ledger..."
+msgstr "Đang chuẩn bị giao dịch hiện tại (đầu vào {0}) trên Ledger của bạn..."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
+#, python-brace-format
+msgid "Elapsed: {}"
+msgstr "Đã qua: {0}"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid ""
+"Signing message...\n"
+"Message hash: {}"
+msgstr ""
+"Đang ký tin nhắn...\n"
+"Băm tin nhắn: {0}"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/preferences.py
+msgid "System"
+msgstr "Hệ thống"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device cannot provide this account key. Check the derivation "
+"path and passphrase, or select another device."
+msgstr ""
+"Thiết bị đã chọn không thể cung cấp khóa tài khoản này. Kiểm tra đường dẫn "
+"phái sinh và cụm mật khẩu hoặc chọn thiết bị khác."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device uses a different hardware adapter. Select a compatible "
+"device and retry."
+msgstr ""
+"Thiết bị được chọn sử dụng bộ điều hợp phần cứng khác. Chọn một thiết bị "
+"tương thích và thử lại."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a detected device."
+msgstr "Chọn một thiết bị được phát hiện."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "The selected device is not ready. Unlock it and retry."
+msgstr "Thiết bị được chọn chưa sẵn sàng. Mở khóa nó và thử lại."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "This USB interface does not support Ledger wallet communication."
+msgstr "Giao diện USB này không hỗ trợ giao tiếp ví Ledger."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account public key checked. It will be checked again before signing."
+msgstr ""
+"Khóa công khai của tài khoản đã được kiểm tra. Nó sẽ được kiểm tra lại trước"
+" khi ký."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect"
+msgstr "Kết nối"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection details"
+msgstr "Chi tiết kết nối"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account key matches"
+msgstr "Khóa tài khoản trùng khớp"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection cancelled. Select the device and retry."
+msgstr "Kết nối bị hủy. Chọn thiết bị và thử lại."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and unlock a hardware wallet to begin."
+msgstr "Hãy kết nối và mở khóa ví phần cứng để bắt đầu."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"No devices detected. Connect a hardware wallet; this list updates "
+"automatically."
+msgstr ""
+"Không phát hiện thấy thiết bị nào. Kết nối ví phần cứng; danh sách này cập "
+"nhật tự động."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose a device and connect it to check the account public key."
+msgstr "Chọn một thiết bị và kết nối nó để kiểm tra khóa chung của tài khoản."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Select"
+msgstr "Lựa chọn"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Choose a detected device, connect it, then select it after the account key "
+"check passes."
+msgstr ""
+"Chọn một thiết bị được phát hiện, kết nối thiết bị đó, sau đó chọn thiết bị "
+"đó sau khi quá trình kiểm tra khóa tài khoản thành công."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware account key checked; ready to use"
+msgstr "Đã kiểm tra khóa tài khoản phần cứng; sẵn sàng để sử dụng"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "No hardware devices detected"
+msgstr "Không phát hiện thấy thiết bị phần cứng nào"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware device detected, but not available for this account"
+msgstr ""
+"Đã phát hiện thấy thiết bị phần cứng nhưng không có sẵn cho tài khoản này"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger may show “unverified inputs” and cannot verify the fee. Signing many "
+"inputs may still be slow."
+msgstr ""
+"Ledger có thể hiển thị “unverified inputs” và không thể xác minh phí. Việc "
+"ký nhiều đầu vào vẫn có thể chậm."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify input amounts (recommended)"
+msgstr "Xác minh số tiền đầu vào (khuyến nghị)"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger checks previous transactions before signing. Large transactions may "
+"take several minutes."
+msgstr ""
+"Ledger kiểm tra các giao dịch trước khi ký. Giao dịch lớn có thể mất vài "
+"phút."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Inputs: {} · Outputs: {}"
+msgstr "Đầu vào: {} · Đầu ra: {}"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Skipped"
+msgstr "Đã bỏ qua"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Sign inputs"
+msgstr "Ký các đầu vào"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Follow the instructions on your Ledger."
+msgstr "Làm theo hướng dẫn trên Ledger."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signatures verified."
+msgstr "Đã xác minh chữ ký."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid ""
+"Cancellation requested. Finish or reject the current request on your Ledger;"
+" signing will stop before the next device operation."
+msgstr ""
+"Đã yêu cầu hủy. Hoàn tất hoặc từ chối yêu cầu hiện tại trên Ledger; việc ký "
+"sẽ dừng trước thao tác tiếp theo trên thiết bị."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Transaction signing"
+msgstr "Ký giao dịch"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Prepare transaction"
+msgstr "Chuẩn bị giao dịch"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify signatures"
+msgstr "Xác minh chữ ký"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Keep your Ledger connected throughout signing."
+msgstr "Giữ Ledger kết nối trong suốt quá trình ký."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify previous transactions"
+msgstr "Xác minh giao dịch trước"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Review on device"
+msgstr "Kiểm tra trên thiết bị"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Stopped"
+msgstr "Đã dừng"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signing cancelled."
+msgstr "Đã hủy ký."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Complete"
+msgstr "Hoàn tất"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Waiting"
+msgstr "Đang chờ"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "In progress"
+msgstr "Đang thực hiện"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Some input amounts could not be retrieved."
+msgstr "Không thể lấy một số số tiền đầu vào."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid ""
+"Previous transaction data is not stored in this wallet. Use View on block "
+"explorer to inspect it."
+msgstr ""
+"Ví này không lưu dữ liệu giao dịch trước. Hãy dùng “Xem trên trình khám phá "
+"khối”."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Loading input amounts…"
+msgstr "Đang tải số tiền đầu vào…"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Input amounts are unavailable offline."
+msgstr "Không thể lấy số tiền đầu vào khi ngoại tuyến."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Retry"
+msgstr "Thử lại"

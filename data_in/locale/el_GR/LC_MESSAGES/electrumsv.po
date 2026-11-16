@@ -152,9 +152,10 @@ msgstr ""
 msgid "&Report Bug"
 msgstr "&Αναφορά Σφαλμάτων"
 
-#: electrumsv/gui/qt/account_wizard.py:886
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "&Rescan"
-msgstr ""
+msgstr "&Επανάληψη σάρωσης"
 
 #: electrumsv/gui/qt/main_window.py:564
 msgid "&Save Copy"
@@ -360,9 +361,11 @@ msgstr ""
 msgid "An uninitialized Digital Bitbox is detected."
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:934
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
 msgid "An unnamed {}"
-msgstr ""
+msgstr "Ένα ανώνυμο {0}"
 
 #: electrumsv/devices/keepkey/qt.py:458 electrumsv/devices/trezor/qt.py:447
 msgid "Apply"
@@ -517,11 +520,11 @@ msgstr ""
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: electrumsv/devices/ledger/ledger.py:277
-#: electrumsv/devices/ledger/ledger.py:291
-#: electrumsv/devices/ledger/ledger.py:404
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Cancelled by user"
-msgstr ""
+msgstr "Ακυρώθηκε από τον χρήστη"
 
 #: electrumsv/devices/hw_wallet/qt.py:229
 msgid "Cannot find python library for"
@@ -671,9 +674,11 @@ msgstr ""
 msgid "Confirm Toggle Passphrase Protection"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:366
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Confirm Transaction on your Ledger device..."
-msgstr ""
+msgstr "Επιβεβαιώστε τη συναλλαγή στη συσκευή σας Ledger..."
 
 #: electrumsv/devices/keepkey/client.py:194
 #: electrumsv/devices/trezor/client.py:25
@@ -744,9 +749,11 @@ msgstr ""
 msgid "Confirmed"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:392
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Confirmed. Signing Transaction..."
-msgstr ""
+msgstr "Επιβεβαιωμένος. Υπογραφή συναλλαγής..."
 
 #: electrumsv/gui/qt/main_window.py:1007
 msgid "Connected"
@@ -872,13 +879,15 @@ msgstr ""
 msgid "Date: {}"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:979
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages"
-msgstr ""
+msgstr "Εντοπισμός σφαλμάτων μηνυμάτων"
 
-#: electrumsv/gui/qt/account_wizard.py:1211
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages:"
-msgstr ""
+msgstr "Αποσφαλμάτωση μηνυμάτων:"
 
 #: electrumsv/gui/qt/main_window.py:2348
 msgid "Decrypt"
@@ -902,10 +911,10 @@ msgstr "Διαγραφή"
 msgid "Delete invoice?"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:757
-#: electrumsv/gui/qt/account_wizard.py:1173
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Derivation path"
-msgstr ""
+msgstr "Διαδρομή παραγωγής"
 
 #: electrumsv/gui/qt/main_window.py:1133 electrumsv/gui/qt/main_window.py:1430
 #: electrumsv/gui/qt/transaction_dialog.py:280
@@ -942,9 +951,11 @@ msgstr ""
 msgid "Device communication error. Please unplug and replug your Digital Bitbox."
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:199
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Device not in Bitcoin Cash mode"
-msgstr ""
+msgstr "Η συσκευή δεν βρίσκεται σε λειτουργία Bitcoin Cash"
 
 #: electrumsv/devices/keepkey/qt.py:512 electrumsv/devices/trezor/qt.py:525
 msgid "Disable PIN"
@@ -1126,10 +1137,12 @@ msgstr "Κρυπτογραφημένο"
 msgid "Encryption and decryption are not implemented by {}"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:259
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:453
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
 msgid "Encryption and decryption are not supported for {}"
-msgstr ""
+msgstr "Η κρυπτογράφηση και η αποκρυπτογράφηση δεν υποστηρίζονται για το {0}"
 
 #: electrumsv/i18n.py:50
 msgid "English"
@@ -1326,11 +1339,11 @@ msgstr ""
 msgid "External party"
 msgstr ""
 
-#: electrumsv/devices/trezor/trezor.py:248
-#: electrumsv/devices/ledger/ledger.py:494
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:705
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Failed to create a client for this device."
-msgstr ""
+msgstr "Αποτυχία δημιουργίας πελάτη για αυτήν τη συσκευή."
 
 #: electrumsv/exceptions.py:39 electrumsv/exceptions.py:44
 msgid "Failed to import file."
@@ -1473,9 +1486,10 @@ msgstr ""
 msgid "Identity Type"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:72
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "If any problems were encountered during the scan, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
-msgstr ""
+msgstr "Εάν παρουσιάστηκαν προβλήματα κατά τη σάρωση, θα εμφανιστούν παρακάτω. Εάν δεν υπάρχουν ενδείξεις γιατί δεν βρίσκεται το πορτοφόλι υλικού σας, πατήστε το κουμπί «Βοήθεια» για περαιτέρω κατεύθυνση."
 
 #: electrumsv/gui/qt/account_wizard.py:78
 msgid "If any problems were encountered during the setup attempt, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
@@ -1541,10 +1555,10 @@ msgstr ""
 msgid "Import Account From Text With Customizations"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:866
-#: electrumsv/gui/qt/account_wizard.py:1093
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Import a Hardware Wallet as an Account"
-msgstr ""
+msgstr "Εισαγάγετε ένα πορτοφόλι υλικού ως λογαριασμό"
 
 #: electrumsv/gui/qt/accounts_view.py:120
 #: electrumsv/gui/qt/accounts_view.py:163
@@ -1765,13 +1779,17 @@ msgstr "Γλώσσα"
 msgid "Latvian"
 msgstr ""
 
-#: electrumsv/devices/ledger/qt.py:48
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "Ledger Status"
-msgstr ""
+msgstr "Κατάσταση Ledger"
 
-#: electrumsv/devices/ledger/auth2fa.py:39
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "Ledger Wallet Authentication"
-msgstr ""
+msgstr "Ledger Wallet Έλεγχος ταυτότητας"
 
 #: electrumsv/devices/keepkey/keepkey.py:231
 #: electrumsv/devices/trezor/trezor.py:163
@@ -1822,11 +1840,11 @@ msgstr "Δείτε την συναλλαγή"
 msgid "Lower-case letters"
 msgstr ""
 
-#: electrumsv/devices/trezor/trezor.py:249
-#: electrumsv/devices/ledger/ledger.py:495
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:706
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Make sure it is in the correct state."
-msgstr ""
+msgstr "Βεβαιωθείτε ότι είναι στη σωστή κατάσταση."
 
 #: electrumsv/devices/hw_wallet/plugin.py:109
 #: electrumsv/devices/hw_wallet/qt.py:230
@@ -2316,9 +2334,10 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:913
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Please wait for hardware wallets to be located."
-msgstr ""
+msgstr "Περιμένετε να εντοπιστούν τα πορτοφόλια υλικού."
 
 #: electrumsv/gui/qt/wallet_wizard.py:707
 msgid "Please wait while your wallet is backed up and migrated to the new format."
@@ -2573,9 +2592,10 @@ msgstr ""
 msgid "Seed type"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:945
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Select a device"
-msgstr ""
+msgstr "Επιλέξτε μια συσκευή"
 
 #: electrumsv/gui/qt/wallet_wizard.py:366
 msgid "Select an existing wallet"
@@ -2721,9 +2741,11 @@ msgstr ""
 msgid "Show/Hide"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:428
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Showing address ..."
-msgstr ""
+msgstr "Εμφάνιση διεύθυνσης..."
 
 #: electrumsv/gui/qt/main_window.py:2264
 #: electrumsv/gui/qt/transaction_dialog.py:107
@@ -2996,9 +3018,11 @@ msgstr ""
 msgid "This blockchain is used to verify the transactions sent by your transaction server."
 msgstr ""
 
-#: electrumsv/devices/ledger/qt.py:81
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "This button does nothing."
-msgstr ""
+msgstr "Αυτό το κουμπί δεν κάνει τίποτα."
 
 #: electrumsv/gui/qt/main_window.py:1154
 msgid "This information is seen by the recipient if you send them a signed payment request."
@@ -3522,9 +3546,11 @@ msgstr ""
 msgid "Your Ledger Wallet wants to tell you a one-time PIN code.<br><br>For best security you should unplug your device, open a text editor on another computer, put your cursor into it, and plug your device into that computer. It will output a summary of the transaction being signed and a one-time PIN.<br><br>Verify the transaction summary and type the PIN code here.<br><br>Before pressing enter, plug the device back into this computer.<br>"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:85
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Your Ledger is locked. Please unlock it."
-msgstr ""
+msgstr "Το Ledger είναι κλειδωμένο. Ξεκλειδώστε το."
 
 #: electrumsv/gui/qt/coinsplitting_tab.py:248
 msgid "Your browser will open to a faucet that can provide you with a small amount of SV coin. Once you have operated the faucet, and obtained it, ElectrumSV will detect it."
@@ -3653,9 +3679,10 @@ msgstr ""
 msgid "fee is absurdly high"
 msgstr ""
 
-#: electrumsv/device.py:305 electrumsv/gui/qt/account_wizard.py:933
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "initialized"
-msgstr ""
+msgstr "αρχικοποιήθηκε"
 
 #: electrumsv/network.py:73
 msgid "insufficient fees or priority"
@@ -3753,9 +3780,10 @@ msgstr ""
 msgid "very small \"dust\" payments"
 msgstr ""
 
-#: electrumsv/device.py:305 electrumsv/gui/qt/account_wizard.py:933
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "wiped"
-msgstr ""
+msgstr "σκουπίστηκε"
 
 #: electrumsv/gui/qt/transaction_dialog.py:434
 msgid "{:,d} confirmations (in block {:,d})"
@@ -3773,3 +3801,871 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid "Install the dependencies and reopen the wallet to sign."
+msgstr "Εγκαταστήστε τις εξαρτήσεις και ανοίξτε ξανά το πορτοφόλι για υπογραφή."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid "The connected device does not match this wallet. Select the correct device and passphrase, then retry."
+msgstr "Η συνδεδεμένη συσκευή δεν ταιριάζει με αυτό το πορτοφόλι. Επιλέξτε τη σωστή συσκευή και φράση πρόσβασης και, στη συνέχεια, δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Device disconnected. Please reconnect and try again."
+msgstr "Η συσκευή αποσυνδέθηκε. Συνδεθείτε ξανά και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "A hardware wallet operation is already in progress. Finish or reject it on the device, then try again."
+msgstr "Μια λειτουργία πορτοφολιού υλικού είναι ήδη σε εξέλιξη. Ολοκληρώστε ή απορρίψτε το στη συσκευή και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Address display is unavailable for this account."
+msgstr "Η εμφάνιση της διεύθυνσης δεν είναι διαθέσιμη για αυτόν τον λογαριασμό."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Choose an account derivation path."
+msgstr "Επιλέξτε μια διαδρομή απόκτησης λογαριασμού."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Connect the device, unlock it and refresh. No USB interface was found; this alone does not establish whether it is locked."
+msgstr "Συνδέστε τη συσκευή, ξεκλειδώστε την και ανανεώστε τη. Δεν βρέθηκε διεπαφή USB. Αυτό από μόνο του δεν καθορίζει αν είναι κλειδωμένο."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device attempted to replace an existing signature."
+msgstr "Η συσκευή προσπάθησε να αντικαταστήσει μια υπάρχουσα υπογραφή."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device did not return an extended public key."
+msgstr "Η συσκευή δεν επέστρεψε εκτεταμένο δημόσιο κλειδί."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an invalid message signature."
+msgstr "Η συσκευή επέστρεψε μια μη έγκυρη υπογραφή μηνύματος."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected input count."
+msgstr "Η συσκευή επέστρεψε έναν απροσδόκητο αριθμό εισόδων."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected signature count."
+msgstr "Η συσκευή επέστρεψε έναν απροσδόκητο αριθμό υπογραφών."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Enter a message between 1 and 65535 UTF-8 bytes."
+msgstr "Εισαγάγετε ένα μήνυμα μεταξύ 1 και 65535 UTF-8 byte."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Hardware signing requires SIGHASH_ALL | FORKID (0x41)."
+msgstr "Η υπογραφή υλικού απαιτεί SIGHASH_ALL | FORKID (0x41)."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Initialize this device with its manufacturer application before importing it. Never enter its recovery seed into ElectrumSVP."
+msgstr "Αρχικοποιήστε αυτήν τη συσκευή με την εφαρμογή κατασκευαστή της πριν την εισαγάγετε. Μην εισάγετε ποτέ τον σπόρο ανάκτησής του στο ElectrumSVP."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Install the optional {} dependencies."
+msgstr "Εγκαταστήστε τις προαιρετικές εξαρτήσεις {0}."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Optional previous-transaction verification is implemented for Ledger only."
+msgstr "Η προαιρετική επαλήθευση προηγούμενης συναλλαγής εφαρμόζεται μόνο για το Ledger."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a device of the same brand as this hardware account."
+msgstr "Επιλέξτε μια συσκευή της ίδιας μάρκας με αυτόν τον λογαριασμό υλικού."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Selecting individual inputs is implemented for Ledger only."
+msgstr "Η επιλογή μεμονωμένων εισόδων εφαρμόζεται μόνο για το Ledger."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "The selected device is unavailable. Refresh and retry."
+msgstr "Η επιλεγμένη συσκευή δεν είναι διαθέσιμη. Ανανεώστε και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "This adapter supports BSV mainnet only."
+msgstr "Αυτός ο προσαρμογέας υποστηρίζει μόνο mainnet BSV."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "This device does not match the current account. Check the selected device, account path and passphrase."
+msgstr "Αυτή η συσκευή δεν ταιριάζει με τον τρέχοντα λογαριασμό. Ελέγξτε την επιλεγμένη συσκευή, τη διαδρομή λογαριασμού και τη φράση πρόσβασης."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Unknown hardware wallet: {}"
+msgstr "Άγνωστο πορτοφόλι υλικού: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "USB device found. Import or select its account to verify wallet pairing. Firmware and signing readiness have not been checked."
+msgstr "Βρέθηκε συσκευή USB. Εισαγάγετε ή επιλέξτε τον λογαριασμό του για να επαληθεύσετε τη σύζευξη πορτοφολιού. Το υλικολογισμικό και η ετοιμότητα υπογραφής δεν έχουν ελεγχθεί."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/qt.py
+msgid "Hardware wallet connection status"
+msgstr "Κατάσταση σύνδεσης πορτοφολιού υλικού"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Initialize the device with its manufacturer application."
+msgstr "Εκκινήστε τη συσκευή με την εφαρμογή κατασκευαστή της."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "A complete previous transaction is unavailable."
+msgstr "Μια πλήρης προηγούμενη συναλλαγή δεν είναι διαθέσιμη."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Input/output count exceeds this model’s verification budget."
+msgstr "Ο αριθμός εισροών/εξόδων υπερβαίνει τον προϋπολογισμό επαλήθευσης αυτού του μοντέλου."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction amount does not match the requested input."
+msgstr "Το ποσό της προηγούμενης συναλλαγής δεν ταιριάζει με τα στοιχεία που ζητήθηκαν."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction does not match the requested input."
+msgstr "Η προηγούμενη συναλλαγή δεν ταιριάζει με την αιτούμενη είσοδο."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction script does not match the requested input."
+msgstr "Το σενάριο προηγούμενης συναλλαγής δεν ταιριάζει με την αιτούμενη είσοδο."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transactions exceed this model’s byte, script or communication budget."
+msgstr "Οι προηγούμενες συναλλαγές υπερβαίνουν τον προϋπολογισμό byte, σεναρίου ή επικοινωνίας αυτού του μοντέλου."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "This app version is outside the trusted-input route."
+msgstr "Αυτή η έκδοση εφαρμογής βρίσκεται εκτός της διαδρομής αξιόπιστης εισαγωγής."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Bitcoin Cash is open. Wallet pairing is checked separately before use."
+msgstr "Το Bitcoin Cash είναι ανοιχτό. Η αντιστοίχιση πορτοφολιού ελέγχεται ξεχωριστά πριν από τη χρήση."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Cannot open Ledger. Close Ledger Wallet, browser device sessions and other wallet applications, then reconnect, unlock and retry."
+msgstr "Δεν είναι δυνατό το άνοιγμα του Ledger. Κλείστε το Ledger Wallet, τις περιόδους σύνδεσης συσκευής προγράμματος περιήγησης και άλλες εφαρμογές πορτοφολιού και, στη συνέχεια, επανασυνδεθείτε, ξεκλειδώστε και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Enter the PIN on this device, then refresh."
+msgstr "Εισαγάγετε το PIN σε αυτήν τη συσκευή και, στη συνέχεια, ανανεώστε."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Full verification of {} inputs will send {:.1f} KiB of previous transactions to your Ledger. Verification and signing may take several minutes. Keep the device connected and review the transaction on its screen when prompted. Continue with full verification?"
+msgstr "Η πλήρης επαλήθευση των εισόδων {0} θα στείλει {1:.1f} KiB προηγούμενων συναλλαγών στο Ledger. Η επαλήθευση και η υπογραφή ενδέχεται να διαρκέσουν αρκετά λεπτά. Διατηρήστε τη συσκευή συνδεδεμένη και ελέγξτε τη συναλλαγή στην οθόνη της όταν σας ζητηθεί. Συνέχεια με την πλήρη επαλήθευση;"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Ledger is locked. Enter your PIN on the device and retry."
+msgstr "Το Ledger είναι κλειδωμένο. Εισαγάγετε το PIN στη συσκευή και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Open the Bitcoin Cash app on your Ledger (currently: {})."
+msgstr "Ανοίξτε την εφαρμογή Bitcoin Cash στο Ledger (προς το παρόν: {0})."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Opening Bitcoin Cash on the selected Ledger. Confirm on the device if requested."
+msgstr "Άνοιγμα Bitcoin Cash στο επιλεγμένο Ledger. Επιβεβαιώστε στη συσκευή εάν ζητηθεί."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Previous-transaction verification was switched off for this signing operation."
+msgstr "Η επαλήθευση προηγούμενης συναλλαγής απενεργοποιήθηκε για αυτήν τη λειτουργία υπογραφής."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts are unverified."
+msgstr "Ελέγξτε τη συναλλαγή στο Ledger σας. Τα ποσά εισροών δεν έχουν επαληθευτεί."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts were checked against previous transactions; chain status and coinbase maturity are checked by the wallet."
+msgstr "Ελέγξτε τη συναλλαγή στο Ledger σας. Τα ποσά εισροών ελέγχθηκαν σε σχέση με προηγούμενες συναλλαγές. Η κατάσταση της αλυσίδας και η ωριμότητα του coinbase ελέγχονται από το πορτοφόλι."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Signing input {} of {} on your Ledger..."
+msgstr "Υπογραφή εισόδου {0} του {1} στο Ledger..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The Ledger app rejected this message. Check the derivation path and try a shorter message supported by your app version."
+msgstr "Η εφαρμογή Ledger απέρριψε αυτό το μήνυμα. Ελέγξτε τη διαδρομή παραγωγής και δοκιμάστε ένα πιο σύντομο μήνυμα που υποστηρίζεται από την έκδοση της εφαρμογής σας."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The address displayed by the Ledger does not match this wallet. Check the selected device and account."
+msgstr "Η διεύθυνση που εμφανίζεται από το Ledger δεν ταιριάζει με αυτό το πορτοφόλι. Ελέγξτε την επιλεγμένη συσκευή και λογαριασμό."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The device cannot verify input amounts against previous transactions. It may show \"unverified inputs\". Continue with this reduced verification?"
+msgstr "Η συσκευή δεν μπορεί να επαληθεύσει τα ποσά εισόδου σε σχέση με προηγούμενες συναλλαγές. Μπορεί να δείχνει \"unverified inputs\". Θέλετε να συνεχίσετε με αυτήν τη μειωμένη επαλήθευση;"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Unlock this device before signing. The wallet can request opening Bitcoin Cash on the selected device; confirm there if asked."
+msgstr "Ξεκλειδώστε αυτήν τη συσκευή πριν υπογράψετε. Το πορτοφόλι μπορεί να ζητήσει το άνοιγμα του Bitcoin Cash στην επιλεγμένη συσκευή. επιβεβαιώστε εκεί αν σας ζητηθεί."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Verifying input {} of {} on your Ledger..."
+msgstr "Επαλήθευση εισόδου {0} του {1} στο Ledger..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Verifying previous transactions on your Ledger..."
+msgstr "Επαλήθευση προηγούμενων συναλλαγών στο Ledger..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger did not reconnect with the expected app. Unlock it, close other wallet applications and select it again."
+msgstr "Το επιλεγμένο Ledger δεν επανασυνδέθηκε με την αναμενόμενη εφαρμογή. Ξεκλειδώστε το, κλείστε άλλες εφαρμογές πορτοφολιού και επιλέξτε το ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger is locked. Enter the PIN on that device and retry."
+msgstr "Το επιλεγμένο Ledger είναι κλειδωμένο. Εισαγάγετε το PIN σε αυτήν τη συσκευή και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Cannot write to Ledger. Close Ledger Wallet and retry."
+msgstr "Δεν είναι δυνατή η εγγραφή στο Ledger. Κλείστε το Ledger Wallet και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger connection is closed. Reconnect and try again."
+msgstr "Η σύνδεση Ledger είναι κλειστή. Επανασυνδεθείτε και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger did not respond. Finish or reject the request on the device, reconnect it, close other wallet applications and retry."
+msgstr "Το Ledger δεν απάντησε. Ολοκληρώστε ή απορρίψτε το αίτημα στη συσκευή, επανασυνδέστε το, κλείστε άλλες εφαρμογές πορτοφολιού και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger is busy with another request. Finish it and try again."
+msgstr "Το Ledger είναι απασχολημένο με άλλο αίτημα. Τελειώστε το και προσπαθήστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger returned an incomplete response."
+msgstr "Το Ledger επέστρεψε μια ελλιπή απάντηση."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "This adapter requires a Ledger Nano USB device."
+msgstr "Αυτός ο προσαρμογέας απαιτεί μια συσκευή Ledger Nano USB."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Connect hardware wallet"
+msgstr "Συνδέστε το πορτοφόλι υλικού"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Use an initialized Ledger, Trezor, KeepKey or BitBox01. Keep the recovery seed on your device. Ledger requires the Bitcoin Cash app. These adapters are experimental; check the tested-version list before use."
+msgstr "Χρησιμοποιήστε ένα αρχικοποιημένο Ledger, Trezor, KeepKey ή BitBox01. Διατηρήστε τον σπόρο ανάκτησης στη συσκευή σας. Το Ledger απαιτεί την εφαρμογή Bitcoin Cash. Αυτοί οι προσαρμογείς είναι πειραματικοί. ελέγξτε τη λίστα δοκιμασμένων εκδόσεων πριν από τη χρήση."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account check cancelled. Select the device and retry."
+msgstr "Ο έλεγχος λογαριασμού ακυρώθηκε. Επιλέξτε τη συσκευή και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Amount (satoshis)"
+msgstr "Ποσό (satoshis)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Application / version"
+msgstr "Εφαρμογή / έκδοση"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Bitcoin Cash open"
+msgstr "Bitcoin Cash ανοιχτό"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose inputs to sign"
+msgstr "Επιλέξτε εισόδους για υπογραφή"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and check current account"
+msgstr "Συνδεθείτε και ελέγξτε τον τρέχοντα λογαριασμό"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connected; pairing unchecked"
+msgstr "Συνδεδεμένος; μη επιλεγμένη σύζευξη"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Continue to device"
+msgstr "Συνέχεια στη συσκευή"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Current account paths: {}"
+msgstr "Τρέχουσες διαδρομές λογαριασμού: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Device"
+msgstr "Συσκευή"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Follow the instructions on your device.\n"
+"To cancel, reject the request on the device."
+msgstr ""
+"Ακολουθήστε τις οδηγίες στη συσκευή σας.\n"
+"Για ακύρωση, απορρίψτε το αίτημα στη συσκευή."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet"
+msgstr "Πορτοφόλι υλικού"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet dependencies unavailable"
+msgstr "Οι εξαρτήσεις πορτοφολιού υλικού δεν είναι διαθέσιμες"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Hardware wallets"
+msgstr "Πορτοφόλια υλικού"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Input"
+msgstr "Εισαγωγή"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger may display only a message hash. Compare it with this SHA-256 of the exact UTF-8 message, including spaces and newlines. The device has not displayed the message text."
+msgstr "Το Ledger μπορεί να εμφανίζει μόνο έναν κατακερματισμό μηνυμάτων. Συγκρίνετε το με αυτό το SHA-256 του ακριβούς μηνύματος UTF-8, συμπεριλαμβανομένων των διαστημάτων και των νέων γραμμών. Η συσκευή δεν έχει εμφανίσει το κείμενο του μηνύματος."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger signing options"
+msgstr "Επιλογές υπογραφής Ledger"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Locked"
+msgstr "Κλειδωμένο"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Matches a hardware key in the current account. The complete account public key was checked. It will be checked again before use."
+msgstr "Ταιριάζει με ένα κλειδί υλικού στον τρέχοντα λογαριασμό. Ελέγχθηκε το πλήρες δημόσιο κλειδί του λογαριασμού. Θα ελεγχθεί ξανά πριν από τη χρήση."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "No hardware account is selected. Connection status is available below."
+msgstr "Δεν έχει επιλεγεί λογαριασμός υλικού. Η κατάσταση σύνδεσης είναι διαθέσιμη παρακάτω."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Not detected"
+msgstr "Δεν εντοπίστηκε"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Only checked inputs will receive new signatures. Existing signatures will be kept. Ledger still reviews the whole transaction: each new signature uses SIGHASH_ALL | FORKID (0x41), committing to all inputs and outputs. Save the incomplete transaction as JSON to pass it to another signer."
+msgstr "Μόνο οι ελεγμένες είσοδοι θα λαμβάνουν νέες υπογραφές. Οι υπάρχουσες υπογραφές θα διατηρηθούν. Το Ledger εξακολουθεί να ελέγχει ολόκληρη τη συναλλαγή: κάθε νέα υπογραφή χρησιμοποιεί το SIGHASH_ALL | FORKID (0x41), δεσμεύοντας για όλες τις εισόδους και τις εξόδους. Αποθηκεύστε την ημιτελή συναλλαγή ως JSON για να τη μεταβιβάσετε σε άλλον υπογράφοντα."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Open Bitcoin Cash to sign"
+msgstr "Ανοίξτε το Bitcoin Cash για υπογραφή"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Outpoint"
+msgstr "Κερδίζω"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh"
+msgstr "Φρεσκάρω"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh to read connection status. This does not sign anything."
+msgstr "Κάντε ανανέωση για να διαβάσετε την κατάσταση σύνδεσης. Αυτό δεν υπογράφει τίποτα."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "To add an account, choose Add account → Connect hardware wallet. For an existing account, use its Keys tab to display an address or sign a message."
+msgstr "Για να προσθέσετε έναν λογαριασμό, επιλέξτε Προσθήκη λογαριασμού → Σύνδεση πορτοφολιού υλικού. Για έναν υπάρχοντα λογαριασμό, χρησιμοποιήστε την καρτέλα Κλειδιά για να εμφανίσετε μια διεύθυνση ή να υπογράψετε ένα μήνυμα."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Unavailable"
+msgstr "Δυσεύρετος"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Unlock the selected device on its own screen. Confirm any app-opening request. Then the account public key will be checked."
+msgstr "Ξεκλειδώστε την επιλεγμένη συσκευή στη δική της οθόνη. Επιβεβαιώστε οποιοδήποτε αίτημα ανοίγματος εφαρμογής. Στη συνέχεια θα ελεγχθεί το δημόσιο κλειδί του λογαριασμού."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify previous transactions on the device (recommended)"
+msgstr "Επαλήθευση προηγούμενων συναλλαγών στη συσκευή (συνιστάται)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "When disabled, complete previous transactions are not sent. The device may show “unverified inputs” and cannot independently verify the fee. The current transaction’s inputs and outputs are still sent, and every requested input still needs its own signature. This may therefore remain slow."
+msgstr "Όταν είναι απενεργοποιημένη, δεν αποστέλλονται πλήρεις προηγούμενες συναλλαγές. Η συσκευή ενδέχεται να εμφανίζει \"unverified inputs\" και δεν μπορεί να επαληθεύσει ανεξάρτητα τη χρέωση. Οι είσοδοι και οι έξοδοι της τρέχουσας συναλλαγής εξακολουθούν να αποστέλλονται και κάθε είσοδος που ζητήθηκε εξακολουθεί να χρειάζεται τη δική της υπογραφή. Αυτό μπορεί επομένως να παραμείνει αργό."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "When enabled, available complete previous transactions are sent to the device to verify input amounts. Large transactions may take several minutes. If data is missing or exceeds the device model’s work budget, you will be asked before continuing with reduced verification."
+msgstr "Όταν είναι ενεργοποιημένη, οι διαθέσιμες πλήρεις προηγούμενες συναλλαγές αποστέλλονται στη συσκευή για επαλήθευση των ποσών εισόδου. Οι μεγάλες συναλλαγές μπορεί να διαρκέσουν αρκετά λεπτά. Εάν λείπουν δεδομένα ή υπερβαίνουν τον προϋπολογισμό εργασίας του μοντέλου συσκευής, θα ερωτηθείτε πριν συνεχίσετε με μειωμένη επαλήθευση."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "{} inputs · {} outputs"
+msgstr "Είσοδοι {0} · Έξοδοι {1}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "A scan has been unable to locate any connected hardware wallets. Connect and unlock your hardware wallet, close other wallet applications, then press the 'Rescan' button to try again."
+msgstr "Μια σάρωση δεν μπόρεσε να εντοπίσει τυχόν συνδεδεμένα πορτοφόλια υλικού. Συνδέστε και ξεκλειδώστε το πορτοφόλι υλικού σας, κλείστε άλλες εφαρμογές πορτοφολιού και, στη συνέχεια, πατήστε το κουμπί «Επανάληψη σάρωσης» για να προσπαθήσετε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Choose the account derivation path. When reopening an existing account, use its original path: a different account path gives different addresses even on the same device."
+msgstr "Επιλέξτε τη διαδρομή απόκτησης λογαριασμού. Όταν ανοίγετε ξανά έναν υπάρχοντα λογαριασμό, χρησιμοποιήστε την αρχική του διαδρομή: μια διαφορετική διαδρομή λογαριασμού δίνει διαφορετικές διευθύνσεις ακόμα και στην ίδια συσκευή."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "Connected to your {} hardware wallet."
+msgstr "Συνδέθηκε στο πορτοφόλι υλικού {0}."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Device setup was cancelled. Go back to try again."
+msgstr "Η ρύθμιση της συσκευής ακυρώθηκε. Επιστρέψτε για να δοκιμάσετε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "The default {} matches traditional BTC/BSV accounts. BCH accounts commonly use m/44'/145'/0'. Keep the original path when checking an existing balance."
+msgstr "Το προεπιλεγμένο {0} ταιριάζει με τους παραδοσιακούς λογαριασμούς BTC/BSV. Οι λογαριασμοί BCH χρησιμοποιούν συνήθως m/44'/145'/0'. Διατηρήστε την αρχική διαδρομή όταν ελέγχετε ένα υπάρχον υπόλοιπο."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "The selected device is not ready. Unlock it on its own screen, close other wallet applications, then choose Try again. Ledger can request opening Bitcoin Cash; confirm on the device if asked. To select a different device, go back."
+msgstr "Η επιλεγμένη συσκευή δεν είναι έτοιμη. Ξεκλειδώστε το στη δική του οθόνη, κλείστε άλλες εφαρμογές πορτοφολιού και μετά επιλέξτε Δοκιμάστε ξανά. Το Ledger μπορεί να ζητήσει το άνοιγμα του Bitcoin Cash. επιβεβαιώστε στη συσκευή εάν σας ζητηθεί. Για να επιλέξετε διαφορετική συσκευή, επιστρέψτε."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Try again"
+msgstr "Προσπαθήστε ξανά"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Η ανταμοιβή εξόρυξης δεν επαληθεύεται στην επιλεγμένη αλυσίδα"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/keys_view.py
+msgid "Show address on device"
+msgstr "Εμφάνιση διεύθυνσης στη συσκευή"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Select an address in the Keys tab and choose Sign/verify message."
+msgstr "Επιλέξτε μια διεύθυνση στην καρτέλα Κλειδιά και επιλέξτε Υπογραφή/επαλήθευση μηνύματος."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "To sign, select an address in the Keys tab and choose Sign/verify message. You can verify any address here."
+msgstr "Για να υπογράψετε, επιλέξτε μια διεύθυνση στην καρτέλα Κλειδιά και επιλέξτε Υπογραφή/επαλήθευση μηνύματος. Μπορείτε να επαληθεύσετε οποιαδήποτε διεύθυνση εδώ."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Sign selected inputs…"
+msgstr "Υπογραφή επιλεγμένων εισόδων…"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/i18n.py
+msgid "Chinese (Traditional)"
+msgstr "Κινέζικα (Παραδοσιακά)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "A selected coin depends on an unverified or immature mining reward on the selected chain. Refresh chain data and wait for maturity, then select coins again."
+msgstr "Ένα επιλεγμένο νόμισμα εξαρτάται από μια μη επαληθευμένη ή ανώριμη ανταμοιβή εξόρυξης στην επιλεγμένη αλυσίδα. Ανανεώστε τα δεδομένα της αλυσίδας και περιμένετε τη λήξη και, στη συνέχεια, επιλέξτε ξανά νομίσματα."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "An input depends on an unverified or immature mining reward on the selected chain. Refresh chain data before retrying."
+msgstr "Μια είσοδος εξαρτάται από μια μη επαληθευμένη ή ανώριμη ανταμοιβή εξόρυξης στην επιλεγμένη αλυσίδα. Ανανεώστε τα δεδομένα της αλυσίδας πριν προσπαθήσετε ξανά."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Input selection is currently available for Ledger accounts only."
+msgstr "Η επιλογή εισόδου είναι προς το παρόν διαθέσιμη μόνο για λογαριασμούς Ledger."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Select at least one valid input to sign."
+msgstr "Επιλέξτε τουλάχιστον μία έγκυρη είσοδο για υπογραφή."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Preparing the current transaction ({} inputs) on your Ledger..."
+msgstr "Προετοιμασία της τρέχουσας συναλλαγής (εισόδους {0}) στο Ledger..."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
+#, python-brace-format
+msgid "Elapsed: {}"
+msgstr "Πέρασε: {0}"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid ""
+"Signing message...\n"
+"Message hash: {}"
+msgstr ""
+"Υπογραφή μηνύματος...\n"
+"Κατακερματισμός μηνύματος: {0}"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/preferences.py
+msgid "System"
+msgstr "Σύστημα"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device cannot provide this account key. Check the derivation "
+"path and passphrase, or select another device."
+msgstr ""
+"Η επιλεγμένη συσκευή δεν μπορεί να παρέχει αυτό το κλειδί λογαριασμού. "
+"Ελέγξτε τη διαδρομή παραγωγής και τη φράση πρόσβασης ή επιλέξτε άλλη "
+"συσκευή."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device uses a different hardware adapter. Select a compatible "
+"device and retry."
+msgstr ""
+"Η επιλεγμένη συσκευή χρησιμοποιεί διαφορετικό προσαρμογέα υλικού. Επιλέξτε "
+"μια συμβατή συσκευή και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a detected device."
+msgstr "Επιλέξτε μια συσκευή που εντοπίστηκε."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "The selected device is not ready. Unlock it and retry."
+msgstr ""
+"Η επιλεγμένη συσκευή δεν είναι έτοιμη. Ξεκλειδώστε το και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "This USB interface does not support Ledger wallet communication."
+msgstr "Αυτή η διεπαφή USB δεν υποστηρίζει επικοινωνία πορτοφολιού Ledger."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account public key checked. It will be checked again before signing."
+msgstr ""
+"Έλεγξε το δημόσιο κλειδί του λογαριασμού. Θα ελεγχθεί ξανά πριν την "
+"υπογραφή."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect"
+msgstr "Συνδέω"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection details"
+msgstr "Λεπτομέρειες σύνδεσης"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account key matches"
+msgstr "Το κλειδί λογαριασμού ταιριάζει"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection cancelled. Select the device and retry."
+msgstr "Η σύνδεση ακυρώθηκε. Επιλέξτε τη συσκευή και δοκιμάστε ξανά."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and unlock a hardware wallet to begin."
+msgstr "Συνδέστε και ξεκλειδώστε ένα πορτοφόλι υλικού για να ξεκινήσετε."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"No devices detected. Connect a hardware wallet; this list updates "
+"automatically."
+msgstr ""
+"Δεν εντοπίστηκαν συσκευές. Συνδέστε ένα πορτοφόλι υλικού. αυτή η λίστα "
+"ενημερώνεται αυτόματα."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose a device and connect it to check the account public key."
+msgstr ""
+"Επιλέξτε μια συσκευή και συνδέστε την για να ελέγξετε το δημόσιο κλειδί του "
+"λογαριασμού."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Select"
+msgstr "Επιλέγω"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Choose a detected device, connect it, then select it after the account key "
+"check passes."
+msgstr ""
+"Επιλέξτε μια συσκευή που εντοπίστηκε, συνδέστε την και, στη συνέχεια, "
+"επιλέξτε την αφού περάσει ο έλεγχος κλειδιού λογαριασμού."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware account key checked; ready to use"
+msgstr "Έλεγξε το κλειδί λογαριασμού υλικού. έτοιμο προς χρήση"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "No hardware devices detected"
+msgstr "Δεν εντοπίστηκαν συσκευές υλικού"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware device detected, but not available for this account"
+msgstr ""
+"Εντοπίστηκε συσκευή υλικού, αλλά δεν είναι διαθέσιμη για αυτόν τον "
+"λογαριασμό"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger may show “unverified inputs” and cannot verify the fee. Signing many "
+"inputs may still be slow."
+msgstr ""
+"Το Ledger μπορεί να εμφανίσει «unverified inputs» και δεν μπορεί να "
+"επαληθεύσει την προμήθεια. Η υπογραφή πολλών εισόδων μπορεί να παραμένει "
+"αργή."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify input amounts (recommended)"
+msgstr "Επαλήθευση ποσών εισόδων (συνιστάται)"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger checks previous transactions before signing. Large transactions may "
+"take several minutes."
+msgstr ""
+"Το Ledger ελέγχει προηγούμενες συναλλαγές πριν από την υπογραφή. Μεγάλες "
+"συναλλαγές μπορεί να χρειαστούν αρκετά λεπτά."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Inputs: {} · Outputs: {}"
+msgstr "Είσοδοι: {} · Έξοδοι: {}"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Skipped"
+msgstr "Παραλείφθηκε"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Sign inputs"
+msgstr "Υπογραφή εισόδων"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Follow the instructions on your Ledger."
+msgstr "Ακολουθήστε τις οδηγίες στο Ledger."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signatures verified."
+msgstr "Οι υπογραφές επαληθεύτηκαν."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid ""
+"Cancellation requested. Finish or reject the current request on your Ledger;"
+" signing will stop before the next device operation."
+msgstr ""
+"Ζητήθηκε ακύρωση. Ολοκληρώστε ή απορρίψτε το τρέχον αίτημα στο Ledger· η "
+"υπογραφή θα σταματήσει πριν από την επόμενη λειτουργία της συσκευής."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Transaction signing"
+msgstr "Υπογραφή συναλλαγής"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Prepare transaction"
+msgstr "Προετοιμασία συναλλαγής"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify signatures"
+msgstr "Επαλήθευση υπογραφών"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Keep your Ledger connected throughout signing."
+msgstr "Κρατήστε το Ledger συνδεδεμένο κατά την υπογραφή."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify previous transactions"
+msgstr "Επαλήθευση προηγούμενων συναλλαγών"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Review on device"
+msgstr "Έλεγχος στη συσκευή"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Stopped"
+msgstr "Σταμάτησε"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signing cancelled."
+msgstr "Η υπογραφή ακυρώθηκε."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Complete"
+msgstr "Ολοκληρώθηκε"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Waiting"
+msgstr "Αναμονή"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "In progress"
+msgstr "Σε εξέλιξη"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Some input amounts could not be retrieved."
+msgstr "Δεν ήταν δυνατή η ανάκτηση ορισμένων ποσών εισόδων."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid ""
+"Previous transaction data is not stored in this wallet. Use View on block "
+"explorer to inspect it."
+msgstr ""
+"Η προηγούμενη συναλλαγή δεν είναι αποθηκευμένη σε αυτό το πορτοφόλι. "
+"Χρησιμοποιήστε «Προβολή στην εξερεύνηση μπλοκ»."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Loading input amounts…"
+msgstr "Φόρτωση ποσών εισόδων…"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Input amounts are unavailable offline."
+msgstr "Τα ποσά εισόδων δεν είναι διαθέσιμα εκτός σύνδεσης."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Retry"
+msgstr "Επανάληψη"

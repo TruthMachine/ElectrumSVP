@@ -1,0 +1,776 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ElectrumSVP hardware and desktop integration\n"
+"POT-Creation-Date: 2026-11-16 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: electrumsv/device.py
+msgid "Install the dependencies and reopen the wallet to sign."
+msgstr ""
+
+#: electrumsv/device.py
+msgid "The connected device does not match this wallet. Select the correct device and passphrase, then retry."
+msgstr ""
+
+#: electrumsv/devices/trezor/trezor.py
+msgid "Device disconnected. Please reconnect and try again."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "A hardware wallet operation is already in progress. Finish or reject it on the device, then try again."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Address display is unavailable for this account."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Choose an account derivation path."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Connect the device, unlock it and refresh. No USB interface was found; this alone does not establish whether it is locked."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Device attempted to replace an existing signature."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Device did not return an extended public key."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Device returned an invalid message signature."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected input count."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected signature count."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Enter a message between 1 and 65535 UTF-8 bytes."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Hardware signing requires SIGHASH_ALL | FORKID (0x41)."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Initialize this device with its manufacturer application before importing it. Never enter its recovery seed into ElectrumSVP."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Install the optional {} dependencies."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Optional previous-transaction verification is implemented for Ledger only."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Select a device of the same brand as this hardware account."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Selecting individual inputs is implemented for Ledger only."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "The selected device is unavailable. Refresh and retry."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "This adapter supports BSV mainnet only."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "This device does not match the current account. Check the selected device, account path and passphrase."
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Unknown hardware wallet: {}"
+msgstr ""
+
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "USB device found. Import or select its account to verify wallet pairing. Firmware and signing readiness have not been checked."
+msgstr ""
+
+#: electrumsv/devices/hw_wallet/qt.py
+msgid "Hardware wallet connection status"
+msgstr ""
+
+#: electrumsv/devices/trezor/trezor.py
+msgid "Initialize the device with its manufacturer application."
+msgstr ""
+
+#: electrumsv/devices/ledger/input_verification.py
+msgid "A complete previous transaction is unavailable."
+msgstr ""
+
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Input/output count exceeds this model’s verification budget."
+msgstr ""
+
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction amount does not match the requested input."
+msgstr ""
+
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction does not match the requested input."
+msgstr ""
+
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction script does not match the requested input."
+msgstr ""
+
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transactions exceed this model’s byte, script or communication budget."
+msgstr ""
+
+#: electrumsv/devices/ledger/input_verification.py
+msgid "This app version is outside the trusted-input route."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Bitcoin Cash is open. Wallet pairing is checked separately before use."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Cannot open Ledger. Close Ledger Wallet, browser device sessions and other wallet applications, then reconnect, unlock and retry."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Enter the PIN on this device, then refresh."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Full verification of {} inputs will send {:.1f} KiB of previous transactions to your Ledger. Verification and signing may take several minutes. Keep the device connected and review the transaction on its screen when prompted. Continue with full verification?"
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Ledger is locked. Enter your PIN on the device and retry."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Open the Bitcoin Cash app on your Ledger (currently: {})."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Opening Bitcoin Cash on the selected Ledger. Confirm on the device if requested."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Previous-transaction verification was switched off for this signing operation."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts are unverified."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts were checked against previous transactions; chain status and coinbase maturity are checked by the wallet."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Signing input {} of {} on your Ledger..."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "The Ledger app rejected this message. Check the derivation path and try a shorter message supported by your app version."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "The address displayed by the Ledger does not match this wallet. Check the selected device and account."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "The device cannot verify input amounts against previous transactions. It may show \"unverified inputs\". Continue with this reduced verification?"
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Unlock this device before signing. The wallet can request opening Bitcoin Cash on the selected device; confirm there if asked."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Verifying input {} of {} on your Ledger..."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Verifying previous transactions on your Ledger..."
+msgstr ""
+
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger did not reconnect with the expected app. Unlock it, close other wallet applications and select it again."
+msgstr ""
+
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger is locked. Enter the PIN on that device and retry."
+msgstr ""
+
+#: electrumsv/devices/ledger/transport.py
+msgid "Cannot write to Ledger. Close Ledger Wallet and retry."
+msgstr ""
+
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger connection is closed. Reconnect and try again."
+msgstr ""
+
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger did not respond. Finish or reject the request on the device, reconnect it, close other wallet applications and retry."
+msgstr ""
+
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger is busy with another request. Finish it and try again."
+msgstr ""
+
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger returned an incomplete response."
+msgstr ""
+
+#: electrumsv/devices/ledger/transport.py
+msgid "This adapter requires a Ledger Nano USB device."
+msgstr ""
+
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Connect hardware wallet"
+msgstr ""
+
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Use an initialized Ledger, Trezor, KeepKey or BitBox01. Keep the recovery seed on your device. Ledger requires the Bitcoin Cash app. These adapters are experimental; check the tested-version list before use."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Account check cancelled. Select the device and retry."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Amount (satoshis)"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Application / version"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Bitcoin Cash open"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Cancel"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose inputs to sign"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Close"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and check current account"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Connected; pairing unchecked"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Continue to device"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Current account paths: {}"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Device"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Follow the instructions on your device.\n"
+"To cancel, reject the request on the device."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet dependencies unavailable"
+msgstr ""
+
+#: electrumsv/gui/qt/main_window.py
+msgid "Hardware wallets"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Input"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger may display only a message hash. Compare it with this SHA-256 of the exact UTF-8 message, including spaces and newlines. The device has not displayed the message text."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger signing options"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Locked"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Matches a hardware key in the current account. The complete account public key was checked. It will be checked again before use."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "No hardware account is selected. Connection status is available below."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Not detected"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Only checked inputs will receive new signatures. Existing signatures will be kept. Ledger still reviews the whole transaction: each new signature uses SIGHASH_ALL | FORKID (0x41), committing to all inputs and outputs. Save the incomplete transaction as JSON to pass it to another signer."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Open Bitcoin Cash to sign"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Outpoint"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh to read connection status. This does not sign anything."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Status"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "To add an account, choose Add account → Connect hardware wallet. For an existing account, use its Keys tab to display an address or sign a message."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Unavailable"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Unlock the selected device on its own screen. Confirm any app-opening request. Then the account public key will be checked."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify previous transactions on the device (recommended)"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "When disabled, complete previous transactions are not sent. The device may show “unverified inputs” and cannot independently verify the fee. The current transaction’s inputs and outputs are still sent, and every requested input still needs its own signature. This may therefore remain slow."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "When enabled, available complete previous transactions are sent to the device to verify input amounts. Large transactions may take several minutes. If data is missing or exceeds the device model’s work budget, you will be asked before continuing with reduced verification."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "{} inputs · {} outputs"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "&Rescan"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "A scan has been unable to locate any connected hardware wallets. Connect and unlock your hardware wallet, close other wallet applications, then press the 'Rescan' button to try again."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "An unnamed {}"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Choose the account derivation path. When reopening an existing account, use its original path: a different account path gives different addresses even on the same device."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "Connected to your {} hardware wallet."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Debug messages"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Debug messages:"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Derivation path"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Device setup was cancelled. Go back to try again."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "If any problems were encountered during the scan, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Import a Hardware Wallet as an Account"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Please wait for hardware wallets to be located."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Select a device"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "The default {} matches traditional BTC/BSV accounts. BCH accounts commonly use m/44'/145'/0'. Keep the original path when checking an existing balance."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "The selected device is not ready. Unlock it on its own screen, close other wallet applications, then choose Try again. Ledger can request opening Bitcoin Cash; confirm on the device if asked. To select a different device, go back."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Try again"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "initialized"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "wiped"
+msgstr ""
+
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr ""
+
+#: electrumsv/gui/qt/keys_view.py
+msgid "Show address on device"
+msgstr ""
+
+#: electrumsv/gui/qt/main_window.py
+msgid "Select an address in the Keys tab and choose Sign/verify message."
+msgstr ""
+
+#: electrumsv/gui/qt/main_window.py
+msgid "To sign, select an address in the Keys tab and choose Sign/verify message. You can verify any address here."
+msgstr ""
+
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Sign selected inputs…"
+msgstr ""
+
+#: electrumsv/i18n.py
+msgid "Chinese (Traditional)"
+msgstr ""
+
+#: electrumsv/wallet.py
+msgid "A selected coin depends on an unverified or immature mining reward on the selected chain. Refresh chain data and wait for maturity, then select coins again."
+msgstr ""
+
+#: electrumsv/wallet.py
+msgid "An input depends on an unverified or immature mining reward on the selected chain. Refresh chain data before retrying."
+msgstr ""
+
+#: electrumsv/wallet.py
+msgid "Input selection is currently available for Ledger accounts only."
+msgstr ""
+
+#: electrumsv/wallet.py
+msgid "Select at least one valid input to sign."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Preparing the current transaction ({} inputs) on your Ledger..."
+msgstr ""
+
+#: electrumsv/devices/ledger/qt.py
+#, python-brace-format
+msgid "Elapsed: {}"
+msgstr ""
+
+#: electrumsv/devices/ledger/qt.py
+msgid "Ledger Status"
+msgstr ""
+
+#: electrumsv/devices/ledger/qt.py
+msgid "This button does nothing."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Showing address ..."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Confirm Transaction on your Ledger device..."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Encryption and decryption are not supported for {}"
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Cancelled by user"
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Confirmed. Signing Transaction..."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Make sure it is in the correct state."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Failed to create a client for this device."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Your Ledger is locked. Please unlock it."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "Device not in Bitcoin Cash mode"
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid ""
+"Signing message...\n"
+"Message hash: {}"
+msgstr ""
+
+#: electrumsv/devices/ledger/qt.py
+msgid "Ledger Wallet Authentication"
+msgstr ""
+
+#: electrumsv/gui/qt/preferences.py
+msgid "System"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Account key matches"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Account public key checked. It will be checked again before signing."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Choose a detected device, connect it, then select it after the account key "
+"check passes."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose a device and connect it to check the account public key."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and unlock a hardware wallet to begin."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection cancelled. Select the device and retry."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection details"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware account key checked; ready to use"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware device detected, but not available for this account"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"No devices detected. Connect a hardware wallet; this list updates "
+"automatically."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware_status.py
+msgid "No hardware devices detected"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Select"
+msgstr ""
+
+#: electrumsv/devices/hardware.py
+msgid "Select a detected device."
+msgstr ""
+
+#: electrumsv/device.py
+msgid ""
+"The selected device cannot provide this account key. Check the derivation "
+"path and passphrase, or select another device."
+msgstr ""
+
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "The selected device is not ready. Unlock it and retry."
+msgstr ""
+
+#: electrumsv/device.py
+msgid ""
+"The selected device uses a different hardware adapter. Select a compatible "
+"device and retry."
+msgstr ""
+
+#: electrumsv/devices/ledger/ledger.py
+msgid "This USB interface does not support Ledger wallet communication."
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid ""
+"Cancellation requested. Finish or reject the current request on your Ledger;"
+" signing will stop before the next device operation."
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Complete"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Follow the instructions on your Ledger."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Inputs: {} · Outputs: {}"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Keep your Ledger connected throughout signing."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger checks previous transactions before signing. Large transactions may "
+"take several minutes."
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger may show “unverified inputs” and cannot verify the fee. Signing many "
+"inputs may still be slow."
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Prepare transaction"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Review on device"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Sign inputs"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signatures verified."
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signing cancelled."
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Skipped"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Stopped"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Transaction signing"
+msgstr ""
+
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify input amounts (recommended)"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify previous transactions"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify signatures"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Waiting"
+msgstr ""
+
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "In progress"
+msgstr ""
+
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Input amounts are unavailable offline."
+msgstr ""
+
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Loading input amounts…"
+msgstr ""
+
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid ""
+"Previous transaction data is not stored in this wallet. Use View on block "
+"explorer to inspect it."
+msgstr ""
+
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Retry"
+msgstr ""
+
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Some input amounts could not be retrieved."
+msgstr ""

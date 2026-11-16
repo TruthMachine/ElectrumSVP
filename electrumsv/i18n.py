@@ -36,6 +36,8 @@ def _(x):
 def set_language(x):
     global language
     if x:
+        # The historical language selector uses no_NO; the shipped catalogue is nb_NO.
+        x = {'no_NO': 'nb_NO'}.get(x, x)
         language = gettext.translation('electrumsv', LOCALE_DIR, fallback=True, languages=[x])
 
 
@@ -70,5 +72,6 @@ languages = {
     'ta_IN':_('Tamil'),
     'th_TH':_('Thai'),
     'vi_VN':_('Vietnamese'),
-    'zh_CN':_('Chinese')
+    'zh_CN':_('Chinese'),
+    'zh_TW':_('Chinese (Traditional)'),
     }

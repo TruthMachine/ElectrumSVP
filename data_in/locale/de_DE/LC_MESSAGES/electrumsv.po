@@ -152,9 +152,10 @@ msgstr "&Vor kurzem geöffnet"
 msgid "&Report Bug"
 msgstr "&Fehler melden"
 
-#: electrumsv/gui/qt/account_wizard.py:886
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "&Rescan"
-msgstr ""
+msgstr "&Erneut scannen"
 
 #: electrumsv/gui/qt/main_window.py:564
 msgid "&Save Copy"
@@ -875,13 +876,15 @@ msgstr ""
 msgid "Date: {}"
 msgstr "Datum: {}"
 
-#: electrumsv/gui/qt/account_wizard.py:979
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages"
-msgstr ""
+msgstr "Debug-Meldungen"
 
-#: electrumsv/gui/qt/account_wizard.py:1211
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages:"
-msgstr ""
+msgstr "Debug-Meldungen:"
 
 #: electrumsv/gui/qt/main_window.py:2348
 msgid "Decrypt"
@@ -905,10 +908,10 @@ msgstr "Löschen"
 msgid "Delete invoice?"
 msgstr "Rechnung löschen?"
 
-#: electrumsv/gui/qt/account_wizard.py:757
-#: electrumsv/gui/qt/account_wizard.py:1173
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Derivation path"
-msgstr ""
+msgstr "Ableitungspfad"
 
 #: electrumsv/gui/qt/main_window.py:1133 electrumsv/gui/qt/main_window.py:1430
 #: electrumsv/gui/qt/transaction_dialog.py:280
@@ -1129,10 +1132,12 @@ msgstr "Verschlüsselt"
 msgid "Encryption and decryption are not implemented by {}"
 msgstr "Eine Ver- oder Entschlüsselung ist mit {} nicht implementiert"
 
-#: electrumsv/devices/ledger/ledger.py:259
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:453
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
 msgid "Encryption and decryption are not supported for {}"
-msgstr ""
+msgstr "Verschlüsselung und Entschlüsselung werden für {0} nicht unterstützt"
 
 #: electrumsv/i18n.py:50
 msgid "English"
@@ -1477,9 +1482,10 @@ msgstr "Identität"
 msgid "Identity Type"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:72
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "If any problems were encountered during the scan, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
-msgstr ""
+msgstr "Sollten während des Scans Probleme aufgetreten sein, werden diese unten angezeigt. Wenn es keine Hinweise darauf gibt, warum Ihr Hardware-Wallet nicht gefunden wird, klicken Sie auf die Schaltfläche „Hilfe“, um weitere Anweisungen zu erhalten."
 
 #: electrumsv/gui/qt/account_wizard.py:78
 msgid "If any problems were encountered during the setup attempt, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
@@ -1545,10 +1551,10 @@ msgstr ""
 msgid "Import Account From Text With Customizations"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:866
-#: electrumsv/gui/qt/account_wizard.py:1093
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Import a Hardware Wallet as an Account"
-msgstr ""
+msgstr "Importieren Sie ein Hardware Wallet als Konto"
 
 #: electrumsv/gui/qt/accounts_view.py:120
 #: electrumsv/gui/qt/accounts_view.py:163
@@ -2320,9 +2326,10 @@ msgstr "Bitte versuchen Sie es erneut."
 msgid "Please wait"
 msgstr "Bitte warten"
 
-#: electrumsv/gui/qt/account_wizard.py:913
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Please wait for hardware wallets to be located."
-msgstr ""
+msgstr "Bitte warten Sie, bis die Hardware-Wallets gefunden werden."
 
 #: electrumsv/gui/qt/wallet_wizard.py:707
 msgid "Please wait while your wallet is backed up and migrated to the new format."
@@ -2855,10 +2862,10 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: electrumsv/gui/qt/network_dialog.py:319 electrumsv/gui/qt/request_list.py:50
-#: electrumsv/gui/qt/invoice_list.py:46
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: electrumsv/gui/qt/transaction_dialog.py:282
 msgid "Status:"
@@ -3001,9 +3008,11 @@ msgstr ""
 msgid "This blockchain is used to verify the transactions sent by your transaction server."
 msgstr "Diese Blockchain wird genutzt, um die Transaktionen von Ihrem Transaktionsserver zu prüfen."
 
-#: electrumsv/devices/ledger/qt.py:81
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "This button does nothing."
-msgstr ""
+msgstr "Diese Schaltfläche bewirkt nichts."
 
 #: electrumsv/gui/qt/main_window.py:1154
 msgid "This information is seen by the recipient if you send them a signed payment request."
@@ -3779,3 +3788,874 @@ msgstr "{} neue Transaktionen erhalten: Gesamtbetrag aller neuen Transaktionen {
 msgid "{} words"
 msgstr "{} Wörter"
 
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid "Install the dependencies and reopen the wallet to sign."
+msgstr "Installieren Sie die Abhängigkeiten und öffnen Sie die Wallet zum Signieren erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid "The connected device does not match this wallet. Select the correct device and passphrase, then retry."
+msgstr "Das verbundene Gerät passt nicht zu dieser Wallet. Wählen Sie das richtige Gerät und die richtige Passphrase aus und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Device disconnected. Please reconnect and try again."
+msgstr "Gerät getrennt. Bitte stellen Sie die Verbindung wieder her und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "A hardware wallet operation is already in progress. Finish or reject it on the device, then try again."
+msgstr "Ein Hardware-Wallet-Vorgang ist bereits im Gange. Beenden Sie den Vorgang oder lehnen Sie ihn auf dem Gerät ab und versuchen Sie es dann erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Address display is unavailable for this account."
+msgstr "Die Adressanzeige ist für dieses Konto nicht verfügbar."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Choose an account derivation path."
+msgstr "Wählen Sie einen Kontoableitungspfad."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Connect the device, unlock it and refresh. No USB interface was found; this alone does not establish whether it is locked."
+msgstr "Schließen Sie das Gerät an, entsperren Sie es und aktualisieren Sie es. Es wurde keine USB-Schnittstelle gefunden; Dies allein stellt noch nicht fest, ob es gesperrt ist."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device attempted to replace an existing signature."
+msgstr "Das Gerät hat versucht, eine vorhandene Signatur zu ersetzen."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device did not return an extended public key."
+msgstr "Das Gerät hat keinen erweiterten öffentlichen Schlüssel zurückgegeben."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an invalid message signature."
+msgstr "Das Gerät hat eine ungültige Nachrichtensignatur zurückgegeben."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected input count."
+msgstr "Das Gerät hat eine unerwartete Eingabeanzahl zurückgegeben."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected signature count."
+msgstr "Das Gerät hat eine unerwartete Signaturanzahl zurückgegeben."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Enter a message between 1 and 65535 UTF-8 bytes."
+msgstr "Geben Sie eine Nachricht zwischen 1 und 65535 UTF-8 Bytes ein."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Hardware signing requires SIGHASH_ALL | FORKID (0x41)."
+msgstr "Für die Hardwaresignierung ist SIGHASH_ALL | FORKID (0x41) erforderlich."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Initialize this device with its manufacturer application before importing it. Never enter its recovery seed into ElectrumSVP."
+msgstr "Initialisieren Sie dieses Gerät mit der Herstelleranwendung, bevor Sie es importieren. Geben Sie niemals den Wiederherstellungs-Seed in ElectrumSVP ein."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Install the optional {} dependencies."
+msgstr "Installieren Sie die optionalen {0}-Abhängigkeiten."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Optional previous-transaction verification is implemented for Ledger only."
+msgstr "Die optionale Überprüfung früherer Transaktionen ist nur für Ledger implementiert."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a device of the same brand as this hardware account."
+msgstr "Wählen Sie ein Gerät derselben Marke wie dieses Hardwarekonto aus."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Selecting individual inputs is implemented for Ledger only."
+msgstr "Die Auswahl einzelner Eingänge ist nur für Ledger implementiert."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "The selected device is unavailable. Refresh and retry."
+msgstr "Das ausgewählte Gerät ist nicht verfügbar. Aktualisieren Sie und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "This adapter supports BSV mainnet only."
+msgstr "Dieser Adapter unterstützt nur das BSV-Mainnet."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "This device does not match the current account. Check the selected device, account path and passphrase."
+msgstr "Dieses Gerät passt nicht zum aktuellen Konto. Überprüfen Sie das ausgewählte Gerät, den Kontopfad und die Passphrase."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Unknown hardware wallet: {}"
+msgstr "Unbekannte Hardware-Wallet: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "USB device found. Import or select its account to verify wallet pairing. Firmware and signing readiness have not been checked."
+msgstr "USB-Gerät gefunden. Importieren Sie das Konto oder wählen Sie es aus, um die Wallet-Kopplung zu überprüfen. Firmware und Signierbereitschaft wurden nicht überprüft."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/qt.py
+msgid "Hardware wallet connection status"
+msgstr "Verbindungsstatus der Hardware-Wallet"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Initialize the device with its manufacturer application."
+msgstr "Initialisieren Sie das Gerät mit der Herstelleranwendung."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "A complete previous transaction is unavailable."
+msgstr "Eine vollständige vorherige Transaktion ist nicht verfügbar."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Input/output count exceeds this model’s verification budget."
+msgstr "Die Anzahl der Ein-/Ausgaben übersteigt das Verifizierungsbudget dieses Modells."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction amount does not match the requested input."
+msgstr "Der Betrag der vorherigen Transaktion stimmt nicht mit der angeforderten Eingabe überein."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction does not match the requested input."
+msgstr "Die vorherige Transaktion stimmt nicht mit der angeforderten Eingabe überein."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction script does not match the requested input."
+msgstr "Das vorherige Transaktionsskript stimmt nicht mit der angeforderten Eingabe überein."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transactions exceed this model’s byte, script or communication budget."
+msgstr "Frühere Transaktionen übersteigen das Byte-, Skript- oder Kommunikationsbudget dieses Modells."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "This app version is outside the trusted-input route."
+msgstr "Diese App-Version liegt außerhalb der vertrauenswürdigen Eingaberoute."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Bitcoin Cash is open. Wallet pairing is checked separately before use."
+msgstr "Bitcoin Cash ist geöffnet. Die Wallet-Kopplung wird vor der Nutzung separat geprüft."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Cannot open Ledger. Close Ledger Wallet, browser device sessions and other wallet applications, then reconnect, unlock and retry."
+msgstr "Ledger kann nicht geöffnet werden. Schließen Sie Ledger Wallet, Browser-Gerätesitzungen und andere Wallet-Anwendungen, stellen Sie dann erneut eine Verbindung her, entsperren Sie sie und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Enter the PIN on this device, then refresh."
+msgstr "Geben Sie PIN auf diesem Gerät ein und aktualisieren Sie es."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Full verification of {} inputs will send {:.1f} KiB of previous transactions to your Ledger. Verification and signing may take several minutes. Keep the device connected and review the transaction on its screen when prompted. Continue with full verification?"
+msgstr "Durch die vollständige Überprüfung der {0}-Eingaben werden {1:.1f} KiB früherer Transaktionen an Ihr Ledger gesendet. Die Überprüfung und Signierung kann mehrere Minuten dauern. Lassen Sie das Gerät angeschlossen und überprüfen Sie die Transaktion auf dem Bildschirm, wenn Sie dazu aufgefordert werden. Mit vollständiger Verifizierung fortfahren?"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Ledger is locked. Enter your PIN on the device and retry."
+msgstr "Ledger ist gesperrt. Geben Sie Ihren PIN auf dem Gerät ein und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Open the Bitcoin Cash app on your Ledger (currently: {})."
+msgstr "Öffnen Sie die App Bitcoin Cash auf Ihrem Ledger (aktuell: {0})."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Opening Bitcoin Cash on the selected Ledger. Confirm on the device if requested."
+msgstr "Öffnen von Bitcoin Cash auf dem ausgewählten Ledger. Bestätigen Sie dies auf Anfrage auf dem Gerät."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Previous-transaction verification was switched off for this signing operation."
+msgstr "Die Überprüfung vorheriger Transaktionen wurde für diesen Signiervorgang deaktiviert."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts are unverified."
+msgstr "Überprüfen Sie die Transaktion auf Ihrem Ledger. Eingabebeträge sind nicht überprüft."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts were checked against previous transactions; chain status and coinbase maturity are checked by the wallet."
+msgstr "Überprüfen Sie die Transaktion auf Ihrem Ledger. Die eingegebenen Beträge wurden mit früheren Transaktionen verglichen; Der Kettenstatus und die Laufzeit der Coinbase werden vom Wallet überprüft."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Signing input {} of {} on your Ledger..."
+msgstr "Signierungseingabe {0} von {1} auf Ihrem Ledger..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The Ledger app rejected this message. Check the derivation path and try a shorter message supported by your app version."
+msgstr "Die Ledger-App hat diese Nachricht abgelehnt. Überprüfen Sie den Ableitungspfad und versuchen Sie es mit einer kürzeren Nachricht, die von Ihrer App-Version unterstützt wird."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The address displayed by the Ledger does not match this wallet. Check the selected device and account."
+msgstr "Die vom Ledger angezeigte Adresse stimmt nicht mit dieser Wallet überein. Überprüfen Sie das ausgewählte Gerät und Konto."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "The device cannot verify input amounts against previous transactions. It may show \"unverified inputs\". Continue with this reduced verification?"
+msgstr "Das Gerät kann Eingabebeträge nicht mit früheren Transaktionen vergleichen. Möglicherweise wird „unverified inputs“ angezeigt. Mit dieser reduzierten Überprüfung fortfahren?"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Unlock this device before signing. The wallet can request opening Bitcoin Cash on the selected device; confirm there if asked."
+msgstr "Entsperren Sie dieses Gerät, bevor Sie unterschreiben. Das Wallet kann das Öffnen von Bitcoin Cash auf dem ausgewählten Gerät anfordern; Bestätigen Sie dort, wenn Sie dazu aufgefordert werden."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Verifying input {} of {} on your Ledger..."
+msgstr "Überprüfung der Eingabe {0} von {1} auf Ihrem Ledger ..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Verifying previous transactions on your Ledger..."
+msgstr "Überprüfen früherer Transaktionen auf Ihrem Ledger..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger did not reconnect with the expected app. Unlock it, close other wallet applications and select it again."
+msgstr "Der ausgewählte Ledger konnte die Verbindung mit der erwarteten App nicht wiederherstellen. Entsperren Sie es, schließen Sie andere Wallet-Anwendungen und wählen Sie es erneut aus."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger is locked. Enter the PIN on that device and retry."
+msgstr "Der ausgewählte Ledger ist gesperrt. Geben Sie PIN auf diesem Gerät ein und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Cannot write to Ledger. Close Ledger Wallet and retry."
+msgstr "Auf Ledger kann nicht geschrieben werden. Schließen Sie Ledger Wallet und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger connection is closed. Reconnect and try again."
+msgstr "Ledger-Verbindung ist geschlossen. Stellen Sie die Verbindung wieder her und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger did not respond. Finish or reject the request on the device, reconnect it, close other wallet applications and retry."
+msgstr "Ledger hat nicht geantwortet. Beenden oder lehnen Sie die Anfrage auf dem Gerät ab, verbinden Sie es erneut, schließen Sie andere Wallet-Anwendungen und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger is busy with another request. Finish it and try again."
+msgstr "Ledger ist mit einer anderen Anfrage beschäftigt. Beenden Sie es und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger returned an incomplete response."
+msgstr "Ledger hat eine unvollständige Antwort zurückgegeben."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "This adapter requires a Ledger Nano USB device."
+msgstr "Für diesen Adapter ist ein Ledger Nano USB-Gerät erforderlich."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Connect hardware wallet"
+msgstr "Hardware-Wallet anschließen"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Use an initialized Ledger, Trezor, KeepKey or BitBox01. Keep the recovery seed on your device. Ledger requires the Bitcoin Cash app. These adapters are experimental; check the tested-version list before use."
+msgstr "Verwenden Sie einen initialisierten Ledger, Trezor, KeepKey oder BitBox01. Behalten Sie den Wiederherstellungs-Seed auf Ihrem Gerät. Für Ledger ist die Bitcoin Cash-App erforderlich. Diese Adapter sind experimentell; Überprüfen Sie vor der Verwendung die Liste der getesteten Versionen."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account check cancelled. Select the device and retry."
+msgstr "Kontoüberprüfung abgebrochen. Wählen Sie das Gerät aus und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Amount (satoshis)"
+msgstr "Betrag (Satoshis)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Application / version"
+msgstr "Anwendung/Version"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Bitcoin Cash open"
+msgstr "Bitcoin Cash geöffnet"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose inputs to sign"
+msgstr "Wählen Sie Eingaben zum Signieren aus"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and check current account"
+msgstr "Aktuelles Konto anschließen und prüfen"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connected; pairing unchecked"
+msgstr "Verbunden; Kopplung deaktiviert"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Continue to device"
+msgstr "Weiter zum Gerät"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Current account paths: {}"
+msgstr "Girokontopfade: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Device"
+msgstr "Gerät"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Follow the instructions on your device.\n"
+"To cancel, reject the request on the device."
+msgstr ""
+"Befolgen Sie die Anweisungen auf Ihrem Gerät.\n"
+"Um abzubrechen, lehnen Sie die Anfrage auf dem Gerät ab."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet"
+msgstr "Hardware-Wallet"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet dependencies unavailable"
+msgstr "Hardware-Wallet-Abhängigkeiten nicht verfügbar"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Hardware wallets"
+msgstr "Hardware-Wallets"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Input"
+msgstr "Eingang"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger may display only a message hash. Compare it with this SHA-256 of the exact UTF-8 message, including spaces and newlines. The device has not displayed the message text."
+msgstr "Ledger zeigt möglicherweise nur einen Nachrichten-Hash an. Vergleichen Sie es mit diesem SHA-256 der genauen UTF-8-Nachricht, einschließlich Leerzeichen und Zeilenumbrüchen. Das Gerät hat den Nachrichtentext nicht angezeigt."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger signing options"
+msgstr "Ledger Signierungsoptionen"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Locked"
+msgstr "Gesperrt"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Matches a hardware key in the current account. The complete account public key was checked. It will be checked again before use."
+msgstr "Entspricht einem Hardwareschlüssel im aktuellen Konto. Der vollständige öffentliche Schlüssel des Kontos wurde überprüft. Es wird vor der Verwendung noch einmal überprüft."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "No hardware account is selected. Connection status is available below."
+msgstr "Es ist kein Hardwarekonto ausgewählt. Der Verbindungsstatus ist unten verfügbar."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Not detected"
+msgstr "Nicht erkannt"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Only checked inputs will receive new signatures. Existing signatures will be kept. Ledger still reviews the whole transaction: each new signature uses SIGHASH_ALL | FORKID (0x41), committing to all inputs and outputs. Save the incomplete transaction as JSON to pass it to another signer."
+msgstr "Nur geprüfte Eingaben erhalten neue Signaturen. Vorhandene Unterschriften bleiben erhalten. Ledger überprüft weiterhin die gesamte Transaktion: Jede neue Signatur verwendet SIGHASH_ALL | FORKID (0x41) und verpflichtet sich zu allen Ein- und Ausgängen. Speichern Sie die unvollständige Transaktion als JSON, um sie an einen anderen Unterzeichner weiterzugeben."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Open Bitcoin Cash to sign"
+msgstr "Öffnen Sie Bitcoin Cash zum Signieren"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Outpoint"
+msgstr "Outpoint"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh to read connection status. This does not sign anything."
+msgstr "Aktualisieren, um den Verbindungsstatus zu lesen. Dies bedeutet nichts."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "To add an account, choose Add account → Connect hardware wallet. For an existing account, use its Keys tab to display an address or sign a message."
+msgstr "Um ein Konto hinzuzufügen, wählen Sie Konto hinzufügen → Hardware-Wallet verbinden. Verwenden Sie bei einem vorhandenen Konto die Registerkarte „Schlüssel“, um eine Adresse anzuzeigen oder eine Nachricht zu signieren."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Unlock the selected device on its own screen. Confirm any app-opening request. Then the account public key will be checked."
+msgstr "Entsperren Sie das ausgewählte Gerät auf einem eigenen Bildschirm. Bestätigen Sie alle Anfragen zum Öffnen der App. Anschließend wird der öffentliche Schlüssel des Kontos überprüft."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify previous transactions on the device (recommended)"
+msgstr "Überprüfen Sie frühere Transaktionen auf dem Gerät (empfohlen)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "When disabled, complete previous transactions are not sent. The device may show “unverified inputs” and cannot independently verify the fee. The current transaction’s inputs and outputs are still sent, and every requested input still needs its own signature. This may therefore remain slow."
+msgstr "Wenn diese Option deaktiviert ist, werden keine vollständigen vorherigen Transaktionen gesendet. Das Gerät zeigt möglicherweise „unverified inputs“ an und kann die Gebühr nicht unabhängig überprüfen. Die Ein- und Ausgaben der aktuellen Transaktion werden weiterhin gesendet und jede angeforderte Eingabe benötigt weiterhin eine eigene Signatur. Dies kann daher langsam bleiben."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "When enabled, available complete previous transactions are sent to the device to verify input amounts. Large transactions may take several minutes. If data is missing or exceeds the device model’s work budget, you will be asked before continuing with reduced verification."
+msgstr "Wenn diese Option aktiviert ist, werden verfügbare vollständige frühere Transaktionen an das Gerät gesendet, um Eingabebeträge zu überprüfen. Große Transaktionen können mehrere Minuten dauern. Wenn Daten fehlen oder das Arbeitsbudget des Gerätemodells überschreiten, werden Sie gefragt, bevor Sie mit der reduzierten Überprüfung fortfahren."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "{} inputs · {} outputs"
+msgstr "{0}-Eingänge · {1}-Ausgänge"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "A scan has been unable to locate any connected hardware wallets. Connect and unlock your hardware wallet, close other wallet applications, then press the 'Rescan' button to try again."
+msgstr "Bei einem Scan konnten keine verbundenen Hardware-Wallets gefunden werden. Verbinden und entsperren Sie Ihr Hardware-Wallet, schließen Sie andere Wallet-Anwendungen und klicken Sie dann auf die Schaltfläche „Erneut scannen“, um es erneut zu versuchen."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Choose the account derivation path. When reopening an existing account, use its original path: a different account path gives different addresses even on the same device."
+msgstr "Wählen Sie den Kontoableitungspfad. Wenn Sie ein bestehendes Konto erneut eröffnen, verwenden Sie dessen ursprünglichen Pfad: Ein anderer Kontopfad führt zu unterschiedlichen Adressen, selbst auf demselben Gerät."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "Connected to your {} hardware wallet."
+msgstr "Verbunden mit Ihrer {0}-Hardware-Wallet."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Device setup was cancelled. Go back to try again."
+msgstr "Die Geräteeinrichtung wurde abgebrochen. Gehen Sie zurück und versuchen Sie es noch einmal."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "The default {} matches traditional BTC/BSV accounts. BCH accounts commonly use m/44'/145'/0'. Keep the original path when checking an existing balance."
+msgstr "Der Standardwert {0} entspricht den herkömmlichen Konten BTC/BSV. BCH-Konten verwenden üblicherweise m/44'/145'/0'. Behalten Sie den ursprünglichen Pfad bei, wenn Sie einen vorhandenen Kontostand überprüfen."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "The selected device is not ready. Unlock it on its own screen, close other wallet applications, then choose Try again. Ledger can request opening Bitcoin Cash; confirm on the device if asked. To select a different device, go back."
+msgstr "Das ausgewählte Gerät ist nicht bereit. Entsperren Sie es auf einem eigenen Bildschirm, schließen Sie andere Wallet-Anwendungen und wählen Sie dann „Erneut versuchen“. Ledger kann die Öffnung anfordern Bitcoin Cash; Bestätigen Sie dies auf dem Gerät, wenn Sie dazu aufgefordert werden. Um ein anderes Gerät auszuwählen, gehen Sie zurück."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Try again"
+msgstr "Versuchen Sie es erneut"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Die Mining-Belohnung wird in der ausgewählten Kette nicht überprüft"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/keys_view.py
+msgid "Show address on device"
+msgstr "Adresse auf dem Gerät anzeigen"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Select an address in the Keys tab and choose Sign/verify message."
+msgstr "Wählen Sie auf der Registerkarte „Schlüssel“ eine Adresse aus und wählen Sie „Nachricht signieren/bestätigen“."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "To sign, select an address in the Keys tab and choose Sign/verify message. You can verify any address here."
+msgstr "Wählen Sie zum Signieren eine Adresse auf der Registerkarte „Schlüssel“ aus und wählen Sie „Nachricht signieren/bestätigen“. Hier können Sie jede Adresse verifizieren."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Sign selected inputs…"
+msgstr "Ausgewählte Eingaben signieren…"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/i18n.py
+msgid "Chinese (Traditional)"
+msgstr "Chinesisch (traditionell)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "A selected coin depends on an unverified or immature mining reward on the selected chain. Refresh chain data and wait for maturity, then select coins again."
+msgstr "Eine ausgewählte Münze hängt von einer nicht verifizierten oder unausgereiften Mining-Belohnung in der ausgewählten Kette ab. Aktualisieren Sie die Kettendaten und warten Sie auf die Fälligkeit. Wählen Sie dann erneut Münzen aus."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "An input depends on an unverified or immature mining reward on the selected chain. Refresh chain data before retrying."
+msgstr "Eine Eingabe hängt von einer nicht verifizierten oder unausgereiften Mining-Belohnung in der ausgewählten Kette ab. Aktualisieren Sie die Kettendaten, bevor Sie es erneut versuchen."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Input selection is currently available for Ledger accounts only."
+msgstr "Die Eingabeauswahl ist derzeit nur für Ledger-Konten verfügbar."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Select at least one valid input to sign."
+msgstr "Wählen Sie mindestens eine gültige Eingabe zum Signieren aus."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Preparing the current transaction ({} inputs) on your Ledger..."
+msgstr "Vorbereiten der aktuellen Transaktion ({0}-Eingaben) auf Ihrem Ledger..."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
+#, python-brace-format
+msgid "Elapsed: {}"
+msgstr "Verstrichen: {0}"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid ""
+"Signing message...\n"
+"Message hash: {}"
+msgstr ""
+"Signiernachricht...\n"
+"Nachrichten-Hash: {0}"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/preferences.py
+msgid "System"
+msgstr "System"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device cannot provide this account key. Check the derivation "
+"path and passphrase, or select another device."
+msgstr ""
+"Das ausgewählte Gerät kann diesen Kontoschlüssel nicht bereitstellen. "
+"Überprüfen Sie den Ableitungspfad und die Passphrase oder wählen Sie ein "
+"anderes Gerät aus."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device uses a different hardware adapter. Select a compatible "
+"device and retry."
+msgstr ""
+"Das ausgewählte Gerät verwendet einen anderen Hardware-Adapter. Wählen Sie "
+"ein kompatibles Gerät aus und versuchen Sie es erneut."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a detected device."
+msgstr "Wählen Sie ein erkanntes Gerät aus."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "The selected device is not ready. Unlock it and retry."
+msgstr ""
+"Das ausgewählte Gerät ist nicht bereit. Entsperren Sie es und versuchen Sie "
+"es erneut."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "This USB interface does not support Ledger wallet communication."
+msgstr ""
+"Diese USB-Schnittstelle unterstützt keine Ledger-Wallet-Kommunikation."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account public key checked. It will be checked again before signing."
+msgstr ""
+"Der öffentliche Schlüssel des Kontos wurde überprüft. Vor der Unterzeichnung"
+" wird es noch einmal überprüft."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect"
+msgstr "Verbinden"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection details"
+msgstr "Verbindungsdetails"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account key matches"
+msgstr "Übereinstimmungen mit dem Kontoschlüssel"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection cancelled. Select the device and retry."
+msgstr ""
+"Verbindung abgebrochen. Wählen Sie das Gerät aus und versuchen Sie es "
+"erneut."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and unlock a hardware wallet to begin."
+msgstr ""
+"Schließen Sie eine Hardware-Wallet an und entsperren Sie sie, um zu "
+"beginnen."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"No devices detected. Connect a hardware wallet; this list updates "
+"automatically."
+msgstr ""
+"Keine Geräte erkannt. Schließen Sie eine Hardware-Wallet an; Diese Liste "
+"wird automatisch aktualisiert."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose a device and connect it to check the account public key."
+msgstr ""
+"Wählen Sie ein Gerät aus und verbinden Sie es, um den öffentlichen Schlüssel"
+" des Kontos zu überprüfen."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Select"
+msgstr "Wählen"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Choose a detected device, connect it, then select it after the account key "
+"check passes."
+msgstr ""
+"Wählen Sie ein erkanntes Gerät aus, schließen Sie es an und wählen Sie es "
+"dann aus, nachdem die Kontoschlüsselprüfung erfolgreich war."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware account key checked; ready to use"
+msgstr "Hardware-Kontoschlüssel überprüft; gebrauchsfertig"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "No hardware devices detected"
+msgstr "Keine Hardwaregeräte erkannt"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware device detected, but not available for this account"
+msgstr "Hardwaregerät erkannt, aber für dieses Konto nicht verfügbar"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger may show “unverified inputs” and cannot verify the fee. Signing many "
+"inputs may still be slow."
+msgstr ""
+"Ledger zeigt möglicherweise „unverified inputs“ und kann die Gebühr nicht "
+"prüfen. Viele Eingänge können weiterhin langsam signiert werden."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify input amounts (recommended)"
+msgstr "Eingangsbeträge prüfen (empfohlen)"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger checks previous transactions before signing. Large transactions may "
+"take several minutes."
+msgstr ""
+"Ledger prüft vor dem Signieren die vorherigen Transaktionen. Große "
+"Transaktionen können mehrere Minuten dauern."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Inputs: {} · Outputs: {}"
+msgstr "Eingänge: {} · Ausgänge: {}"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Skipped"
+msgstr "Übersprungen"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Sign inputs"
+msgstr "Eingänge signieren"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Follow the instructions on your Ledger."
+msgstr "Befolgen Sie die Anweisungen auf Ihrem Ledger."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signatures verified."
+msgstr "Signaturen geprüft."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid ""
+"Cancellation requested. Finish or reject the current request on your Ledger;"
+" signing will stop before the next device operation."
+msgstr ""
+"Abbruch angefordert. Schließen Sie die aktuelle Anfrage auf Ihrem Ledger ab "
+"oder lehnen Sie sie ab. Vor dem nächsten Geräteschritt wird angehalten."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Transaction signing"
+msgstr "Transaktion signieren"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Prepare transaction"
+msgstr "Transaktion vorbereiten"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify signatures"
+msgstr "Signaturen prüfen"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Keep your Ledger connected throughout signing."
+msgstr "Ledger während des Signierens angeschlossen lassen."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify previous transactions"
+msgstr "Vorherige Transaktionen prüfen"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Review on device"
+msgstr "Auf dem Gerät prüfen"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Stopped"
+msgstr "Gestoppt"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signing cancelled."
+msgstr "Signieren abgebrochen."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Complete"
+msgstr "Abgeschlossen"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Waiting"
+msgstr "Warten"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "In progress"
+msgstr "In Bearbeitung"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Some input amounts could not be retrieved."
+msgstr "Einige Eingangsbeträge konnten nicht abgerufen werden."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid ""
+"Previous transaction data is not stored in this wallet. Use View on block "
+"explorer to inspect it."
+msgstr ""
+"Die vorherige Transaktion ist nicht in dieser Wallet gespeichert. Verwenden "
+"Sie „Im Blockexplorer anzeigen“."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Loading input amounts…"
+msgstr "Eingangsbeträge werden geladen…"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Input amounts are unavailable offline."
+msgstr "Eingangsbeträge sind offline nicht verfügbar."
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Retry"
+msgstr "Erneut versuchen"
