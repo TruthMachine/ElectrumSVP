@@ -32,7 +32,7 @@ from typing import Any, List
 from PyQt5.QtCore import QObject, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices, QPainter, QPixmap
 from PyQt5.QtWidgets import (QVBoxLayout, QLabel, QLayout, QWidget,
-    QHBoxLayout, QStyle, QStyleOption, QToolBar, QAction, QListWidget,
+    QHBoxLayout, QStyle, QStyleOption, QListWidget,
     QListWidgetItem)
 
 from electrumsv.constants import WalletEventFlag, WalletEventType
@@ -48,8 +48,6 @@ from .wallet_api import WalletAPI
 class ListContext(QObject):
     entry_added = pyqtSignal(object)
     entry_removed = pyqtSignal(object)
-
-    sortable_list = False
 
     def __init__(self, wallet_api: WalletAPI, list: "View") -> None:
         super().__init__(list)
@@ -110,38 +108,13 @@ class View(QWidget):
 
         cards = Cards(self._context, self)
 
-        sort_action = QAction(self)
-        sort_action.setIcon(read_QIcon("icons8-alphabetical-sorting-2-80-blueui.png"))
-        sort_action.setToolTip(_("Sort"))
-        sort_action.triggered.connect(self._on_sort_action)
-        sort_action.setEnabled(self._context.sortable_list)
-
-        toolbar = QToolBar(self)
-        toolbar.setMovable(False)
-        toolbar.setOrientation(Qt.Vertical)
-        toolbar.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        toolbar.addAction(sort_action)
-
         self._layout = QHBoxLayout()
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.setSpacing(0)
         self._layout.addWidget(cards)
-        self._layout.addWidget(toolbar)
         self.setLayout(self._layout)
 
         self._cards = cards
-        self._sort_action = sort_action
-        self._sort_type = 1
-
-    def _on_sort_action(self) -> None:
-        if self._sort_type == 1:
-            self._sort_type = -1
-            self._sort_action.setIcon(read_QIcon("icons8-alphabetical-sorting-80-blueui.png"))
-            self._cards._list.sortItems(Qt.DescendingOrder)
-        else:
-            self._sort_type = 1
-            self._sort_action.setIcon(read_QIcon("icons8-alphabetical-sorting-2-80-blueui.png"))
-            self._cards._list.sortItems(Qt.AscendingOrder)
 
 
 class Cards(QWidget):
@@ -174,7 +147,7 @@ class Cards(QWidget):
         self._remove_empty_label()
         if self._list is None:
             self._list = QListWidget(self)
-            self._list.setSortingEnabled(self._context.sortable_list)
+            self._list.setSortingEnabled(False)
             self._layout.addWidget(self._list)
 
         card = self._context.card_factory(row)

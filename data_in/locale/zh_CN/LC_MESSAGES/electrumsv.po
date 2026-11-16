@@ -3780,3 +3780,41 @@ msgstr "收到了{} 笔新的交易，共收到新交易 {}"
 msgid "{} words"
 msgstr "{} 个词语"
 
+
+
+# ElectrumSVP hardware flow: Chinese translation.
+#: electrumsv/i18n.py
+msgid "Chinese (Traditional)"
+msgstr "繁体中文"
+
+# ElectrumSVP hardware flow. Chinese translation added with this patch.
+#: electrumsv/gui/qt/preferences.py
+msgid "System"
+msgstr "跟随系统"
+
+# ElectrumSVP interface. Chinese translation added with this patch.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Input amounts are unavailable offline."
+msgstr "离线时无法获取输入金额。"
+
+# ElectrumSVP interface. Chinese translation added with this patch.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Loading input amounts…"
+msgstr "正在读取输入金额…"
+
+# ElectrumSVP interface. Chinese translation added with this patch.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid ""
+"Previous transaction data is not stored in this wallet. Use View on block "
+"explorer to inspect it."
+msgstr "本钱包未保存前序交易数据。请使用“在区块浏览器中查看”检查。"
+
+# ElectrumSVP interface. Chinese translation added with this patch.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Retry"
+msgstr "重试"
+
+# ElectrumSVP interface. Chinese translation added with this patch.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Some input amounts could not be retrieved."
+msgstr "部分输入金额未能获取。"

@@ -31,11 +31,13 @@ from functools import partial
 import gzip
 import json
 import math
+from threading import Event
 from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Set, Tuple
 import weakref
 import webbrowser
 
 from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5 import sip
 from PyQt5.QtGui import QBrush, QCursor, QFont
 from PyQt5.QtWidgets import (QDialog, QLabel, QMenu, QPushButton, QHBoxLayout,
     QToolTip, QTreeWidgetItem, QVBoxLayout, QWidget)
@@ -51,6 +53,7 @@ from electrumsv.logs import logs
 from electrumsv.paymentrequest import PaymentRequest
 from electrumsv.platform import platform
 from electrumsv.services.coins import CoinService
+from electrumsv.services.transaction_inputs import input_values, load_previous_transactions
 from electrumsv.transaction import (Transaction, TxFileExtensions, TxSerialisationFormat,
     tx_output_to_display_text, XTxOutput)
 from electrumsv.types import TxoKeyType, WaitingUpdateCallback
@@ -137,6 +140,11 @@ class TxDialog(QDialog, MessageBoxMixin):
         self._coin_service = CoinService(self._wallet)
         self._prompt_if_unsaved = prompt_if_unsaved
         self._saved = False
+        self._input_lookup_stopped = Event()
+        self._input_lookup_running = False
+        self._previous_transactions = dict(self.tx.context.prev_txs)
+        self._input_values = input_values(self.tx, self._previous_transactions)
+        self.finished.connect(lambda _result: self._input_lookup_stopped.set())
 
         self.setMinimumWidth(1000)
         self.setWindowTitle(_("Transaction"))
@@ -225,6 +233,42 @@ class TxDialog(QDialog, MessageBoxMixin):
         main_window.history_updated_signal.connect(self.update_tx_if_in_wallet)
         main_window.network_signal.connect(self._on_transaction_verified)
         main_window.transaction_added_signal.connect(self._on_transaction_added)
+        self._load_input_amounts()
+
+    def _load_input_amounts(self):
+        if self._input_lookup_running or self._input_lookup_stopped.is_set() or self.tx.is_coinbase():
+            return
+        self._input_lookup_running = True
+        self._input_status.setText(_('Loading input amounts…'))
+        self._retry_inputs.setEnabled(False)
+        self._input_status.show()
+        tx = copy.deepcopy(self.tx)
+        known = dict(self._previous_transactions)
+        network = self._main_window.network
+        request = network.request_and_wait if network is not None else None
+        stopped = self._input_lookup_stopped
+        read_local = self._wallet._transaction_cache.get_transaction
+        def completed(future):
+            if stopped.is_set() or sip.isdeleted(self):
+                return
+            self._input_lookup_running = False
+            try:
+                self._previous_transactions.update(future.result())
+            except Exception:
+                logger.exception('Previous-transaction lookup failed')
+            self._input_values = input_values(self.tx, self._previous_transactions)
+            missing = any(not txin.is_coinbase() and i not in self._input_values
+                for i, txin in enumerate(self.tx.inputs))
+            self._input_status.setText(_('Some input amounts could not be retrieved.')
+                if network is not None else _('Input amounts are unavailable offline.'))
+            self._input_status.setVisible(missing)
+            self._retry_inputs.setVisible(missing)
+            self._retry_inputs.setEnabled(True)
+            self._i_table.clear(); self._o_table.clear()
+            self._update_io(self._i_table, self._o_table)
+            self.update()
+        app_state.app.run_in_thread(lambda: load_previous_transactions(
+            tx, known, read_local, request, stopped), on_done=completed)
 
     def _validate_account_event(self, account_ids: Set[int]) -> bool:
         return self._account_id in account_ids
@@ -258,7 +302,8 @@ class TxDialog(QDialog, MessageBoxMixin):
             self.update()
 
     def update_tx_if_in_wallet(self) -> None:
-        if self._tx_hash and self._account.has_received_transaction(self._tx_hash):
+        if self._tx_hash and self._account is not None and \
+                self._account.has_received_transaction(self._tx_hash):
             self.update()
 
     def do_broadcast(self) -> None:
@@ -347,13 +392,19 @@ class TxDialog(QDialog, MessageBoxMixin):
             self.broadcast_button.setToolTip(_('You are using ElectrumSV in offline mode; restart '
                                                'ElectrumSV if you want to get connected'))
 
-        can_sign = not self.tx.is_complete() and self._account.can_sign(self.tx)
+        can_sign = self._account is not None and not self.tx.is_complete() and \
+            self._account.can_sign(self.tx)
         self.sign_button.setEnabled(can_sign)
 
         self._tx_hash = tx_info.hash
         tx_id = hash_to_hex_str(tx_info.hash)
         self.tx_hash_e.setText(tx_id)
 
+        if tx_info_fee is None:
+            if len(self._input_values) == len(self.tx.inputs):
+                verified_fee = sum(self._input_values.values()) - sum(o.value for o in self.tx.outputs)
+                if verified_fee >= 0:
+                    tx_info_fee = verified_fee
         if tx_info_fee is None:
             try:
                 # Try and compute fee. We don't always have 'value' in all the inputs though. :/
@@ -547,6 +598,14 @@ class TxDialog(QDialog, MessageBoxMixin):
         self._spent_value_label = QLabel()
         input_header_layout = QHBoxLayout()
         input_header_layout.addWidget(QLabel(_("Inputs") + ' (%d)' % len(self.tx.inputs)))
+        self._input_status = QLabel()
+        self._input_status.setWordWrap(True)
+        self._retry_inputs = QPushButton(_('Retry'))
+        self._retry_inputs.setAutoDefault(False)
+        self._retry_inputs.clicked.connect(self._load_input_amounts)
+        self._retry_inputs.hide()
+        input_header_layout.addWidget(self._input_status)
+        input_header_layout.addWidget(self._retry_inputs)
         input_header_layout.addStretch(1)
         input_header_layout.addWidget(self._spent_value_label)
 
@@ -600,14 +659,14 @@ class TxDialog(QDialog, MessageBoxMixin):
         prev_txos = self._coin_service.get_outputs(
             [ TxoKeyType(txin.prev_hash, txin.prev_idx) for txin in self.tx.inputs ])
         prev_txo_dict = { TxoKeyType(r.tx_hash, r.tx_index): r for r in prev_txos }
-        self._spent_value_label.setText(_("Spent input value") +": "+
-            app_state.format_amount(sum(r.value for r in prev_txos)))
+        input_values = []
 
         for tx_index, txin in enumerate(self.tx.inputs):
             account_name = ""
             source_text = ""
             amount_text = ""
-            is_receiving = is_change = is_broken = False
+            is_receiving = is_change = is_broken = is_mine = False
+            value = None
             txo_key = TxoKeyType(txin.prev_hash, txin.prev_idx)
 
             if txin.is_coinbase():
@@ -618,15 +677,19 @@ class TxDialog(QDialog, MessageBoxMixin):
                 # There are only certain kinds of transactions that have values on the inputs,
                 # likely deserialised incomplete transactions from cosigners. Others?
                 value = txin.value
+                prev_txo = prev_txo_dict.get(txo_key)
+                if prev_txo is not None and is_tx_complete:
+                    value = prev_txo.value
+                value = self._input_values.get(tx_index, value)
                 if self._account is not None:
                     keyinstance_id = get_keyinstance_id(self._account, txo_key)
-                    is_receiving = compare_key_path(self._account, keyinstance_id,
-                        RECEIVING_SUBPATH)
-                    is_change = compare_key_path(self._account, keyinstance_id, CHANGE_SUBPATH)
-                    account_name = name_for_account(self._account)
-                    prev_txo = prev_txo_dict.get(txo_key, None)
-                    if prev_txo is not None and is_tx_complete:
-                        value = prev_txo.value
+                    if keyinstance_id is not None:
+                        is_mine = True
+                        is_receiving = compare_key_path(self._account, keyinstance_id,
+                            RECEIVING_SUBPATH)
+                        is_change = compare_key_path(self._account, keyinstance_id, CHANGE_SUBPATH)
+                        account_name = name_for_account(self._account)
+                    if is_mine and prev_txo is not None and is_tx_complete:
                         if is_tx_known:
                             # The transaction has been added to the account.
                             is_broken = (prev_txo.flags & TransactionOutputFlag.IS_SPENT) == 0
@@ -635,10 +698,11 @@ class TxDialog(QDialog, MessageBoxMixin):
                             # being viewed but has not been added to the account.
                             is_broken = (prev_txo.flags & TransactionOutputFlag.IS_SPENT) != 0
                 amount_text = app_state.format_amount(value, whitespaces=True)
+            input_values.append(value)
 
             item = QTreeWidgetItem([ str(tx_index), account_name, source_text, amount_text ])
             item.setData(InputColumns.INDEX, Roles.TX_HASH, txin.prev_hash)
-            item.setData(InputColumns.INDEX, Roles.IS_MINE, is_change or is_receiving)
+            item.setData(InputColumns.INDEX, Roles.IS_MINE, is_mine)
             if is_receiving:
                 item.setBackground(InputColumns.SOURCE, self._receiving_brush)
             if is_change:
@@ -648,6 +712,11 @@ class TxDialog(QDialog, MessageBoxMixin):
             item.setTextAlignment(InputColumns.AMOUNT, Qt.AlignRight | Qt.AlignVCenter)
             item.setFont(InputColumns.AMOUNT, self._monospace_font)
             i_table.addTopLevelItem(item)
+
+        total_input_value = (sum(input_values) if all(value is not None
+            for value in input_values) else None)
+        self._spent_value_label.setText(_("Spent input value") + ": " +
+            app_state.format_amount(total_input_value))
 
         # TODO: Rewrite this to be lot simpler when we have better TXO management. At this time
         # we do not track UTXOs except when a transaction is known to the network as we rely on
@@ -820,7 +889,9 @@ class InputTreeWidget(MyTreeWidget):
         column_data = item.text(column).strip()
 
         tx_hash = item.data(InputColumns.INDEX, Roles.TX_HASH)
-        have_tx = self.parent()._account.have_transaction_data(tx_hash)
+        account = self.parent()._account
+        have_tx = tx_hash in self.parent()._previous_transactions or \
+            (account is not None and account.have_transaction_data(tx_hash))
 
         tx_id = hash_to_hex_str(tx_hash)
         tx_URL = web.BE_URL(self._main_window.config, 'tx', tx_id)
@@ -839,16 +910,16 @@ class InputTreeWidget(MyTreeWidget):
         dialog = self.parent()
         account = dialog._account
         try:
-            tx = account.get_transaction(tx_hash)
+            tx = dialog._previous_transactions.get(tx_hash)
+            if tx is None and account is not None:
+                tx = account.get_transaction(tx_hash)
         except MissingRowError:
-            MessageBox.show_error(_("This transaction is unrelated to your wallet."
-                " For now use a blockchain explorer."))
+            tx = None
+        if tx is not None:
+            self._main_window.show_transaction(account, tx)
         else:
-            if tx is not None:
-                self._main_window.show_transaction(account, tx)
-            else:
-                MessageBox.show_error(_("The data for this  transaction is not yet present in "
-                    "your wallet. Please try again when it has been obtained from the network."))
+            MessageBox.show_message(_("Previous transaction data is not stored in this wallet. "
+                "Use View on block explorer to inspect it."))
 
 
 class OutputTreeWidget(MyTreeWidget):

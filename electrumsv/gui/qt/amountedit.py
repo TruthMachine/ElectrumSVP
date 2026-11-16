@@ -47,15 +47,23 @@ class AmountEdit(MyLineEdit):
 
     def __init__(self, base_unit_func, parent=None, prefix=''):
         super().__init__(parent)
-        # This seems sufficient for hundred-BTC amounts with 8 decimals
-        self.setFixedWidth(140)
         self.base_unit_func = base_unit_func
         self.prefix = prefix
-        if self.prefix:
-            self.setTextMargins(16, 0, 0, 0)
+        self._update_unit_geometry()
         self.textChanged.connect(self.numbify)
         self.is_shortcut = False
-        self.help_palette = QPalette()
+
+    def _update_unit_geometry(self):
+        metrics = self.fontMetrics()
+        unit = self.base_unit_func() if callable(self.base_unit_func) else ''
+        unit_width = metrics.horizontalAdvance(unit) + 12 if unit else 0
+        prefix_width = metrics.horizontalAdvance(self.prefix) + 8 if self.prefix else 0
+        margins = self.textMargins()
+        if (margins.left(), margins.right()) != (prefix_width, unit_width):
+            self.setTextMargins(prefix_width, 0, unit_width, 0)
+        # Reserve space for the value AND the unit; neither is painted over the other.
+        self.setMinimumWidth(metrics.horizontalAdvance('00000000.00000000') +
+            prefix_width + unit_width + 20)
 
     def decimal_point(self):
         return 8
@@ -79,6 +87,7 @@ class AmountEdit(MyLineEdit):
         self.setCursorPosition(pos)
 
     def paintEvent(self, event):
+        self._update_unit_geometry()
         QLineEdit.paintEvent(self, event)
 
         if self.base_unit_func:
@@ -90,18 +99,11 @@ class AmountEdit(MyLineEdit):
 
             painter = QPainter(self)
             painter.setPen(
-                self.help_palette.brush(
-                    QPalette.Disabled, QPalette.Text
-                ).color()
+                self.palette().color(QPalette.PlaceholderText)
             )
 
             if self.prefix:
                 prefixRect = textRect.adjusted(2, 0, 0, 0)
-
-                original_font = painter.font()
-                prefix_font = original_font
-                prefix_font.setPointSize(prefix_font.pointSize() + 1)
-                painter.setFont(prefix_font)
 
                 painter.drawText(
                     prefixRect,
@@ -109,9 +111,7 @@ class AmountEdit(MyLineEdit):
                     self.prefix
                 )
 
-                painter.setFont(original_font)
-
-            textRect.adjust(2, 0, -10, 0)
+            textRect.adjust(2, 0, -4, 0)
             painter.drawText(
                 textRect,
                 Qt.AlignRight | Qt.AlignVCenter,

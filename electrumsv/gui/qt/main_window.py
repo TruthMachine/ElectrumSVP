@@ -131,7 +131,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         theme = theme_from_config(app_state.config)
         dark = theme == Theme.DARK
 
-        apply_windows_title_bar(self, dark)
+        apply_windows_title_bar(self, theme)
         self.setStyleSheet(wallet_window_style(theme))
 
         self._api = WalletAPI(self)
@@ -649,6 +649,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         tab.tab_name = name
         if self.config.get('show_{}_tab'.format(name), default):
             tabs.addTab(tab, icon, description.replace("&", ""))
+        else:
+            # Pages not adopted by the tab stack must remain hidden.
+            tab.hide()
 
     def _on_wallet_setting_changed(self, event_name: str, setting_name: str, setting_value: Any) \
             -> None:
@@ -797,6 +800,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
             else:
                 i = self._tab_widget.indexOf(tab)
                 self._tab_widget.removeTab(i)
+                tab.hide()
 
         if self._tab_widget.indexOf(tab) != -1 and to_front:
             self._tab_widget.setCurrentWidget(tab)
@@ -1121,7 +1125,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
 
     def init_toolbar(self):
         self.toolbar = toolbar = QToolBar(self)
-        icon_size = int(self.app.dpi / 5.8)
+        toolbar.setObjectName('walletToolbar')
+        icon_size = max(20, self.fontMetrics().height())
         toolbar.setMovable(False)
         toolbar.setIconSize(QSize(icon_size, icon_size))
         toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
