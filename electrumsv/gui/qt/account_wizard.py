@@ -281,6 +281,7 @@ class AddAccountWizardPage(QWizardPage):
                     super(ListWidget, self).keyPressEvent(event)
 
         option_list = self._option_list = ListWidget()
+        option_list.setProperty('theme_role', 'account_types')
         option_list.setIconSize(QSize(30, 30))
 
         theme = theme_from_config(app_state.config)
@@ -320,14 +321,7 @@ class AddAccountWizardPage(QWizardPage):
         )
         info_label.setWordWrap(True)
         
-        if theme_from_config(app_state.config, True) == Theme.DARK:
-            info_label.setStyleSheet(
-                "color: #b8bdc4; background-color: transparent; font-style: italic;"
-            )
-        else:
-            info_label.setStyleSheet(
-                "color: gray; background-color: transparent; font-style: italic;"
-            )
+        info_label.setStyleSheet("background-color: transparent; font-style: italic;")
 
         info_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 

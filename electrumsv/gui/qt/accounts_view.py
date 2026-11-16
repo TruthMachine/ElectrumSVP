@@ -19,6 +19,7 @@ from electrumsv.logs import logs
 from electrumsv.wallet import AbstractAccount, MultisigAccount, Wallet
 
 from .account_dialog import AccountDialog
+from .theme_controls import SegmentedTabWidget
 from .main_window import ElectrumWindow
 from .util import (Buttons, CancelButton, filename_field, line_dialog, MessageBox, OkButton,
     protected, read_QIcon, WindowModalDialog)
@@ -58,7 +59,9 @@ class AccountsView(QSplitter):
                 painter.drawText(self.rect(), Qt.AlignCenter, _("Add an account.."))
 
         self._account_ids: List[int] = []
-        self._tab_widget = QTabWidget()
+        self._tab_widget = SegmentedTabWidget()
+        self._tab_widget.setObjectName("walletTabs")
+        self._tab_widget.setUsesScrollButtons(True)
 
         self._selection_list = CustomListWidget()
         self._selection_list.setMinimumWidth(150)
