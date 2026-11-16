@@ -23,7 +23,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 
 from bitcoinx import (Ops, hash_to_hex_str, sha256, Address, classify_output_script,
     OP_RETURN_Output, P2MultiSig_Output, P2PK_Output, P2PKH_Address, P2SH_Address, Script,
@@ -46,6 +46,11 @@ MAX_FEE_RATE = 20000
 
 COINBASE_MATURITY = 100
 COIN = 100000000
+
+
+def is_coinbase_mature(height: Optional[int], tip_height: int) -> bool:
+    """Numeric maturity only; callers must first prove membership in the selected tip's chain."""
+    return height is not None and height > 0 and tip_height + 1 >= height + COINBASE_MATURITY
 
 
 def rev_hex(s):

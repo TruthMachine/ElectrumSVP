@@ -378,30 +378,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
 
     def reset_blockchain_headers(self):
         import os
-        import platform
         from PyQt5.QtWidgets import QMessageBox
-
-        system = platform.system()
-
-        if system == "Windows":
-            headers_path = os.path.join(
-                os.path.expanduser("~"),
-                "AppData",
-                "Roaming",
-                "ElectrumSV",
-                "Headers",
-            )
-
-        elif system == "Darwin":
-            headers_path = os.path.expanduser(
-                "~/.electrum-sv/headers"
-            )
-
-        else:
-            # Linux
-            headers_path = os.path.expanduser(
-                "~/.electrum-sv/headers"
-            )
+        headers_path = self.config.file_path('headers')
 
         print(
             "HEADER RESET: resolved headers path:",

@@ -537,10 +537,17 @@ class TestTransactionCache:
 
         assert 11 == cache.get_height(tx_hash_1)
 
-        cache.update_flags(tx_hash_1, TxFlags.StateCleared, TxFlags.HasByteData)
+        with SynchronousWriter() as writer:
+            cache.update_flags(tx_hash_1, TxFlags.StateCleared, TxFlags.HasByteData,
+                completion_callback=writer.get_callback())
+            assert writer.succeeded()
         assert 11 == cache.get_height(tx_hash_1)
 
-        cache.update_flags(tx_hash_1, TxFlags.StateReceived, TxFlags.HasByteData)
+        # The next test clears this shared database; do not leave background writes racing it.
+        with SynchronousWriter() as writer:
+            cache.update_flags(tx_hash_1, TxFlags.StateReceived, TxFlags.HasByteData,
+                completion_callback=writer.get_callback())
+            assert writer.succeeded()
         assert None is cache.get_height(tx_hash_1)
 
     @pytest.mark.timeout(5)
@@ -567,7 +574,7 @@ class TestTransactionCache:
         results = cache.get_unsynced_hashes()
         assert 0 == len(results)
 
-    def test_get_unverified_entries_too_high(self):
+    def test_existing_position_without_proof_needs_reverification(self):
         cache = TransactionCache(self.store)
 
         tx_1 = Transaction.from_hex(tx_hex_1)
@@ -578,6 +585,12 @@ class TestTransactionCache:
                 completion_callback=writer.get_callback())
             assert writer.succeeded()
 
+        results = cache.get_unverified_entries(100)
+        assert 1 == len(results)
+        with SynchronousWriter() as writer:
+            cache.update_proof(tx_hash_1, TxProof(22, [b'p' * 32] * 5),
+                completion_callback=writer.get_callback())
+            assert writer.succeeded()
         results = cache.get_unverified_entries(100)
         assert 0 == len(results)
 

@@ -1837,6 +1837,15 @@ class Network(TriggeredCallbacks):
                     logger.error(f'getting proof for {tx_id}: {e}')
                 else:
                     if header.merkle_root == proven_root:
+                        # The branch may have changed while the proof request was in flight.
+                        # A valid proof for the old block must not settle a reward on the new chain.
+                        try:
+                            current_header = self.chain().header_at_height(tx_height)
+                        except (MissingHeader, AttributeError):
+                            continue
+                        if current_header.hash != header.hash:
+                            logger.debug('ignoring proof from a superseded block for %s', tx_id)
+                            continue
                         logger.debug(f'received valid proof for {tx_id}')
                         wallet.add_transaction_proof(tx_hash, tx_height, header.timestamp, tx_pos,
                             tx_pos, branch)
