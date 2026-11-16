@@ -3779,3 +3779,31 @@ msgstr "{} neue Transaktionen erhalten: Gesamtbetrag aller neuen Transaktionen {
 msgid "{} words"
 msgstr "{} Wörter"
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"Eine ausgewählte Münze hängt von einer nicht verifizierten oder "
+"unausgereiften Mining-Belohnung in der ausgewählten Kette ab. Aktualisieren "
+"Sie die Kettendaten und warten Sie auf die Fälligkeit. Wählen Sie dann "
+"erneut Münzen aus."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr ""
+"Eine Eingabe hängt von einer nicht verifizierten oder unausgereiften Mining-"
+"Belohnung in der ausgewählten Kette ab. Aktualisieren Sie die Kettendaten, "
+"bevor Sie es erneut versuchen."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Die Mining-Belohnung wird in der ausgewählten Kette nicht überprüft"

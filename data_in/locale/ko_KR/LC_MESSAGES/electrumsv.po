@@ -30,7 +30,7 @@ msgstr ""
 #: electrumsv/devices/keepkey/qt.py:410 electrumsv/devices/trezor/qt.py:399
 #, python-format
 msgid "%2d minutes"
-msgstr "분"
+msgstr "%2d분"
 
 #: electrumsv/devices/trezor/qt.py:201
 #, python-format
@@ -3773,3 +3773,26 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"선택된 코인은 선택된 체인에 대한 검증되지 않았거나 미성숙한 채굴 보상에 따라 달라집니다. 체인 데이터를 새로 고치고 만기를 기다린 후 "
+"코인을 다시 선택하세요."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr "입력은 선택한 체인의 검증되지 않았거나 미성숙한 채굴 보상에 따라 달라집니다. 재시도하기 전에 체인 데이터를 새로 고치세요."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "선택한 체인에서는 채굴 보상이 확인되지 않습니다."

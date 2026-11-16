@@ -434,11 +434,16 @@ class TransactionTable(BaseWalletStore):
                 db.executemany(self.UPDATE_MANY_SQL, data_rows)
             if len(metadata_rows):
                 db.executemany(self.UPDATE_METADATA_MANY_SQL, metadata_rows)
+            # Flags and proof bytes must agree after a height change, including after restart.
+            db.executemany('UPDATE Transactions SET proof_data=NULL WHERE tx_hash=?',
+                [(tx_hash,) for tx_hash, _metadata, _data, flags in entries
+                    if not flags & TxFlags.HasProofData])
 
         self._db_context.queue_write(_write, completion_callback, size_hint)
 
     def update_metadata(self, entries: List[Tuple[bytes, TxData, TxFlags]],
-            completion_callback: Optional[CompletionCallbackType]=None) -> None:
+            completion_callback: Optional[CompletionCallbackType]=None,
+            clear_proof: bool=False) -> None:
         datas = []
         for tx_hash, metadata, flags in entries:
             assert type(tx_hash) is bytes
@@ -448,6 +453,9 @@ class TransactionTable(BaseWalletStore):
             self._logger.debug("update %d tx metadatas: %s", len(entries),
                 [ (hash_to_hex_str(a), b, TxFlags.to_repr(c)) for (a, b, c) in entries ])
             db.executemany(self.UPDATE_METADATA_MANY_SQL, datas)
+            if clear_proof:
+                db.executemany('UPDATE Transactions SET proof_data=NULL WHERE tx_hash=?',
+                    [(entry[0],) for entry in entries])
         self._db_context.queue_write(_write, completion_callback)
 
     def update_flags(self, entries: Iterable[Tuple[bytes, TxFlags, TxFlags, int]],

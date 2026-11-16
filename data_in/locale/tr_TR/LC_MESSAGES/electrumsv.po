@@ -3773,3 +3773,30 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"Seçilen bir kripto para, seçilen zincirdeki doğrulanmamış veya olgunlaşmamış"
+" bir madencilik ödülüne bağlıdır. Zincir verilerini yenileyin ve vadeyi "
+"bekleyin, ardından koinleri tekrar seçin."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr ""
+"Bir girdi, seçilen zincirdeki doğrulanmamış veya olgunlaşmamış bir "
+"madencilik ödülüne bağlıdır. Yeniden denemeden önce zincir verilerini "
+"yenileyin."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Madencilik ödülü seçilen zincirde doğrulanmadı"

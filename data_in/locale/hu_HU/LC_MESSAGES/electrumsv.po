@@ -3776,3 +3776,29 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"Egy kiválasztott érme a kiválasztott lánc ellenőrizetlen vagy éretlen "
+"bányászati ​​jutalmától függ. Frissítse a láncadatokat, várja meg a "
+"lejáratot, majd válassza ki újra az érméket."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr ""
+"A bemenet a kiválasztott lánc ellenőrizetlen vagy éretlen bányászati "
+"​​jutalmától függ. Az újrapróbálkozás előtt frissítse a láncadatokat."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "A bányászati ​​jutalom nincs ellenőrizve a kiválasztott láncon"

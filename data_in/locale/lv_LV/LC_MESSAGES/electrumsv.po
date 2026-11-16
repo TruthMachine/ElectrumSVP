@@ -3773,3 +3773,29 @@ msgstr "Saņemtas {} jaunas transakcijas. Kopējā saņemtā summa jaunajās tra
 msgid "{} words"
 msgstr ""
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"Izvēlētā monēta ir atkarīga no nepārbaudītas vai nenobriedušas ieguves "
+"atlīdzības atlasītajā ķēdē. Atsvaidziniet ķēdes datus un uzgaidiet termiņu, "
+"pēc tam vēlreiz atlasiet monētas."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr ""
+"Ievade ir atkarīga no nepārbaudītas vai nenobriedušas ieguves atlīdzības "
+"atlasītajā ķēdē. Pirms atkārtotas mēģinājuma atsvaidziniet ķēdes datus."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Atlīdzība par ieguvi atlasītajā ķēdē nav pārbaudīta"

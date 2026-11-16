@@ -1,0 +1,36 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ElectrumSVP\n"
+"Language: ta_IN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"தேர்ந்தெடுக்கப்பட்ட நாணயமானது, தேர்ந்தெடுக்கப்பட்ட சங்கிலியில் "
+"சரிபார்க்கப்படாத அல்லது முதிர்ச்சியடையாத சுரங்க வெகுமதியைப் பொறுத்தது. "
+"சங்கிலித் தரவைப் புதுப்பித்து, முதிர்வுக்காகக் காத்திருந்து, மீண்டும் "
+"நாணயங்களைத் தேர்ந்தெடுக்கவும்."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr ""
+"ஒரு உள்ளீடு தேர்ந்தெடுக்கப்பட்ட சங்கிலியில் சரிபார்க்கப்படாத அல்லது "
+"முதிர்ச்சியடையாத சுரங்க வெகுமதியைப் பொறுத்தது. மீண்டும் முயற்சிக்கும் முன் "
+"சங்கிலித் தரவைப் புதுப்பிக்கவும்."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "தேர்ந்தெடுக்கப்பட்ட சங்கிலியில் சுரங்க வெகுமதி சரிபார்க்கப்படவில்லை"

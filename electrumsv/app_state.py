@@ -136,7 +136,8 @@ class AppStateProxy:
             shutil.copyfile(PRELOADED_HEADERS, filename)
 
         try:
-            self.headers = PersistentHeaders(file_path=filename, network=Bitcoin)
+            self.headers = PersistentHeaders(file_path=filename, network=Bitcoin,
+                validate_network=not self.config.get('offline', False))
         except MissingHeader as e:
             logger.warning("Existing headers file failed: %s", str(e))
             old_backup = filename + ".old"
@@ -145,7 +146,8 @@ class AppStateProxy:
                 logger.info("Renamed old headers file to %s", old_backup)
             shutil.copyfile(PRELOADED_HEADERS, filename)
             logger.info("Copied preloaded headers to %s", filename)
-            self.headers = PersistentHeaders(file_path=filename, network=Bitcoin)
+            self.headers = PersistentHeaders(file_path=filename, network=Bitcoin,
+                validate_network=not self.config.get('offline', False))
 
     async def on_stop(self) -> None:
         if hasattr(self, '_poll_task') and self._poll_task:

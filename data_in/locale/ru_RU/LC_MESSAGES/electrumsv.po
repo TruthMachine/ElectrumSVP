@@ -3773,3 +3773,30 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"Выбранная монета зависит от непроверенного или незрелого вознаграждения за "
+"майнинг в выбранной цепочке. Обновите данные цепочки и дождитесь погашения, "
+"затем снова выберите монеты."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr ""
+"Входные данные зависят от непроверенного или незрелого вознаграждения за "
+"майнинг в выбранной цепочке. Обновите данные цепочки перед повторной "
+"попыткой."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Вознаграждение за майнинг не проверено в выбранной цепочке"

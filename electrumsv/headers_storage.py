@@ -23,10 +23,11 @@ class PersistentHeaders:
     automatic fallback to PRELOADED_HEADERS on corruption or missing file.
     """
 
-    def __init__(self, network=Bitcoin, file_path=None):
+    def __init__(self, network=Bitcoin, file_path=None, *, validate_network=True):
         self.headers = Headers(network)
         self.file_path = file_path
         self.cursor = {}
+        self.validate_network = validate_network
 
         if not file_path:
             # In-memory headers only
@@ -140,11 +141,11 @@ class PersistentHeaders:
         # --------------------------------------------------------------
         # Validate ElectrumX response
         # --------------------------------------------------------------
-        server_header_hex = response.get("result")
+        server_header_hex = response.get("result") if isinstance(response, dict) else None
 
-        if not server_header_hex:
+        if not isinstance(server_header_hex, str) or not server_header_hex:
             raise HeaderNetworkCheckFailed(
-                f"ElectrumX returned no header for height {tip_height}"
+                f"ElectrumX returned no hexadecimal header for height {tip_height}"
             )
 
         try:
@@ -212,7 +213,8 @@ class PersistentHeaders:
             logger.info("Headers file integrity check passed")
 
             try:
-                self._validate_tip_against_network()
+                if self.validate_network:
+                    self._validate_tip_against_network()
 
             except HeaderNetworkCheckFailed as e:
                 # A temporary network/DNS failure must NOT cause us

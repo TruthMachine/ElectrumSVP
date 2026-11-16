@@ -37,6 +37,7 @@ class TransactionCache:
         self._cache: Dict[bytes, TransactionCacheEntry] = {}
         self._txdata_cache = LRUCache(max_size=txdata_cache_size)
         self._store = store
+        self._proof_cache = {}
 
         self._lock = threading.RLock()
 
@@ -198,6 +199,18 @@ class TransactionCache:
             else:
                 flags |= entry.flags & TxFlags.HasByteData
 
+            if (incoming_flags & TxFlags.HasHeight and height != entry.metadata.height and
+                    not incoming_flags & TxFlags.StateSettled):
+                # A server's changed height is not a new merkle proof.
+                flags &= ~(TxFlags.HasPosition | TxFlags.HasProofData)
+                if entry.flags & TxFlags.StateSettled:
+                    flags &= ~TxFlags.STATE_MASK
+                    flags |= TxFlags.StateCleared
+                new_metadata = TxData(height, None, fee, entry.metadata.date_added, date_updated)
+                self._proof_cache[tx_hash] = None
+            elif incoming_flags & TxFlags.StateSettled and not entry.flags & TxFlags.StateSettled:
+                self._proof_cache[tx_hash] = None
+
             if entry.metadata == new_metadata and entry.flags == flags:
                 continue
 
@@ -256,6 +269,8 @@ class TransactionCache:
             entry = self._get_entry(tx_hash)
             assert entry is not None
             metadata = entry.metadata
+            self._proof_cache[tx_hash] = proof
+            entry.flags |= TxFlags.HasProofData
             entry.metadata = TxData(metadata.height, metadata.position, metadata.fee,
                 metadata.date_added, date_updated)
             self._store.update_proof([ (tx_hash, proof, date_updated) ],
@@ -266,10 +281,21 @@ class TransactionCache:
         with self._lock:
             self._logger.debug("cache_deletion: %s", hash_to_hex_str(tx_hash))
             del self._cache[tx_hash]
+            self._proof_cache.pop(tx_hash, None)
             self._txdata_cache.set(tx_hash, None)
             self._store.delete([ tx_hash ], completion_callback=completion_callback)
 
     def get_proof(self, tx_hash: bytes) -> Optional[TxProof]:
+        with self._lock:
+            return self._get_proof(tx_hash)
+
+    def _get_proof(self, tx_hash: bytes) -> Optional[TxProof]:
+        entry = self._cache.get(tx_hash)
+        if entry is None or not entry.flags & TxFlags.StateSettled or \
+                not entry.flags & TxFlags.HasProofData:
+            return None
+        if tx_hash in self._proof_cache:
+            return self._proof_cache[tx_hash]
         rows = self._store.read_proof([tx_hash])
 
         if not rows:
@@ -514,7 +540,7 @@ class TransactionCache:
             -> List[Tuple[bytes, TransactionCacheEntry]]:
         results = self.get_metadatas(
             flags=TxFlags.HasByteData | TxFlags.HasHeight,
-            mask=TxFlags.HasByteData | TxFlags.HasPosition | TxFlags.HasHeight)
+            mask=TxFlags.HasByteData | TxFlags.HasProofData | TxFlags.HasHeight)
         if len(results) > 200:
             results = results[:200]
         return [ (tx_hash, self._cache[tx_hash]) for (tx_hash, metadata) in results
@@ -523,8 +549,8 @@ class TransactionCache:
     def apply_reorg(self, reorg_height: int,
             completion_callback: Optional[CompletionCallbackType]=None) \
             -> Tuple[int, List[bytes]]:
-        fetch_flags = TxFlags.StateSettled
-        fetch_mask = TxFlags.StateSettled
+        fetch_flags = TxFlags.StateSettled | TxFlags.StateCleared
+        fetch_mask = None
         unverify_mask = ~(TxFlags.HasHeight | TxFlags.HasPosition | TxFlags.HasProofData |
             TxFlags.STATE_MASK)
 
@@ -534,15 +560,44 @@ class TransactionCache:
             # database.
             store_updates = []
             for (tx_hash, metadata) in self.get_metadatas(fetch_flags, fetch_mask):
-                if cast(int, metadata.height) > reorg_height:
+                if metadata.height is not None and metadata.height > reorg_height:
                     # Update the cached version to match the changes we are going to apply.
                     entry = self._cache[tx_hash]
                     entry.flags = (entry.flags & unverify_mask) | TxFlags.StateCleared
                     # TODO(rt12) BACKLOG the real unconfirmed height may be -1 unconf parent
                     entry.metadata = TxData(height=0, fee=metadata.fee,
                         date_added=metadata.date_added, date_updated=date_updated)
+                    self._proof_cache[tx_hash] = None
                     store_updates.append((tx_hash, entry.metadata, entry.flags))
             if len(store_updates):
                 self._store.update_metadata(store_updates,
-                    completion_callback=completion_callback)
+                    completion_callback=completion_callback, clear_proof=True)
             return len(store_updates), [tx_hash for tx_hash, metadata, flags in store_updates]
+
+    def settle_verified(self, tx_hash: bytes, height: int, position: int, proof: TxProof) -> bool:
+        """Admit a verified proof only while its requested height is still current."""
+        with self._lock:
+            entry = self._cache.get(tx_hash)
+            if entry is None or height <= 0 or entry.metadata.height != height or \
+                    not entry.flags & TxFlags.HasByteData:
+                return False
+            self._update([(tx_hash, TxData(height=height, position=position), None,
+                TxFlags.HasHeight | TxFlags.HasPosition | TxFlags.StateSettled)])
+            self.update_proof(tx_hash, proof)
+            return True
+
+    def invalidate_coinbase(self, tx_hash: bytes, completion_callback=None) -> bool:
+        """Retain a removed reward for audit/reconfirmation, but revoke its old block proof."""
+        with self._lock:
+            tx = self.get_transaction(tx_hash)
+            if tx is None or not tx.is_coinbase():
+                return False
+            entry = self._cache[tx_hash]
+            entry.flags &= ~(TxFlags.STATE_MASK | TxFlags.HasPosition | TxFlags.HasProofData)
+            entry.flags |= TxFlags.StateCleared | TxFlags.HasHeight
+            entry.metadata = TxData(height=0, fee=entry.metadata.fee,
+                date_added=entry.metadata.date_added, date_updated=self._store._get_current_timestamp())
+            self._proof_cache[tx_hash] = None
+            self._store.update_metadata([(tx_hash, entry.metadata, entry.flags)],
+                completion_callback=completion_callback, clear_proof=True)
+            return True

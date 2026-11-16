@@ -3773,3 +3773,29 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"A selected coin depends on an unverified or immature mining reward on the "
+"selected chain. Refresh chain data and wait for maturity, then select coins "
+"again."
+msgstr ""
+"Đồng tiền được chọn phụ thuộc vào phần thưởng khai thác chưa được xác minh "
+"hoặc chưa trưởng thành trên chuỗi đã chọn. Làm mới dữ liệu chuỗi và chờ đến "
+"hạn, sau đó chọn lại tiền."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid ""
+"An input depends on an unverified or immature mining reward on the selected "
+"chain. Refresh chain data before retrying."
+msgstr ""
+"Đầu vào phụ thuộc vào phần thưởng khai thác chưa được xác minh hoặc chưa "
+"trưởng thành trên chuỗi đã chọn. Làm mới dữ liệu chuỗi trước khi thử lại."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/history_list.py
+msgid "Mining reward is not verified on the selected chain"
+msgstr "Phần thưởng khai thác không được xác minh trên chuỗi đã chọn"
