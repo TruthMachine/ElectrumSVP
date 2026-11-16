@@ -47,6 +47,12 @@ TIMEOUT = 5  # seconds
 # --- Paths & platform user dir ---
 def user_data_dir() -> str:
     """Return platform-specific data directory for ElectrumSV (writable by user)."""
+    config = getattr(app_state, 'config', None)
+    if config is not None:
+        # Respect --dir, portable profiles and network-specific subdirectories.
+        # Do not fall back to another profile on permission errors.
+        os.makedirs(config.path, exist_ok=True)
+        return config.path
     system = platform.system()
     if system == "Darwin":
         path = os.path.expanduser("~/.electrum-sv")
@@ -76,6 +82,8 @@ POSSIBLE_HEADER_PATHS = [
     os.path.expanduser("~/.electrum-sv/headers-electrumsv"),
     os.path.expanduser("~/.electrumsv/headers"),
 ]
+if getattr(app_state, 'config', None) is not None:
+    POSSIBLE_HEADER_PATHS = [os.path.join(DATA_DIR, "headers")]
 
 def find_headers_file():
     """Find the headers file in the preferred location or legacy locations."""
