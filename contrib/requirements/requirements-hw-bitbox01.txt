@@ -1,0 +1,2 @@
+# Compatibility pins; see requirements-hw.txt and docs/hardware-wallets.md.
+hidapi==0.10.0

@@ -1063,8 +1063,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
 
         tools_menu.addAction(_("Preferences"), self.preferences_dialog)
         tools_menu.addAction(_("&Network"), self._show_network_dialog)
+        from .hardware import show_hardware_wallets
+        tools_menu.addAction(_("Hardware wallets"), lambda: show_hardware_wallets(self))
         tools_menu.addSeparator()
-        tools_menu.addAction(_("&Sign/verify message"), self.sign_verify_message)
+        tools_menu.addAction(_("&Sign/verify message"), lambda: self.sign_verify_message())
         tools_menu.addAction(_("&Encrypt/decrypt message"), self.encrypt_message)
         tools_menu.addSeparator()
 
@@ -1142,6 +1144,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         spacer.setVisible(True)
         self.spacer_action = toolbar.addWidget(spacer)
+
+        from .hardware_status import hardware_toolbar_action
+        hardware_toolbar_action(self)
 
         log_action = QAction(read_QIcon("icons8-moleskine-80.png"), _("Log Viewer"), self)
         log_action.triggered.connect(self.app.show_log_viewer)
@@ -1741,13 +1746,44 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
 
     @protected
     def sign_tx(self, tx: Transaction, callback: Callable[[bool], None], password: str,
-            window=None, tx_context: Optional[TransactionContext]=None) -> None:
-        self.sign_tx_with_password(tx, callback, password, window=window, tx_context=tx_context)
+            window=None, tx_context: Optional[TransactionContext]=None, input_indexes=None) -> bool:
+        self.sign_tx_with_password(tx, callback, password, window=window, tx_context=tx_context,
+            input_indexes=input_indexes)
+        return True  # A cancelled password prompt returns None from @protected.
 
     def sign_tx_with_password(self, tx: Transaction, callback: Callable[[bool], None],
-            password: str, window=None, tx_context: Optional[TransactionContext]=None) -> None:
+            password: str, window=None, tx_context: Optional[TransactionContext]=None,
+            input_indexes=None) -> None:
         '''Sign the transaction in a separate thread.  When done, calls
         the callback with a success code of True or False.'''
+        window = window or self
+        verify_inputs = True
+        account = self._account
+        ledger_stores = [store for store in account.get_keystores()
+            if getattr(store, 'hw_type', None) == 'ledger']
+        if ledger_stores:
+            from .ledger_progress import LedgerSigningDialog
+            existing = getattr(self, '_ledger_signing_dialog', None)
+            if existing is not None and existing.isVisible():
+                existing.raise_()
+                callback(False)
+                return
+            before = tuple(tuple(txin.signatures) for txin in tx.inputs)
+            def operation(verify):
+                account.sign_transaction(tx, password, tx_context=tx_context,
+                    input_indexes=input_indexes, verify_inputs=verify)
+                if before == tuple(tuple(txin.signatures) for txin in tx.inputs):
+                    raise UserCancelled()
+            def completed(success):
+                self._ledger_signing_dialog = None
+                callback(success)
+            dialog = LedgerSigningDialog(window, tx,
+                [store.handler for store in ledger_stores if store.handler is not None],
+                operation, completed)
+            self._ledger_signing_dialog = dialog
+            dialog.show()
+            return
+
         def on_done(future: concurrent.futures.Future) -> None:
             try:
                 future.result()
@@ -1759,10 +1795,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
 
         def sign_tx(update_cb: WaitingUpdateCallback) -> None:
             nonlocal tx, password, tx_context
-            self._account.sign_transaction(tx, password, tx_context=tx_context)
+            self._account.sign_transaction(tx, password, tx_context=tx_context,
+                input_indexes=input_indexes, verify_inputs=verify_inputs)
             update_cb(False, _("Done."))
 
-        window = window or self
         WaitingDialog(window, _('Signing transaction...'), sign_tx, on_done=on_done,
             title=_("Transaction signing"))
 
@@ -2177,7 +2213,11 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
     @protected
     def do_sign(self, account: AbstractAccount, key_id: int, message: str, signature,
             password: str) -> None:
-        message = message.toPlainText().strip()
+        message = message.toPlainText()
+        signature.clear()
+        if key_id is None:
+            self.show_error(_('Select an address in the Keys tab and choose Sign/verify message.'))
+            return
         if account.is_watching_only():
             self.show_message(_('This is a watching-only account.'))
             return
@@ -2189,8 +2229,19 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
             if not len(sig) or sip.isdeleted(signature):
                 return
             signature.setText(base64.b64encode(sig).decode('ascii'))
-        self.run_in_thread(account.sign_message, key_id, message, password,
-            on_success=show_signed_message)
+        from electrumsv.keystore import Hardware_KeyStore
+        if any(isinstance(store, Hardware_KeyStore) for store in account.get_keystores()):
+            from .hardware import run_device_operation
+            try:
+                show_signed_message(run_device_operation(self,
+                    lambda: account.sign_message(key_id, message, password)))
+            except UserCancelled:
+                pass
+            except Exception as exc:
+                self.show_error(str(exc))
+        else:
+            self.run_in_thread(account.sign_message, key_id, message, password,
+                on_success=show_signed_message)
 
     def run_in_thread(self, func, *args, on_success=None):
         def _on_done(future: concurrent.futures.Future) -> None:
@@ -2215,7 +2266,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
             public_key = account.get_public_keys_for_id(key_id)[0]
             address = public_key.to_address(network=Net.COIN)
 
-        message = message.toPlainText().strip()
+        message = message.toPlainText()
         try:
             # This can throw on invalid base64
             sig = base64.b64decode(signature.toPlainText())
@@ -2237,6 +2288,11 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         d.setMinimumSize(610, 290)
 
         layout = QGridLayout(d)
+        if key_id is None:
+            note = QLabel(_('To sign, select an address in the Keys tab and choose '
+                'Sign/verify message. You can verify any address here.'))
+            note.setWordWrap(True)
+            layout.addWidget(note, 0, 0, 1, 2)
 
         message_e = QTextEdit()
         message_e.setAcceptRichText(False)
@@ -2246,13 +2302,15 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
 
         address_e = QLineEdit()
         if key_id is not None:
-            address_e.setText(f"Key {key_id}")
+            address_e.setText(account.get_public_keys_for_id(key_id)[0].to_address(
+                network=Net.COIN).to_string())
             address_e.setReadOnly(True)
         layout.addWidget(QLabel(_('Address')), 2, 0)
         layout.addWidget(address_e, 2, 1)
 
         signature_e = QTextEdit()
         signature_e.setAcceptRichText(False)
+        message_e.textChanged.connect(signature_e.clear)
         layout.addWidget(QLabel(_('Signature')), 3, 0)
         layout.addWidget(signature_e, 3, 1)
         layout.setRowStretch(3,1)
@@ -2260,6 +2318,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         hbox = QHBoxLayout()
 
         b = QPushButton(_("Sign"))
+        b.setEnabled(key_id is not None)
         def do_sign(checked=False):
             # pylint: disable=no-value-for-parameter
             self.do_sign(account, key_id, message_e, signature_e)
@@ -2275,6 +2334,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin):
         b.clicked.connect(d.accept)
         hbox.addWidget(b)
         layout.addLayout(hbox, 4, 1)
+        if account is not None and any(getattr(store, 'hw_type', None) == 'ledger'
+                for store in account.get_keystores()):
+            from .hardware import MessageHashReview
+            layout.addWidget(MessageHashReview(message_e), 5, 0, 1, 2)
         d.exec_()
 
     @protected

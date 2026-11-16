@@ -52,7 +52,7 @@ class HW_PluginBase(object):
         keystore = self.keystore_class(data, row)
         keystore.plugin = self
         # This should be replaced when a window is opened in the gui
-        keystore.gui_handler = CmdLineHandler()
+        keystore.handler = CmdLineHandler()
         return keystore
 
     def create_handler(self, window: Any) -> Any:
@@ -111,6 +111,16 @@ class HW_PluginBase(object):
 
     def enumerate_devices(self):
         raise NotImplementedError
+
+    def get_device_status(self, device):
+        from electrumsv.devices.hardware import DeviceStatus
+        return DeviceStatus(self.name, self.device, 'connected',
+            _('USB device found. Import or select its account to verify wallet pairing. '
+              'Firmware and signing readiness have not been checked.'), device=device)
+
+    def check_connection(self, client):
+        if not client.is_initialized() or not client.has_usable_connection_with_device():
+            raise RuntimeError(_('The selected device is not ready. Unlock it and retry.'))
 
 
 class LibraryFoundButUnusable(Exception):

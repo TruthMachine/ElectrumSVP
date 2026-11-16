@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-16",
+  "fixture": {
+    "parents": "synthetic coinbase",
+    "bytes_per_parent": 128,
+    "outputs": 2,
+    "satoshis_per_input": 1000,
+    "nominal_fee_satoshis": 100,
+    "broadcast": false
+  },
+  "timing_note": "Parent and signature totals measure library commands only; their sum omits current-input preparation and human review. Only the last S Plus run also measures preparation and total elapsed time.",
+  "runs": [
+    {
+      "model": "Nano S",
+      "app_version": "2.4.7",
+      "input_count": 4,
+      "output_count": 2,
+      "total_parent_seconds": 0.983,
+      "total_signature_seconds": 5.5119,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": false,
+      "review_seconds_including_user": null
+    },
+    {
+      "model": "Nano S",
+      "app_version": "2.4.7",
+      "input_count": 64,
+      "output_count": 2,
+      "total_parent_seconds": 16.3438,
+      "total_signature_seconds": 88.7212,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": null
+    },
+    {
+      "model": "Nano S",
+      "app_version": "2.4.7",
+      "input_count": 161,
+      "output_count": 2,
+      "total_parent_seconds": 39.1284,
+      "total_signature_seconds": 223.6689,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": [
+        7.8054
+      ]
+    },
+    {
+      "model": "Nano S",
+      "app_version": "2.4.7",
+      "input_count": 256,
+      "output_count": 2,
+      "total_parent_seconds": 62.8152,
+      "total_signature_seconds": 355.7934,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": [
+        10.7064
+      ]
+    },
+    {
+      "model": "Nano S",
+      "app_version": "2.4.7",
+      "input_count": 512,
+      "output_count": 2,
+      "total_parent_seconds": 126.0988,
+      "total_signature_seconds": 711.3859,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": [
+        89.5687
+      ]
+    },
+    {
+      "model": "Nano S Plus",
+      "app_version": "2.4.14",
+      "input_count": 64,
+      "output_count": 2,
+      "total_parent_seconds": 14.4032,
+      "total_signature_seconds": 34.7443,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": false,
+      "review_seconds_including_user": [
+        8.1748
+      ]
+    },
+    {
+      "model": "Nano S Plus",
+      "app_version": "2.4.14",
+      "input_count": 256,
+      "output_count": 2,
+      "total_parent_seconds": 56.8591,
+      "total_signature_seconds": 138.9991,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": [
+        30.8915
+      ]
+    },
+    {
+      "model": "Nano S Plus",
+      "app_version": "2.4.14",
+      "input_count": 512,
+      "output_count": 2,
+      "total_parent_seconds": 113.8485,
+      "total_signature_seconds": 278.9155,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": [
+        27.3247
+      ],
+      "total_transaction_preparation_seconds": 65.2231,
+      "initial_transaction_preparation_seconds": 26.2799,
+      "elapsed_seconds_including_user": 487.5023
+    },
+    {
+      "model": "Nano X",
+      "app_version": "2.4.14",
+      "input_count": 256,
+      "output_count": 2,
+      "total_parent_seconds": 57.0245,
+      "total_signature_seconds": 140.2525,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": [
+        33.8056
+      ]
+    },
+    {
+      "model": "Nano X",
+      "app_version": "2.4.14",
+      "input_count": 512,
+      "output_count": 2,
+      "total_parent_seconds": 113.7696,
+      "total_signature_seconds": 280.3913,
+      "passed": true,
+      "owner_confirmed_no_unverified_warning": true,
+      "review_seconds_including_user": [
+        21.6171
+      ]
+    }
+  ],
+  "failed_attempts": [
+    {
+      "model": "Nano S Plus",
+      "inputs": 512,
+      "stage": "after_parent_verification",
+      "status": "0x5515"
+    },
+    {
+      "model": "Nano S Plus",
+      "inputs": 512,
+      "stage": "preparing_input_427",
+      "status": "0x5515"
+    },
+    {
+      "model": "Nano S Plus",
+      "inputs": 512,
+      "stage": "preparing_input_426",
+      "status": "0x5515",
+      "owner_reported_lock_setting": "10 minutes"
+    }
+  ]
+}

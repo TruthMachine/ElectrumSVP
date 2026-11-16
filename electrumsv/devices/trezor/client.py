@@ -177,7 +177,8 @@ class TrezorClientSV:
     def close(self):
         '''Called when Our wallet was closed or the device removed.'''
         logger.debug("closing client")
-        self.handler.clean_up()
+        if self.handler is not None:
+            self.handler.clean_up()
         self.clear_session()
 
     def is_uptodate(self):

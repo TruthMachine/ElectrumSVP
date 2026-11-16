@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-16",
+  "status": "experimental_host_integration",
+  "evidence_note": "Physical checks were collected incrementally during development; they are not a final packaged-build or funded-transaction certification. No private keys, user addresses, xpubs, USB serials or signatures are included.",
+  "environment": {
+    "os": "macOS",
+    "architecture": "Apple Silicon",
+    "python": "3.10.20",
+    "ledger_host_library": "electrumsv-btchip-python 0.1.32",
+    "hidapi": "0.10.0"
+  },
+  "sources": {
+    "ledger_s_plus_os": "https://support.ledger.com/ja/article/4494540771997-zd",
+    "ledger_x_os": "https://support.ledger.com/article/360014980580-zd",
+    "ledger_legacy": "https://github.com/LedgerHQ/app-bitcoin-legacy/blob/fa287121d830a9ea4518babd09993764d32439fb/CHANGELOG.md",
+    "trezor": "https://trezor.io/other/product-updates/trezor-firmware-changelog-all-versions-and-release-dates",
+    "keepkey": "https://github.com/keepkey/keepkey-firmware/releases",
+    "bitbox01": "https://github.com/BitBoxSwiss/mcu/releases/tag/v7.1.0",
+    "ledger_apdu": "https://github.com/LedgerHQ/device-sdk-ts/blob/d6a7ee7e34c2de4d6000bcf6e922e6120e7da7c0/packages/device-management-kit/src/api/apdu/model/Apdu.ts"
+  },
+  "firmware_catalogue": [
+    {
+      "brand": "Ledger",
+      "model": "Nano S Plus",
+      "release": "1.7.0",
+      "component": "OS",
+      "channel": "stable",
+      "date": "2026-10-01",
+      "source": "ledger_s_plus_os",
+      "physical_validation": "partial"
+    },
+    {
+      "brand": "Ledger",
+      "model": "Nano X",
+      "release": "2.8.0",
+      "component": "OS",
+      "channel": "stable",
+      "date": "2026-10-01",
+      "source": "ledger_x_os",
+      "physical_validation": "partial"
+    },
+    {
+      "brand": "Ledger",
+      "model": "Nano S",
+      "release": "2.1.0",
+      "component": "OS",
+      "channel": "device_observed",
+      "source": null,
+      "latest_official_release_verified": false,
+      "physical_validation": "partial"
+    },
+    {
+      "brand": "Ledger",
+      "model": "legacy app source",
+      "release": "2.4.13",
+      "component": "app source",
+      "channel": "public_master",
+      "date": "2026-09-25",
+      "source": "ledger_legacy",
+      "note": "S Plus/X devices report BCH 2.4.14; exact public source mapping not established."
+    },
+    {
+      "brand": "Trezor",
+      "model": "Model One",
+      "release": "1.14.2",
+      "component": "universal firmware",
+      "channel": "stable",
+      "date": "2026-10-21",
+      "source": "trezor",
+      "physical_validation": "not_tested"
+    },
+    {
+      "brand": "Trezor",
+      "model": "Model T",
+      "release": "2.13.1",
+      "component": "universal firmware",
+      "channel": "stable",
+      "date": "2026-11-11",
+      "source": "trezor",
+      "physical_validation": "not_tested"
+    },
+    {
+      "brand": "Trezor",
+      "model": "Safe 3/5/7",
+      "release": "2.13.1",
+      "component": "universal firmware",
+      "channel": "stable",
+      "date": "2026-11-11",
+      "source": "trezor",
+      "adapter_scope": "outside_restored_scope",
+      "physical_validation": "not_tested"
+    },
+    {
+      "brand": "KeepKey",
+      "model": "KeepKey",
+      "release": "7.14.2",
+      "component": "multi-coin firmware",
+      "channel": "stable",
+      "date": "2026-10-16",
+      "source": "keepkey",
+      "physical_validation": "not_tested"
+    },
+    {
+      "brand": "KeepKey",
+      "model": "KeepKey",
+      "release": "7.14.3",
+      "component": "Bitcoin-only firmware",
+      "channel": "stable",
+      "date": "2026-10-16",
+      "source": "keepkey",
+      "adapter_scope": "not_a_BSV_baseline",
+      "physical_validation": "not_tested"
+    },
+    {
+      "brand": "KeepKey",
+      "model": "KeepKey",
+      "release": "7.16.0",
+      "component": "multi-coin firmware",
+      "channel": "prerelease",
+      "date": "2026-10-28",
+      "source": "keepkey",
+      "physical_validation": "not_tested"
+    },
+    {
+      "brand": "Digital Bitbox",
+      "model": "BitBox01",
+      "release": "7.1.0",
+      "component": "firmware",
+      "channel": "last_official_repository_release",
+      "date": "2020-08-05",
+      "source": "bitbox01",
+      "physical_validation": "not_tested"
+    }
+  ],
+  "physical_tests": [
+    {
+      "model": "Nano S Plus",
+      "os": "1.7.0",
+      "os_evidence": "owner_read_device_settings",
+      "app": "Bitcoin Cash",
+      "app_version": "2.4.14",
+      "app_evidence": "USB_app_identity_and_legacy_version",
+      "account_paths": [
+        "m/44'/0'/0'",
+        "m/44'/145'/0'"
+      ],
+      "tests": {
+        "account_public_key": "passed",
+        "address_screen_owner_confirmation_and_key_comparison": "passed",
+        "reject_offline_transaction_without_modification": "passed",
+        "synthetic_v2_P2PKH_0x41_signature_verification": "passed",
+        "message_signature_verification": "passed",
+        "funded_transaction_or_broadcast": "not_performed",
+        "packaged_gui_end_to_end": "not_tested",
+        "selected_app_open_reconnect": "passed",
+        "simultaneous_distinct_model_selection": "passed",
+        "explicit_locked_response": "passed",
+        "second_probe_access_conflict": "passed",
+        "trusted_synthetic_coinbase_parents_2in_2out": "not_tested",
+        "partial_P2PKH_preserve_existing_signature_JSON_roundtrip": "passed_signatures_verified_owner_confirmed_no_unverified_warning",
+        "bare_2of2_multisig_preserve_cosigner_JSON_roundtrip": "passed_signatures_verified_owner_confirmed_no_unverified_warning",
+        "explicit_subset_of_owned_unsigned_inputs": "software_regression_only",
+        "trusted_P2PKH_256_and_512_inputs": "passed_signatures_verified_owner_confirmed_no_unverified_warning"
+      }
+    },
+    {
+      "model": "Nano X",
+      "os": "2.8.0",
+      "os_evidence": "owner_read_device_settings",
+      "app": "Bitcoin Cash",
+      "app_version": "2.4.14",
+      "app_evidence": "USB_app_identity_and_legacy_version",
+      "account_paths": [
+        "m/44'/0'/0'"
+      ],
+      "tests": {
+        "account_public_key": "passed",
+        "address_screen_owner_confirmation_and_key_comparison": "passed",
+        "reject_offline_transaction_without_modification": "passed",
+        "synthetic_v2_P2PKH_0x41_signature_verification": "passed",
+        "message_signature_verification": "passed",
+        "funded_transaction_or_broadcast": "not_performed",
+        "packaged_gui_end_to_end": "not_tested",
+        "trusted_synthetic_coinbase_parents_2in_2out": "not_tested",
+        "partial_P2PKH_preserve_existing_signature_JSON_roundtrip": "passed_signatures_verified_owner_confirmed_no_unverified_warning",
+        "bare_2of2_multisig_preserve_cosigner_JSON_roundtrip": "passed_signatures_verified_owner_confirmed_no_unverified_warning",
+        "explicit_subset_of_owned_unsigned_inputs": "software_regression_only",
+        "trusted_P2PKH_256_and_512_inputs": "passed_signatures_verified_owner_confirmed_no_unverified_warning"
+      }
+    },
+    {
+      "model": "Nano S",
+      "os": "2.1.0",
+      "os_evidence": "device_BOLOS_response",
+      "app": "Bitcoin Cash",
+      "app_version": "2.4.7",
+      "app_evidence": "USB_app_identity_and_legacy_version",
+      "account_paths": [
+        "m/44'/0'/0'"
+      ],
+      "tests": {
+        "account_public_key": "passed",
+        "address_screen_owner_confirmation_and_key_comparison": "passed",
+        "reject_offline_transaction_without_modification": "passed",
+        "synthetic_v2_P2PKH_0x41_signature_verification": "passed",
+        "message_signature_verification": "passed",
+        "funded_transaction_or_broadcast": "not_performed",
+        "packaged_gui_end_to_end": "not_tested",
+        "selected_app_open_reconnect": "partial_app_opened_initial_query_timed_out_not_fully_repeated",
+        "simultaneous_distinct_model_selection": "passed",
+        "explicit_locked_response": "passed",
+        "four_vs_five_byte_app_query": "passed_three_each_including_reopen_24_to_26_ms",
+        "trusted_synthetic_coinbase_parents_2in_2out": "passed_signatures_verified_owner_confirmed_no_unverified_warning",
+        "partial_P2PKH_preserve_existing_signature_JSON_roundtrip": "passed_signatures_verified_owner_confirmed_no_unverified_warning",
+        "bare_2of2_multisig_preserve_cosigner_JSON_roundtrip": "passed_signatures_verified_owner_confirmed_no_unverified_warning",
+        "explicit_subset_of_owned_unsigned_inputs": "software_regression_only",
+        "trusted_P2PKH_256_and_512_inputs": "passed_signatures_verified_owner_confirmed_no_unverified_warning"
+      }
+    }
+  ],
+  "query_correction": {
+    "initial_hypothesis": "fifth_byte_caused_Nano_S_timeout",
+    "status": "retracted_after_controlled_repeat",
+    "current_encoding": "b001000000",
+    "version_cutoff": null,
+    "earlier_timeout_cause": "undetermined"
+  },
+  "unresolved": [
+    "Original coinbase construction/signing failure has not been reproduced from a failing transaction.",
+    "Trusted verification budgets are provisional host policy, not measured maximum device capabilities.",
+    "No physical Trezor, KeepKey or BitBox01 tests.",
+    "No physical P2SH multisig, arbitrary-script or funded-transaction certification.",
+    "No native PSBT reader/writer; external interface uses SVP signing JSON.",
+    "Existing full test suite is not green; see hardware-wallets.md.",
+    "Nano S Plus long-job PIN locking recurred, then a fresh-unlock 512-input retry passed; exact timer behavior is unresolved."
+  ],
+  "offline_fixtures": [
+    {
+      "transaction_version": 2,
+      "sighash": "0x41",
+      "input": "deliberately_synthetic_outpoint",
+      "output": "own_P2PKH_key",
+      "output_satoshis": 900,
+      "nominal_fee_satoshis": 100,
+      "real_wallet_loaded": false,
+      "broadcast_attempted": false,
+      "input_count": 1,
+      "output_count": 1,
+      "verification": "unverified"
+    },
+    {
+      "transaction_version": 2,
+      "sighash": "0x41",
+      "input_count": 2,
+      "output_count": 2,
+      "parents": "deliberately_synthetic_coinbase_transactions",
+      "output_satoshis": [
+        900,
+        1000
+      ],
+      "nominal_fee_satoshis": 100,
+      "verification": "trusted",
+      "real_wallet_loaded": false,
+      "broadcast_attempted": false,
+      "variants": [
+        "P2PKH",
+        "partial_P2PKH",
+        "bare_2of2_multisig"
+      ]
+    }
+  ],
+  "sighash_policy": {
+    "ledger_bch": [
+      "0x41"
+    ],
+    "2.4.7_and_public_2.4.13": "source_rejects_other_types",
+    "installed_2.4.14": "inferred_restriction_not_negative_device_test",
+    "host_external_contract": [
+      "0x41",
+      "0x42",
+      "0x43",
+      "0xc1",
+      "0xc2",
+      "0xc3"
+    ]
+  },
+  "software_validation": {
+    "independent_branch": {
+      "focused_tests_passed": 311,
+      "date": "2026-11-17",
+      "includes_appearance_or_coinbase_patch": false
+    },
+    "integration_reference": {
+      "commit": "2d88c95c9489c9e2c65e60d56b553f55a173c193",
+      "focused_tests_passed": 422,
+      "includes_separate_appearance_and_coinbase_changes": true
+    },
+    "optional_dependency_metadata": "four_vendor_groups_validated",
+    "localization": {
+      "catalogues": 37,
+      "messages": 173,
+      "non_Chinese_additions": "machine_translation_native_review_needed"
+    },
+    "packaged_gui_hardware_signing": "not_tested",
+    "signing_progress": "single-window simulated Qt checks; not physical packaged-GUI validation"
+  },
+  "benchmarks": "ledger-benchmarks.json",
+  "known_issues": "known-issues.md"
+}

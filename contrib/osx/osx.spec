@@ -3,7 +3,7 @@
 from importlib.machinery import SourceFileLoader
 import os
 
-from PyInstaller.utils.hooks import collect_dynamic_libs, collect_data_files
+from PyInstaller.utils.hooks import collect_dynamic_libs, collect_data_files, collect_submodules
 
 version = SourceFileLoader('version', 'electrumsv/version.py').load_module()
 
@@ -31,7 +31,8 @@ datas += collect_data_files('electrumsv_secp256k1')
 binaries = [b for b in collect_dynamic_libs('PyQt5') if 'macstyle' in b[0]]
 binaries += [(base_dir + "contrib/osx/libusb-1.0.dylib", ".")]
 
-a = Analysis([base_dir + 'electrum-sv'], binaries=binaries, datas=datas)
+a = Analysis([base_dir + 'electrum-sv'], binaries=binaries, datas=datas,
+    hiddenimports=collect_submodules('electrumsv.devices'))
 
 # Strip out parts of Qt that we never use to reduce binary size
 # Note we need qtdbus and qtprintsupport.
