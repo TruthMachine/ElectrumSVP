@@ -1,75 +1,46 @@
-# Using ElectrumSV with Ledger Nano S
+# Ledger Bitcoin Cash adapter
 
-Successfully tested with Ledger Nano S (1.3.1) ElectrumSV (3.1.2) and Bitcoin Cash Ledger App (1.1.5)
+Use the **Bitcoin Cash** device app for BSV. The modern Bitcoin app's PSBT interface
+is not the BCH `0x41` signing protocol. The host assembles and validates transactions;
+network broadcasting remains a separate wallet action.
 
----
+See [hardware integration and current limits](../../../docs/hardware-wallets.md),
+[firmware / physical validation records](../../../docs/hardware/validation.json), and
+[protocol compatibility history](../../../docs/hardware/ledger-history.md).
 
-### Official Links
-[Product Website](https://www.ledgerwallet.com/products/ledger-nano-s)
+This adapter now provides:
 
-##### Chrome Applications
-[Ledger Manager](https://chrome.google.com/webstore/detail/ledger-manager/beimhnaefocolcplfimocfiaiefpkgbf)
-[Leger Wallet Bitcoin](https://chrome.google.com/webstore/detail/ledger-wallet-bitcoin/kkdpmhnladdopljabkgpacgpliggeeaf)
+- Nano S Plus and Nano X enumeration alongside retained Nano S IDs.
+- Distinct labels for devices with colliding serial fields, and exact-device app switching.
+- App-information queries using Ledger's five-byte encoding. Repeated Nano S / BCH 2.4.7
+  tests accepted both four and five bytes; the earlier byte-count diagnosis was retracted.
+- BCH app identity checking, optional automatic app opening after PIN unlock, and bounded
+  reconnects to the selected identity. It never enters PINs, installs apps or changes firmware.
+- A setup probe at `m/44'/145'/0'` compatible with the path restriction introduced in BCH
+  2.4.10. Existing account derivation paths and xpub fingerprints remain unchanged.
+- Transaction-version propagation, signature verification, message-signature validation,
+  bounded USB reads and actionable access-conflict errors.
 
-##### Guides
-[User Guide](https://ledger.zendesk.com/hc/en-us/sections/115001453109-Ledger-Nano-S)
-[Ledger Bitcoin Cash App User Guide](https://ledger.zendesk.com/hc/en-us/sections/115001472725-Bitcoin-Cash)
+Small transactions now use bounded trusted-parent streaming. Nano S / OS 2.1.0 / BCH 2.4.7
+passed synthetic 2-in/2-out P2PKH, partial signing and bare 2-of-2 multisig with no unverified-input
+warning. Existing signatures survived JSON roundtrips unchanged. S Plus/X still need these
+new physical cases. Budgets are host policy, not measured firmware maxima.
 
----
+If parents are missing or exceed a budget, the owner can explicitly choose reduced verification;
+then **unverified inputs** may appear. Invalid in-budget parents are rejected, and device errors
+never silently downgrade. Trusted inputs do not prove chain membership, unspentness or maturity.
+Only `0x41` is requested from BCH. See the [external signing contract](../../../docs/hardware/external-signers.md)
+for partial-signature admission, script scope and the PSBT boundary.
 
-### Requirements
+Our physical tests use synthetic, unspendable transaction inputs. No real wallet files or
+UTXOs were opened and no transaction was broadcast. Public keys, addresses, USB serials and
+signatures from the owner's devices are not stored in the published validation records.
 
-To complete a Bitcoin Cash transactions with a Ledger Nano S, you will need:
+Run `python -m contrib.hardware_wallet_probe --mode status` to list devices, then select
+one with `--device-id` for `read`, `display`, `reject`, `sign`, `partial`, `multisig` or `message`. The probe has no
+broadcast mode. App switching may require a button confirmation.
 
-1. An updated Ledger device - supported by Nano, HW.1, Nano S or Blue
-2. Bitcoin Cash app installed on your Ledger device
-3. "Browser Support" is disabled in the Bitcoin Cash Ledger app (only required for Nano S and/or Blue)
-
-PLEASE NOTE: Ensure that you do not have another application (like Electrum, Bitcoin Core, or any other software) opened on your computer
-
-(Use the Ledger Manager Chrome application to download and install the Bitcoin Cash app onto your Ledger device)
-
----
-
-### Firmware
-
-The latest Nano S firmware was released on March 2017 (Secure Element 1.3.1)
-
-It is strongly recommended to upgrade to the latest firmware.
-
-To check which firmware version your Nano S is currently running, open the "Settings" application on your device and scroll until "Firmware" is displayed.
-Press both buttons to enter the menu which displays your firmware version.
-
-Firmware Update Guide: https://ledger.zendesk.com/hc/en-us/articles/115005165409-How-can-I-update-my-Nano-S-
-
----
-
-### Bitcoin Cash Ledger App
-
-Install the Ledger Manager to download and install Bitcoin Cash application onto your Ledger device.
-
----
-
-### Using Ledger Nano S with ElectrumSV
-
-1. Connect your Ledger device to USB
-2. Enter your PIN code
-3. Open the Bitcoin Cash application on the Ledger (required for Nano S and Blue)
-4. Disable the "Browser support" setting in this application (required for Nano S and Blue)
-5. Launch ElectrumSV and start the new wallet wizard:
-    * Select "Use a Hardware Device" - press Next
-    * Select your Ledger device - press Next
-    * Select your desired Wallet Derivation (or leave default value for Bitcoin Cash)
-       - If you want to use legacy Bitcoin addresses use m/44'/0'/0'
-       - If you want to use Bitcoin Cash addresses use m/44'/145'/0'
-6. ???
-7. PROFIT!!! (Your Bitcoin wallet should now open in ElectrumSV)
-
----
-
-### Troubeshooting
-
-1. Uninstall and reinstall the Bitcoin Cash app on your Ledger device
-2. Try a different USB cable
-3. Try a different USB port
-4. Try on another computer (see compatibility)
+On Apple Silicon, building the old hidapi pin may require Cython < 3 and setuptools < 66
+with build isolation disabled. Headless imports need AppKit loaded first (the probe does
+this automatically). The pins retain the original project's macOS/Windows compatibility
+rationale; the per-vendor extras keep them optional.

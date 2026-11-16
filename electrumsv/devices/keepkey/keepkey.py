@@ -91,7 +91,8 @@ class KeepKey_KeyStore(Hardware_KeyStore):
         if tx.is_complete():
             return
 
-        assert not len(tx_context.prev_txs), "This keystore does not require input transactions"
+        # Other cosigners (e.g. Trezor) may have requested previous transactions.
+        # KeepKey does not need them, but their presence must not prevent signing.
         # path of the xpubs that are involved
         xpub_path: Dict[str, str] = {}
         for txin in tx.inputs:
@@ -121,12 +122,14 @@ class KeepKeyPlugin(HW_PluginBase):
         super().__init__(name)
 
         self.libraries_available = KEEPKEYLIB
+        self.usb_context = None
         if KEEPKEYLIB:
             try:
                 self.usb_context = USBContext()
                 self.usb_context.open()
-            except Exception:
-                self.libraries_available = False
+            except Exception as exc:
+                self.usb_context = None
+                self.logger.warning('WebUSB unavailable; HID remains available: %s', exc)
 
         self.main_thread = threading.current_thread()
 
@@ -150,7 +153,7 @@ class KeepKeyPlugin(HW_PluginBase):
         return []
 
     def _enumerate_web_usb(self):
-        if KEEPKEYLIB:
+        if KEEPKEYLIB and self.usb_context is not None:
             from keepkeylib.transport_webusb import WebUsbTransport
             return self._libusb_enumerate()
         return []
@@ -302,20 +305,24 @@ class KeepKeyPlugin(HW_PluginBase):
             client.load_device_by_xprv(item, pin, passphrase_protection,
                                        label, language)
 
-    def setup_device(self, device_info, wizard):
+    def setup_device(self, device_info, handler):
         '''Called when creating a new wallet.  Select the device to use.  If
         the device is uninitialized, go through the intialization
         process.'''
         device_id = device_info.device.id_
         client = app_state.device_manager.client_by_id(device_id)
-        client.handler = self.create_handler(wizard)
+        if client is None:
+            raise RuntimeError(_('Device disconnected. Please reconnect and try again.'))
+        client.handler = handler
         if not device_info.initialized:
-            self.initialize_device(device_id, wizard, client.handler)
+            raise RuntimeError(_('Initialize the device with its manufacturer application.'))
         client.get_master_public_key('m', creating=True)
 
-    def get_master_public_key(self, device_id, derivation, wizard):
+    def get_master_public_key(self, device_id, derivation, handler):
         client = app_state.device_manager.client_by_id(device_id)
-        client.handler = self.create_handler(wizard)
+        if client is None:
+            raise RuntimeError(_('Device disconnected. Please reconnect and try again.'))
+        client.handler = handler
         return client.get_master_public_key(derivation)
 
     def sign_transaction(self, keystore: KeepKey_KeyStore, tx: Transaction,
@@ -324,7 +331,7 @@ class KeepKeyPlugin(HW_PluginBase):
         inputs = self.tx_inputs(tx, xpub_path)
         outputs = self.tx_outputs(keystore, keystore.get_derivation(), tx)
         signatures = client.sign_tx(self.get_coin_name(client), inputs, outputs,
-                                    lock_time=tx.locktime)[0]
+                                    lock_time=tx.locktime, version=tx.version)[0]
         tx.update_signatures(signatures)
 
     def show_key(self, account: AbstractAccount, keyinstance_id: int) -> None:

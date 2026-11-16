@@ -3,7 +3,7 @@
 import os
 import sys
 
-from PyInstaller.utils.hooks import collect_dynamic_libs, collect_data_files
+from PyInstaller.utils.hooks import collect_dynamic_libs, collect_data_files, collect_submodules
 
 PYHOME = 'c:/python3'
 
@@ -32,7 +32,7 @@ datas += collect_data_files('electrumsv_secp256k1')
 a = Analysis([home+'electrum-sv'],
              # Workaround setuptools changes.
              # https://github.com/pypa/setuptools/issues/1963#issuecomment-574265532
-             hiddenimports=['pkg_resources.py2_warn'],
+             hiddenimports=['pkg_resources.py2_warn'] + collect_submodules('electrumsv.devices'),
              binaries=binaries,
              datas=datas)
 

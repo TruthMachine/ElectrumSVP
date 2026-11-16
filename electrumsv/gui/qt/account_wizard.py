@@ -71,28 +71,6 @@ DeviceList = List[Tuple[str, DeviceInfo]]
 PASSWORD_EXISTING_TEXT = _("Your wallet has a password, and you will need to provide that "
     "password in order to secure this account.")
 
-NO_DEVICES_FOUND_TEXT = _("A scan has been unable to locate any connected hardware wallets. "
-    "Once you have connected your hardware wallet, and if necessary turned it on, please "
-    "press the 'Rescan' button to try again.") +"\n\n"+ _("If any problems were encountered "
-    "during the scan, they will be displayed below. If there are no indications why your "
-    "hardware wallet is not being found, press the 'Help' button for further direction.")
-
-DEVICE_SETUP_ERROR_TEXT = _("The selected hardware wallet failed to complete it's setup "
-    "process. If your hardware wallet has an application that needs to be running, please "
-    "run it and then return to the previous page to rescan.") +"\n\n"+ _("If any problems "
-    "were encountered during the setup attempt, they will be displayed below. If there are no "
-    "indications why your hardware wallet is not being found, press the 'Help' button for further "
-    "direction.")
-
-DEVICE_SETUP_SUCCESS_TEXT = _("Your {} hardware wallet was both successfully detected and "
-    "configured.") +"\n\n"+ _("In order to link the account to how the hardware wallet has been "
-    "previously used, or specify how it should be used going forward, you need to provide a "
-    "derivation path.") +"\n\n"+ _("If you are not sure what your derivation path is, leave "
-    "this field unchanged.") + _("The default value of {} is the default derivation for "
-    "{} wallets. This matches BTC usage and that of most other BSV wallet software. To match "
-    "BCH wallet addresses use m/44'/145'/0'")
-
-
 KeystoreMatchType = Union[str, Set[str]]
 
 
@@ -110,9 +88,8 @@ class AccountPage(enum.IntEnum):
     IMPORT_ACCOUNT_TEXT_CUSTOM = 410
     WATCH_ONLY_ACCOUNT = 415
     
-    #Remove HW support
-    #FIND_HARDWARE_WALLET = 500
-    #SETUP_HARDWARE_WALLET = 505
+    FIND_HARDWARE_WALLET = 500
+    SETUP_HARDWARE_WALLET = 505
 
 class KeyFlags(enum.IntEnum):
     NONE = 0
@@ -135,7 +112,7 @@ class ResultType(IntFlag):
     NEW = 1
     MULTISIG = 2
     IMPORTED = 3
-    #HARDWARE = 4
+    HARDWARE = 4
 
 
 def request_password(parent: Optional[QWidget], storage: WalletStorage) -> Optional[str]:
@@ -189,9 +166,9 @@ class AccountWizard(BaseWizard, MessageBoxMixin):
             CreateMultisigAccountCustomPage(self))
         self.setPage(AccountPage.CREATE_MULTISIG_ACCOUNT_COSIGNERS,
             MultisigAccountCosignerListPage(self))
-        #Removing HW support
-        #self.setPage(AccountPage.FIND_HARDWARE_WALLET, FindHardwareWalletAccountPage(self))
-        #self.setPage(AccountPage.SETUP_HARDWARE_WALLET, SetupHardwareWalletAccountPage(self))
+        from .hardware_accounts import FindHardwareWalletAccountPage, SetupHardwareWalletAccountPage
+        self.setPage(AccountPage.FIND_HARDWARE_WALLET, FindHardwareWalletAccountPage(self))
+        self.setPage(AccountPage.SETUP_HARDWARE_WALLET, SetupHardwareWalletAccountPage(self))
 
         self.setStartId(AccountPage.ADD_ACCOUNT_MENU)
 
@@ -558,14 +535,16 @@ class AddAccountWizardPage(QWizardPage):
                 'enabled': True,
                 'mode_mask': WizardFlags.ALL_MODES,
             },
-            #Removing HW support 
-            #{
-                #'page': AccountPage.FIND_HARDWARE_WALLET,
-                #'description': _("Import hardware wallet"),
-                #'icon_filename': 'icons8-usb-2-80-blueui-active.png',
-                #'enabled': True,
-                #'mode_mask': WizardFlags.ALL_MODES,
-            #},
+            {
+                'page': AccountPage.FIND_HARDWARE_WALLET,
+                'description': _('Connect hardware wallet'),
+                'long_description': _('Use an initialized Ledger, Trezor, KeepKey or BitBox01. '
+                    'Keep the recovery seed on your device. Ledger requires the Bitcoin Cash app. '
+                    'These adapters are experimental; check the tested-version list before use.'),
+                'icon_filename': 'icons8-usb-2-80-blueui-active.png',
+                'enabled': True,
+                'mode_mask': WizardFlags.ALL_MODES,
+            },
         ]
 
 
@@ -1055,461 +1034,6 @@ class ImportWalletTextCustomPage(QWizardPage):
             password, derivation_text, passphrase, watch_only)
         wizard: AccountWizard = self.wizard()
         return wizard.set_keystore_result(ResultType.IMPORTED, _keystore)
-
-
-class FindHardwareWalletAccountPage(QWizardPage):
-    _selected_device: Optional[Tuple[str, DeviceInfo]]
-    _devices: List[Tuple[str, DeviceInfo]]
-    _device_debug_message: Optional[str]
-    _alive: bool = False
-
-    def __init__(self, wizard: AccountWizard):
-        super().__init__(wizard)
-
-        self._devices = []
-        self._selected_device = None
-        self._device_debug_message = None
-
-        self.setTitle(_("Import a Hardware Wallet as an Account"))
-        self.setFinalPage(False)
-
-    # Qt method called to get the Id of the next page.
-    def nextId(self):
-        return AccountPage.SETUP_HARDWARE_WALLET
-
-    # Qt method called when 'Next' or 'Finish' is clicked for last-minute validation.
-    def validatePage(self) -> bool:
-        wizard: AccountWizard = self.wizard()
-        wizard.set_selected_device(self._selected_device)
-        return True
-
-    # Qt method called to determine if 'Next' or 'Finish' should be enabled or disabled.
-    # Overriding this requires us to emit the 'completeChanges' signal where applicable.
-    def isComplete(self) -> bool:
-        return self._selected_device is not None
-
-    def on_enter(self) -> None:
-        button = self.wizard().button(QWizard.CustomButton1)
-        button.setText(_("&Rescan"))
-        button.setContentsMargins(10, 0, 10, 0)
-        button.clicked.connect(self._on_rescan_clicked)
-
-        self._alive = True
-        if len(self._devices):
-            self._display_scan_success_results()
-        else:
-            self._initiate_scan()
-
-    def on_leave(self) -> None:
-        self._show_rescan_button(False)
-        self._alive = False
-        button = self.wizard().button(QWizard.CustomButton1)
-        button.clicked.disconnect()
-
-    def _on_rescan_clicked(self, *checked) -> None:
-        self._initiate_scan()
-
-    def _display_scan_in_progress(self) -> None:
-        progress_bar = QProgressBar()
-        progress_bar.setRange(0, 0)
-        progress_bar.setOrientation(Qt.Horizontal)
-        progress_bar.setMinimumWidth(250)
-        # This explicitly needs to be done for the progress bar otherwise it has some RHS space.
-        progress_bar.setAlignment(Qt.AlignCenter)
-
-        progress_label = QLabel(_("Please wait for hardware wallets to be located."))
-
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addWidget(progress_bar, alignment=Qt.AlignCenter)
-        vbox.addWidget(progress_label, alignment=Qt.AlignCenter)
-        vbox.addStretch(1)
-
-        if self.layout():
-            QWidget().setLayout(self.layout())
-
-        hlayout = QHBoxLayout()
-        hlayout.addStretch(1)
-        hlayout.addLayout(vbox)
-        hlayout.addStretch(1)
-        self.setLayout(hlayout)
-
-    def _display_scan_success_results(self) -> None:
-        choices = []
-        for name, info in self._devices:
-            state = _("initialized") if info.initialized else _("wiped")
-            label = info.label or _("An unnamed {}").format(name)
-            choices.append(((name, info), f"{label} [{name}, {state}]"))
-
-        c_values = [x[0] for x in choices]
-        c_titles = [x[1] for x in choices]
-        def _on_choice_clicked(choices: ChoicesLayout) -> None:
-            self._selected_device = c_values[choices.selected_index()]
-            self.completeChanged.emit()
-        self._selected_device = c_values[0]
-        self.completeChanged.emit()
-
-        message = _('Select a device')
-        self._choices = ChoicesLayout(message, c_titles, on_clicked=_on_choice_clicked)
-
-        vbox = QVBoxLayout()
-        vbox.addLayout(self._choices.layout())
-        vbox.addStretch(1)
-
-        if self.layout():
-            QWidget().setLayout(self.layout())
-        self.setLayout(vbox)
-
-    def _display_scan_failure_results(self) -> None:
-        label = QLabel(NO_DEVICES_FOUND_TEXT + "\n")
-        label.setWordWrap(True)
-
-        logo_grid = QGridLayout()
-        logo_grid.setSpacing(18)
-        logo_grid.setColumnMinimumWidth(0, 70)
-        logo_grid.setColumnStretch(1,1)
-
-        logo = QLabel()
-        logo.setAlignment(Qt.AlignCenter)
-        lockfile = "icons8-usb-disconnected-80.png"
-        logo.setPixmap(QPixmap(icon_path(lockfile)).scaledToWidth(80))
-
-        logo_grid.addWidget(logo,  0, 0)
-        logo_grid.addWidget(label, 0, 1, 1, 2)
-
-        grid = QGridLayout()
-        grid.setSpacing(8)
-        grid.setColumnMinimumWidth(0, 150)
-        grid.setColumnMinimumWidth(1, 100)
-        grid.setColumnStretch(1,1)
-
-        scan_text_label = QLabel(_("Debug messages") +":")
-        scan_text_edit = QTextEdit()
-        scan_text_edit.setText(self._device_debug_message)
-        scan_text_edit.setReadOnly(True)
-        grid.addWidget(scan_text_label, 0, 0, 2, 1, Qt.AlignRight)
-        grid.addWidget(scan_text_edit, 1, 0, 2, 2, Qt.AlignLeft)
-
-        vbox = QVBoxLayout()
-        vbox.setContentsMargins(10, 10, 20, 10)
-        vbox.addLayout(logo_grid)
-        vbox.addSpacing(10)
-        vbox.addWidget(scan_text_label)
-        vbox.addWidget(scan_text_edit)
-        vbox.addLayout(grid)
-        vbox.addStretch(1)
-
-        if self.layout():
-            QWidget().setLayout(self.layout())
-        self.setLayout(vbox)
-
-    def _show_rescan_button(self, is_shown: bool) -> None:
-        if not self._alive:
-            return
-        button = self.wizard().button(QWizard.CustomButton1)
-        button.setVisible(is_shown)
-
-    def _initiate_scan(self) -> None:
-        self._show_rescan_button(False)
-
-        self._devices = []
-        self._selected_device = None
-        self._device_debug_message = None
-        self.completeChanged.emit()
-
-        self._display_scan_in_progress()
-
-        app_state.app.run_in_thread(self._scan_attempt, on_done=self._on_scan_complete)
-
-    def _on_scan_complete(self, future: concurrent.futures.Future) -> None:
-        if len(self._devices):
-            self._display_scan_success_results()
-        else:
-            self._display_scan_failure_results()
-        self._show_rescan_button(True)
-
-    def _scan_attempt(self) -> None:
-        self._scan_devices()
-        self.completeChanged.emit()
-
-    def _scan_devices(self) -> None:
-        devices: DeviceList = []
-        devmgr = app_state.device_manager
-
-        debug_msg = ''
-        supported_devices = devmgr.supported_devices()
-        try:
-            scanned_devices = devmgr.scan_devices()
-        except Exception:
-            logger.exception(f'error scanning devices')
-        else:
-            for device_kind, plugin in supported_devices.items():
-                # plugin init errored?
-                if isinstance(plugin, Exception):
-                    tail = '\n    '.join([_('You might have an incompatible library.'), '']
-                                         + str(plugin).splitlines())
-                    debug_msg += f'  {device_kind}: (error loading plugin)\n{tail}\n'
-                    continue
-
-                try:
-                    # FIXME: side-effect: unpaired_device_info sets client.handler
-                    u = devmgr.unpaired_device_infos(None, plugin, devices=scanned_devices)
-                    devices += [(device_kind, x) for x in u]
-                except Exception as e:
-                    logger.exception(f'error getting device information for {device_kind}')
-                    tail = '\n    '.join([''] + str(e).splitlines())
-                    debug_msg += f'  {device_kind}: (error getting device information)\n{tail}\n'
-        if not debug_msg:
-            debug_msg = '  {}'.format(_('No exceptions encountered.'))
-
-        if len(devices):
-            self._devices = devices
-        else:
-            self._device_debug_message = debug_msg
-
-        # Help text?
-        #     msg = ''.join([
-        #         _('No hardware device detected.') + '\n',
-        #         _('To trigger a rescan, press \'Next\'.') + '\n\n',
-        #         _('If your device is not detected on Windows, go to "Settings", "Devices", '
-        #           '"Connected devices", and do "Remove device". '
-        #           'Then, plug your device again.') + ' ',
-        #         _('On Linux, you might have to add a new permission to your udev rules.')
-        # + '\n\n',
-        #         _('Debug message') + '\n',
-        #         debug_msg
-        #     ])
-        #     self.confirm_dialog(title=title, message=msg,
-        #                         run_next= lambda x: self.choose_hw_device())
-        #     return
-
-
-class SetupHardwareWalletAccountPage(QWizardPage):
-    _plugin: Any
-    _plugin_debug_message: Optional[str]
-    _derivation_default: Sequence[int] = tuple(bip32_decompose_chain_string(
-        bip44_derivation_cointype(0, 0)))
-    _derivation_user: Optional[Sequence[int]] = None
-
-    def __init__(self, wizard: AccountWizard):
-        super().__init__(wizard)
-
-        self._plugin = None
-        self._plugin_debug_message = None
-
-        self.setTitle(_("Import a Hardware Wallet as an Account"))
-        self.setFinalPage(False)
-
-    # Qt method called to get the Id of the next page.
-    def nextId(self):
-        return -1
-
-    # Qt method called when 'Next' or 'Finish' is clicked for last-minute validation.
-    def validatePage(self) -> bool:
-        wizard: AccountWizard = self.wizard()
-        if self._create_account(main_window=wizard._main_window):
-            return True
-        return False
-
-    # Qt method called to determine if 'Next' or 'Finish' should be enabled or disabled.
-    # Overriding this requires us to emit the 'completeChanges' signal where applicable.
-    def isComplete(self) -> bool:
-        return (self._plugin_debug_message is None and self._plugin is not None and
-            self._derivation_user is not None)
-
-    def on_enter(self) -> None:
-        # if self.wallet_type=='multisig':
-        #     # There is no general standard for HD multisig.
-        #     # This is partially compatible with BIP45; assumes index=0
-        #     default_derivation = "m/45'/0"
-
-        self._initiate_setup()
-
-    def on_leave(self) -> None:
-        self._plugin = None
-        self._plugin_debug_message = None
-
-    def _initiate_setup(self) -> None:
-        self._setup_device()
-
-        # 2023-05-03 RT: There are issues with Qt and hardware wallets. This comment explains why
-        #     we choose to live with them given they seem to just be a poor experience, but work,
-        #     where the larger fix requires a lot of rewriting.
-
-        # There's a thing where the trezor password "confirm on device" dialog is blank. This is
-        # because the hardware wallet setup code is running in the GUI thread and the hardware
-        # wallet blocks the GUI thread. But it works. The proper fix is to move the hardware wallet
-        # setup code to the a worker thread, but this is not as easy as it seems because the
-        # signals on the hardware wallet objects likely need to be created on the GUI thread and
-        # that requires restructuring the code (otherwise they seem to bind to the thread they are
-        # created on?).
-
-    #     app_state.app.run_in_thread(self._setup_device, on_done=self._on_setup_complete)
-
-    # def _on_setup_complete(self, future: concurrent.futures.Future) -> None:
-        # Display according to result.
-        if self._plugin_debug_message is None:
-            self._display_setup_success_results()
-        else:
-            self._display_setup_failure_results()
-        self.completeChanged.emit()
-
-    def _display_setup_success_results(self) -> None:
-        wizard: AccountWizard = self.wizard()
-        name, device_info = wizard.get_selected_device()
-
-        wallet_type = "standard"
-        text = DEVICE_SETUP_SUCCESS_TEXT.format(name.capitalize(),
-            compose_chain_string(self._derivation_default), wallet_type)
-
-        label = QLabel(text + "\n")
-        label.setWordWrap(True)
-
-        logo = QLabel()
-        logo.setAlignment(Qt.AlignCenter)
-        logo_filename = "icons8-usb-connected-80.png"
-        logo.setPixmap(QPixmap(icon_path(logo_filename)).scaledToWidth(80))
-
-        logo_grid = QGridLayout()
-        logo_grid.setSpacing(18)
-        logo_grid.setColumnMinimumWidth(0, 70)
-        logo_grid.setColumnStretch(1,1)
-        logo_grid.addWidget(logo,  0, 0, Qt.AlignTop)
-        logo_grid.addWidget(label, 0, 1, 1, 2)
-
-        grid = QGridLayout()
-        grid.setSpacing(8)
-        grid.setColumnMinimumWidth(0, 150)
-        grid.setColumnMinimumWidth(1, 100)
-        grid.setContentsMargins(50, 10, 50, 10)
-        grid.setColumnStretch(1,1)
-
-        path_text = compose_chain_string(self._derivation_default)
-        self._path_edit = QLineEdit()
-        self._path_edit.setText(path_text)
-        self._path_edit.textEdited.connect(self._on_derivation_path_changed)
-        self._path_edit.setFixedWidth(140)
-        self._on_derivation_path_changed(path_text)
-
-        grid.addWidget(QLabel(_("Derivation path")), 1, 0, 1, 1, Qt.AlignRight)
-        grid.addWidget(self._path_edit, 1, 1, 1, 2, Qt.AlignLeft)
-
-        vbox = QVBoxLayout()
-        vbox.setContentsMargins(10, 10, 20, 10)
-        vbox.addLayout(logo_grid)
-        vbox.addSpacing(10)
-        vbox.addLayout(grid)
-        vbox.addStretch(1)
-
-        if self.layout():
-            QWidget().setLayout(self.layout())
-        self.setLayout(vbox)
-
-    def _display_setup_failure_results(self) -> None:
-        # This might happen for instance, if the "bitcoin cash" application is not open.
-        label = QLabel(DEVICE_SETUP_ERROR_TEXT + "\n")
-        label.setWordWrap(True)
-
-        logo_grid = QGridLayout()
-        logo_grid.setSpacing(18)
-        logo_grid.setColumnMinimumWidth(0, 70)
-        logo_grid.setColumnStretch(1,1)
-
-        logo = QLabel()
-        logo.setAlignment(Qt.AlignCenter)
-        logo_filename = "icons8-usb-disconnected-80.png"
-        logo.setPixmap(QPixmap(icon_path(logo_filename)).scaledToWidth(80))
-
-        logo_grid.addWidget(logo,  0, 0)
-        logo_grid.addWidget(label, 0, 1, 1, 2)
-
-        grid = QGridLayout()
-        grid.setSpacing(8)
-        grid.setColumnMinimumWidth(0, 150)
-        grid.setColumnMinimumWidth(1, 100)
-        grid.setColumnStretch(1,1)
-
-        scan_text_label = QLabel(_("Debug messages:"))
-        scan_text_edit = QTextEdit()
-        scan_text_edit.setText(self._plugin_debug_message)
-        scan_text_edit.setReadOnly(True)
-        grid.addWidget(scan_text_label, 0, 0, 2, 1, Qt.AlignRight)
-        grid.addWidget(scan_text_edit, 1, 0, 2, 2, Qt.AlignLeft)
-
-        vbox = QVBoxLayout()
-        vbox.setContentsMargins(10, 10, 20, 10)
-        vbox.addLayout(logo_grid)
-        vbox.addSpacing(10)
-        vbox.addWidget(scan_text_label)
-        vbox.addWidget(scan_text_edit)
-        vbox.addLayout(grid)
-        vbox.addStretch(1)
-
-        if self.layout():
-            QWidget().setLayout(self.layout())
-        self.setLayout(vbox)
-
-    def _setup_device(self) -> None:
-        self._plugin = None
-        self._plugin_debug_message = None
-
-        wizard: AccountWizard = self.wizard()
-        name, device_info = wizard.get_selected_device()
-        self._plugin = app_state.device_manager.get_plugin(name)
-        try:
-            self._plugin.setup_device(device_info, wizard)
-        except UserCancelled:
-            return
-        except OSError as e:
-            self._plugin_debug_message = (_('We encountered an error while connecting to your '
-                'device:') +'\n'+ str(e) +'\n'+
-                _('To try to fix this, we will now re-pair with your device.') +'\n'+
-                _('Please try again.'))
-            app_state.device_manager.unpair_id(device_info.device.id_)
-            return
-        except Exception as e:
-            self._plugin_debug_message = str(e)
-            logger.exception("Problem encountered setting up hardware device")
-            return
-
-    def _on_derivation_path_changed(self, text: str) -> None:
-        path_text = self._path_edit.text().strip()
-        try:
-            self._derivation_user = tuple(bip32_decompose_chain_string(path_text))
-        except ValueError:
-            self._derivation_user = None
-        self.completeChanged.emit()
-
-
-    @protected
-    def _create_account(self, main_window: Optional[ElectrumWindow]=None,
-            password: Optional[str]=None) -> bool:
-        # The derivation path is valid, proceed to create the account.
-        wizard: AccountWizard = self.wizard()
-        name, device_info = wizard.get_selected_device()
-
-        derivation_text = compose_chain_string(self._derivation_user)
-        try:
-            mpk = self._plugin.get_master_public_key(device_info.device.id_, derivation_text,
-                wizard)
-        except Exception as e:
-            logger.exception("Failed getting master public key for hardware wallet (%s, %s)",
-                self._derivation_user, derivation_text)
-            MessageBox.show_error(str(e))
-            return False
-
-        label = device_info.label
-        data = {
-            'hw_type': name,
-            'derivation': derivation_text,
-            'xpub': mpk.to_extended_key_string(),
-            'label': label.strip() if label and label.strip() else None,
-        }
-        keystore = instantiate_keystore(DerivationType.HARDWARE, data)
-        wizard.set_keystore_result(ResultType.HARDWARE, keystore)
-
-        return True
-
 
 
 class CosignWidget(QWidget):

@@ -247,7 +247,7 @@ class TrezorPlugin(HW_PluginBase):
         )
         return HDNodePathType(node=node, address_n=address_n)
 
-    def setup_device(self, device_info, wizard):
+    def setup_device(self, device_info, handler):
         '''Called when creating a new wallet.  Select the device to use.  If
         the device is uninitialized, go through the intialization
         process.'''
@@ -256,14 +256,16 @@ class TrezorPlugin(HW_PluginBase):
         if client is None:
             raise Exception(_('Failed to create a client for this device.') + '\n' +
                             _('Make sure it is in the correct state.'))
-        client.handler = self.create_handler(wizard)
+        client.handler = handler
         if not device_info.initialized:
-            self.initialize_device(device_id, wizard, client.handler)
+            raise RuntimeError(_('Initialize the device with its manufacturer application.'))
         client.get_master_public_key('m', creating=True)
 
-    def get_master_public_key(self, device_id, derivation, wizard):
+    def get_master_public_key(self, device_id, derivation, handler):
         client = app_state.device_manager.client_by_id(device_id)
-        client.handler = self.create_handler(wizard)
+        if client is None:
+            raise RuntimeError(_('Device disconnected. Please reconnect and try again.'))
+        client.handler = handler
         return client.get_master_public_key(derivation)
 
     def get_trezor_input_script_type(self, is_multisig):
@@ -291,7 +293,7 @@ class TrezorPlugin(HW_PluginBase):
         client = self.get_client(keystore)
         inputs = self.tx_inputs(tx, xpub_path)
         outputs = self.tx_outputs(keystore, keystore.get_derivation(), tx)
-        details = SignTx(lock_time=tx.locktime, inputs_count=len(inputs),
+        details = SignTx(version=tx.version, lock_time=tx.locktime, inputs_count=len(inputs),
             outputs_count=len(outputs))
         signatures, _ = client.sign_tx(self.get_coin_name(), inputs, outputs, details=details,
             prev_txes=prev_txtypes)

@@ -690,14 +690,14 @@ class DigitalBitboxPlugin(HW_PluginBase):
         else:
             return None
 
-    def setup_device(self, device_info, wizard: 'AccountWizard') -> None:
+    def setup_device(self, device_info, handler) -> None:
         device_id = device_info.device.id_
         client = app_state.device_manager.client_by_id(device_id)
         if client is None:
             raise Exception(_('Failed to create a client for this device.') + '\n' +
                             _('Make sure it is in the correct state.'))
-        client.handler = self.create_handler(wizard)
-        client.setupRunning = True
+        client.handler = handler
+        client.setupRunning = False
         client.get_master_public_key("m/44'/0'")
 
     def is_mobile_paired(self):
@@ -717,9 +717,11 @@ class DigitalBitboxPlugin(HW_PluginBase):
             self.handler.show_error(str(e))
 
 
-    def get_master_public_key(self, device_id, derivation, wizard):
+    def get_master_public_key(self, device_id, derivation, handler):
         client = app_state.device_manager.client_by_id(device_id)
-        client.handler = self.create_handler(wizard)
+        if client is None:
+            raise RuntimeError(_('Device disconnected. Please reconnect and try again.'))
+        client.handler = handler
         client.check_device_dialog()
         return client.get_master_public_key(derivation)
 

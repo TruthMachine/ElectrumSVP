@@ -152,9 +152,10 @@ msgstr ""
 msgid "&Report Bug"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:886
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "&Rescan"
-msgstr ""
+msgstr "&สแกนใหม่"
 
 #: electrumsv/gui/qt/main_window.py:564
 msgid "&Save Copy"
@@ -360,9 +361,11 @@ msgstr ""
 msgid "An uninitialized Digital Bitbox is detected."
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:934
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
 msgid "An unnamed {}"
-msgstr ""
+msgstr "{0} ที่ไม่มีชื่อ"
 
 #: electrumsv/devices/keepkey/qt.py:458 electrumsv/devices/trezor/qt.py:447
 msgid "Apply"
@@ -512,16 +515,16 @@ msgstr ""
 msgid "CSV"
 msgstr ""
 
-#: electrumsv/gui/qt/util.py:172 electrumsv/gui/qt/dialogs.py:153
-#: electrumsv/devices/keepkey/qt.py:206 electrumsv/devices/trezor/qt.py:68
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
 msgid "Cancel"
-msgstr ""
+msgstr "ยกเลิก"
 
-#: electrumsv/devices/ledger/ledger.py:277
-#: electrumsv/devices/ledger/ledger.py:291
-#: electrumsv/devices/ledger/ledger.py:404
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Cancelled by user"
-msgstr ""
+msgstr "ยกเลิกโดยผู้ใช้"
 
 #: electrumsv/devices/hw_wallet/qt.py:229
 msgid "Cannot find python library for"
@@ -619,12 +622,10 @@ msgstr ""
 msgid "Click here to hide this message."
 msgstr ""
 
-#: electrumsv/gui/qt/app.py:176 electrumsv/gui/qt/main_window.py:2276
-#: electrumsv/gui/qt/main_window.py:2357
-#: electrumsv/gui/qt/transaction_dialog.py:116 electrumsv/gui/qt/util.py:148
-#: electrumsv/gui/qt/qrcodewidget.py:123
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
 msgid "Close"
-msgstr ""
+msgstr "ปิด"
 
 #: electrumsv/gui/qt/main_window.py:246
 msgid "Co&ins"
@@ -671,9 +672,11 @@ msgstr ""
 msgid "Confirm Toggle Passphrase Protection"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:366
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Confirm Transaction on your Ledger device..."
-msgstr ""
+msgstr "ยืนยันการทำธุรกรรมบนอุปกรณ์ Ledger ของคุณ..."
 
 #: electrumsv/devices/keepkey/client.py:194
 #: electrumsv/devices/trezor/client.py:25
@@ -744,9 +747,11 @@ msgstr ""
 msgid "Confirmed"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:392
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Confirmed. Signing Transaction..."
-msgstr ""
+msgstr "ยืนยันแล้ว การลงนามในธุรกรรม..."
 
 #: electrumsv/gui/qt/main_window.py:1007
 msgid "Connected"
@@ -872,13 +877,15 @@ msgstr ""
 msgid "Date: {}"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:979
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages"
-msgstr ""
+msgstr "แก้ไขข้อความ"
 
-#: electrumsv/gui/qt/account_wizard.py:1211
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Debug messages:"
-msgstr ""
+msgstr "ข้อความแก้ไขข้อบกพร่อง:"
 
 #: electrumsv/gui/qt/main_window.py:2348
 msgid "Decrypt"
@@ -902,10 +909,10 @@ msgstr ""
 msgid "Delete invoice?"
 msgstr "Con&tacts"
 
-#: electrumsv/gui/qt/account_wizard.py:757
-#: electrumsv/gui/qt/account_wizard.py:1173
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Derivation path"
-msgstr ""
+msgstr "เส้นทางที่มา"
 
 #: electrumsv/gui/qt/main_window.py:1133 electrumsv/gui/qt/main_window.py:1430
 #: electrumsv/gui/qt/transaction_dialog.py:280
@@ -942,9 +949,11 @@ msgstr ""
 msgid "Device communication error. Please unplug and replug your Digital Bitbox."
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:199
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Device not in Bitcoin Cash mode"
-msgstr ""
+msgstr "อุปกรณ์ไม่อยู่ในโหมด Bitcoin Cash"
 
 #: electrumsv/devices/keepkey/qt.py:512 electrumsv/devices/trezor/qt.py:525
 msgid "Disable PIN"
@@ -1126,10 +1135,12 @@ msgstr ""
 msgid "Encryption and decryption are not implemented by {}"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:259
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:453
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
 msgid "Encryption and decryption are not supported for {}"
-msgstr ""
+msgstr "ไม่รองรับการเข้ารหัสและการถอดรหัสสำหรับ {0}"
 
 #: electrumsv/i18n.py:50
 msgid "English"
@@ -1326,11 +1337,11 @@ msgstr ""
 msgid "External party"
 msgstr ""
 
-#: electrumsv/devices/trezor/trezor.py:248
-#: electrumsv/devices/ledger/ledger.py:494
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:705
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Failed to create a client for this device."
-msgstr ""
+msgstr "ไม่สามารถสร้างไคลเอ็นต์สำหรับอุปกรณ์นี้ได้"
 
 #: electrumsv/exceptions.py:39 electrumsv/exceptions.py:44
 msgid "Failed to import file."
@@ -1473,9 +1484,16 @@ msgstr ""
 msgid "Identity Type"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:72
-msgid "If any problems were encountered during the scan, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid ""
+"If any problems were encountered during the scan, they will be displayed "
+"below. If there are no indications why your hardware wallet is not being "
+"found, press the 'Help' button for further direction."
 msgstr ""
+"หากพบปัญหาใด ๆ ในระหว่างการสแกน ปัญหาดังกล่าวจะแสดงอยู่ด้านล่าง "
+"หากไม่มีข้อบ่งชี้ว่าทำไมไม่พบกระเป๋าสตางค์ฮาร์ดแวร์ของคุณ ให้กดปุ่ม "
+"'ช่วยเหลือ' เพื่อดูคำแนะนำเพิ่มเติม"
 
 #: electrumsv/gui/qt/account_wizard.py:78
 msgid "If any problems were encountered during the setup attempt, they will be displayed below. If there are no indications why your hardware wallet is not being found, press the 'Help' button for further direction."
@@ -1541,10 +1559,10 @@ msgstr ""
 msgid "Import Account From Text With Customizations"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:866
-#: electrumsv/gui/qt/account_wizard.py:1093
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Import a Hardware Wallet as an Account"
-msgstr ""
+msgstr "นำเข้ากระเป๋าเงินฮาร์ดแวร์เป็นบัญชี"
 
 #: electrumsv/gui/qt/accounts_view.py:120
 #: electrumsv/gui/qt/accounts_view.py:163
@@ -1765,13 +1783,17 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: electrumsv/devices/ledger/qt.py:48
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "Ledger Status"
-msgstr ""
+msgstr "สถานะ Ledger"
 
-#: electrumsv/devices/ledger/auth2fa.py:39
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "Ledger Wallet Authentication"
-msgstr ""
+msgstr "การรับรองความถูกต้อง Ledger Wallet"
 
 #: electrumsv/devices/keepkey/keepkey.py:231
 #: electrumsv/devices/trezor/trezor.py:163
@@ -1822,11 +1844,11 @@ msgstr ""
 msgid "Lower-case letters"
 msgstr ""
 
-#: electrumsv/devices/trezor/trezor.py:249
-#: electrumsv/devices/ledger/ledger.py:495
-#: electrumsv/devices/digitalbitbox/digitalbitbox.py:706
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Make sure it is in the correct state."
-msgstr ""
+msgstr "ตรวจสอบให้แน่ใจว่าอยู่ในสถานะที่ถูกต้อง"
 
 #: electrumsv/devices/hw_wallet/plugin.py:109
 #: electrumsv/devices/hw_wallet/qt.py:230
@@ -2316,9 +2338,10 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:913
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Please wait for hardware wallets to be located."
-msgstr ""
+msgstr "โปรดรอให้กระเป๋าฮาร์ดแวร์ถูกพบ"
 
 #: electrumsv/gui/qt/wallet_wizard.py:707
 msgid "Please wait while your wallet is backed up and migrated to the new format."
@@ -2573,9 +2596,10 @@ msgstr ""
 msgid "Seed type"
 msgstr ""
 
-#: electrumsv/gui/qt/account_wizard.py:945
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "Select a device"
-msgstr ""
+msgstr "เลือกอุปกรณ์"
 
 #: electrumsv/gui/qt/wallet_wizard.py:366
 msgid "Select an existing wallet"
@@ -2721,9 +2745,11 @@ msgstr ""
 msgid "Show/Hide"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:428
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Showing address ..."
-msgstr ""
+msgstr "กำลังแสดงที่อยู่ ..."
 
 #: electrumsv/gui/qt/main_window.py:2264
 #: electrumsv/gui/qt/transaction_dialog.py:107
@@ -2850,10 +2876,10 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: electrumsv/gui/qt/network_dialog.py:319 electrumsv/gui/qt/request_list.py:50
-#: electrumsv/gui/qt/invoice_list.py:46
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
 msgid "Status"
-msgstr ""
+msgstr "สถานะ"
 
 #: electrumsv/gui/qt/transaction_dialog.py:282
 msgid "Status:"
@@ -2996,9 +3022,11 @@ msgstr ""
 msgid "This blockchain is used to verify the transactions sent by your transaction server."
 msgstr ""
 
-#: electrumsv/devices/ledger/qt.py:81
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
 msgid "This button does nothing."
-msgstr ""
+msgstr "ปุ่มนี้ไม่ทำอะไรเลย"
 
 #: electrumsv/gui/qt/main_window.py:1154
 msgid "This information is seen by the recipient if you send them a signed payment request."
@@ -3522,9 +3550,11 @@ msgstr ""
 msgid "Your Ledger Wallet wants to tell you a one-time PIN code.<br><br>For best security you should unplug your device, open a text editor on another computer, put your cursor into it, and plug your device into that computer. It will output a summary of the transaction being signed and a one-time PIN.<br><br>Verify the transaction summary and type the PIN code here.<br><br>Before pressing enter, plug the device back into this computer.<br>"
 msgstr ""
 
-#: electrumsv/devices/ledger/ledger.py:85
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
 msgid "Your Ledger is locked. Please unlock it."
-msgstr ""
+msgstr "Ledger ของคุณถูกล็อค กรุณาปลดล็อคมัน"
 
 #: electrumsv/gui/qt/coinsplitting_tab.py:248
 msgid "Your browser will open to a faucet that can provide you with a small amount of SV coin. Once you have operated the faucet, and obtained it, ElectrumSV will detect it."
@@ -3653,9 +3683,10 @@ msgstr ""
 msgid "fee is absurdly high"
 msgstr ""
 
-#: electrumsv/device.py:305 electrumsv/gui/qt/account_wizard.py:933
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "initialized"
-msgstr ""
+msgstr "เริ่มต้น"
 
 #: electrumsv/network.py:73
 msgid "insufficient fees or priority"
@@ -3753,9 +3784,10 @@ msgstr ""
 msgid "very small \"dust\" payments"
 msgstr ""
 
-#: electrumsv/device.py:305 electrumsv/gui/qt/account_wizard.py:933
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
 msgid "wiped"
-msgstr ""
+msgstr "เช็ด"
 
 #: electrumsv/gui/qt/transaction_dialog.py:434
 msgid "{:,d} confirmations (in block {:,d})"
@@ -3773,3 +3805,957 @@ msgstr ""
 msgid "{} words"
 msgstr ""
 
+
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "A complete previous transaction is unavailable."
+msgstr "การทำธุรกรรมก่อนหน้านี้เสร็จสมบูรณ์ไม่พร้อมใช้งาน"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid ""
+"A hardware wallet operation is already in progress. Finish or reject it on "
+"the device, then try again."
+msgstr ""
+"การดำเนินการกระเป๋าเงินฮาร์ดแวร์กำลังดำเนินการอยู่ "
+"เสร็จสิ้นหรือปฏิเสธบนอุปกรณ์ แล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid ""
+"A scan has been unable to locate any connected hardware wallets. Connect and"
+" unlock your hardware wallet, close other wallet applications, then press "
+"the 'Rescan' button to try again."
+msgstr ""
+"การสแกนไม่พบกระเป๋าสตางค์ฮาร์ดแวร์ที่เชื่อมต่ออยู่ "
+"เชื่อมต่อและปลดล็อคกระเป๋าเงินฮาร์ดแวร์ของคุณ ปิดแอปพลิเคชันกระเป๋าเงินอื่น "
+"ๆ จากนั้นกดปุ่ม 'สแกนซ้ำ' เพื่อลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account check cancelled. Select the device and retry."
+msgstr "เช็คบัญชีถูกยกเลิก เลือกอุปกรณ์แล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account key matches"
+msgstr "การจับคู่คีย์บัญชี"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Account public key checked. It will be checked again before signing."
+msgstr "ตรวจสอบรหัสสาธารณะของบัญชีแล้ว จะมีการตรวจสอบอีกครั้งก่อนลงนาม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Address display is unavailable for this account."
+msgstr "การแสดงที่อยู่ไม่พร้อมใช้งานสำหรับบัญชีนี้"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Amount (satoshis)"
+msgstr "ปริมาณ (ซาโตชิ)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Application / version"
+msgstr "แอปพลิเคชัน/เวอร์ชัน"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Bitcoin Cash is open. Wallet pairing is checked separately before use."
+msgstr ""
+"Bitcoin Cash เปิดอยู่ การจับคู่ Wallet จะถูกตรวจสอบแยกต่างหากก่อนใช้งาน"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Bitcoin Cash open"
+msgstr "Bitcoin Cash เปิด"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"Cannot open Ledger. Close Ledger Wallet, browser device sessions and other "
+"wallet applications, then reconnect, unlock and retry."
+msgstr ""
+"ไม่สามารถเปิด Ledger ได้ ปิด Ledger Wallet เซสชันอุปกรณ์เบราว์เซอร์ "
+"และแอปพลิเคชันกระเป๋าสตางค์อื่นๆ จากนั้นเชื่อมต่อใหม่ ปลดล็อก และลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Cannot write to Ledger. Close Ledger Wallet and retry."
+msgstr "ไม่สามารถเขียนไปยัง Ledger ปิด Ledger Wallet แล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Choose a detected device, connect it, then select it after the account key "
+"check passes."
+msgstr ""
+"เลือกอุปกรณ์ที่ตรวจพบ เชื่อมต่อ "
+"จากนั้นเลือกอุปกรณ์หลังจากผ่านการตรวจสอบคีย์บัญชีแล้ว"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose a device and connect it to check the account public key."
+msgstr "เลือกอุปกรณ์และเชื่อมต่อเพื่อตรวจสอบรหัสสาธารณะของบัญชี"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Choose an account derivation path."
+msgstr "เลือกเส้นทางการรับบัญชี"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Choose inputs to sign"
+msgstr "เลือกอินพุตเพื่อลงนาม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid ""
+"Choose the account derivation path. When reopening an existing account, use "
+"its original path: a different account path gives different addresses even "
+"on the same device."
+msgstr ""
+"เลือกเส้นทางการรับบัญชี เมื่อเปิดบัญชีที่มีอยู่อีกครั้ง ให้ใช้เส้นทางเดิม: "
+"เส้นทางบัญชีอื่นจะให้ที่อยู่ที่แตกต่างกันแม้จะอยู่ในอุปกรณ์เดียวกันก็ตาม"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect"
+msgstr "เชื่อมต่อ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and check current account"
+msgstr "เชื่อมต่อและตรวจสอบบัญชีปัจจุบัน"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connect and unlock a hardware wallet to begin."
+msgstr "เชื่อมต่อและปลดล็อคกระเป๋าสตางค์ฮาร์ดแวร์เพื่อเริ่มต้น"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid "Connect hardware wallet"
+msgstr "เชื่อมต่อกระเป๋าเงินฮาร์ดแวร์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid ""
+"Connect the device, unlock it and refresh. No USB interface was found; this "
+"alone does not establish whether it is locked."
+msgstr ""
+"เชื่อมต่ออุปกรณ์ ปลดล็อค และรีเฟรช ไม่พบอินเทอร์เฟซ USB; "
+"สิ่งนี้เพียงอย่างเดียวไม่ได้ระบุว่ามันถูกล็อคหรือไม่"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid "Connected to your {} hardware wallet."
+msgstr "เชื่อมต่อกับกระเป๋าเงินฮาร์ดแวร์ {0} ของคุณแล้ว"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connected; pairing unchecked"
+msgstr "เชื่อมต่อ; ไม่ได้เลือกการจับคู่"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection cancelled. Select the device and retry."
+msgstr "การเชื่อมต่อถูกยกเลิก เลือกอุปกรณ์แล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Connection details"
+msgstr "รายละเอียดการเชื่อมต่อ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Continue to device"
+msgstr "ดำเนินการต่อไปยังอุปกรณ์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Current account paths: {}"
+msgstr "เส้นทางบัญชีปัจจุบัน: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Device"
+msgstr "อุปกรณ์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device attempted to replace an existing signature."
+msgstr "อุปกรณ์พยายามแทนที่ลายเซ็นที่มีอยู่"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device did not return an extended public key."
+msgstr "อุปกรณ์ไม่ส่งคืนรหัสสาธารณะแบบขยาย"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Device disconnected. Please reconnect and try again."
+msgstr "อุปกรณ์ถูกตัดการเชื่อมต่อ โปรดเชื่อมต่อใหม่และลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an invalid message signature."
+msgstr "อุปกรณ์ส่งคืนลายเซ็นข้อความที่ไม่ถูกต้อง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected input count."
+msgstr "อุปกรณ์ส่งคืนจำนวนอินพุตที่ไม่คาดคิด"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Device returned an unexpected signature count."
+msgstr "อุปกรณ์ส่งคืนจำนวนลายเซ็นที่ไม่คาดคิด"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Device setup was cancelled. Go back to try again."
+msgstr "การตั้งค่าอุปกรณ์ถูกยกเลิก กลับไปลองอีกครั้ง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/qt.py
+#, python-brace-format
+msgid "Elapsed: {}"
+msgstr "ผ่านไป: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Enter a message between 1 and 65535 UTF-8 bytes."
+msgstr "ป้อนข้อความระหว่าง 1 ถึง 65535 UTF-8 ไบต์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Enter the PIN on this device, then refresh."
+msgstr "ป้อน PIN บนอุปกรณ์นี้ จากนั้นรีเฟรช"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Follow the instructions on your device.\n"
+"To cancel, reject the request on the device."
+msgstr ""
+"ทำตามคำแนะนำบนอุปกรณ์ของคุณ\n"
+"หากต้องการยกเลิก ให้ปฏิเสธคำขอบนอุปกรณ์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid ""
+"Full verification of {} inputs will send {:.1f} KiB of previous transactions"
+" to your Ledger. Verification and signing may take several minutes. Keep the"
+" device connected and review the transaction on its screen when prompted. "
+"Continue with full verification?"
+msgstr ""
+"การตรวจสอบอินพุต {0} โดยสมบูรณ์จะส่ง {1:.1f} KiB ของธุรกรรมก่อนหน้าไปยัง "
+"Ledger ของคุณ การตรวจสอบและการลงนามอาจใช้เวลาหลายนาที "
+"เชื่อมต่ออุปกรณ์ไว้และตรวจสอบธุรกรรมบนหน้าจอเมื่อได้รับแจ้ง "
+"ดำเนินการต่อด้วยการยืนยันแบบเต็มหรือไม่"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware account key checked; ready to use"
+msgstr "ตรวจสอบรหัสบัญชีฮาร์ดแวร์แล้ว พร้อมใช้งาน"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "Hardware device detected, but not available for this account"
+msgstr "ตรวจพบอุปกรณ์ฮาร์ดแวร์ แต่ไม่พร้อมใช้งานสำหรับบัญชีนี้"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Hardware signing requires SIGHASH_ALL | FORKID (0x41)."
+msgstr "การลงนามฮาร์ดแวร์ต้องใช้ SIGHASH_ALL | FORKID (0x41)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet"
+msgstr "กระเป๋าเงินฮาร์ดแวร์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/qt.py
+msgid "Hardware wallet connection status"
+msgstr "สถานะการเชื่อมต่อกระเป๋าเงินฮาร์ดแวร์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Hardware wallet dependencies unavailable"
+msgstr "การพึ่งพากระเป๋าสตางค์ของฮาร์ดแวร์ไม่พร้อมใช้งาน"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Hardware wallets"
+msgstr "กระเป๋าเงินฮาร์ดแวร์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/trezor/trezor.py
+msgid "Initialize the device with its manufacturer application."
+msgstr "เริ่มต้นอุปกรณ์ด้วยแอปพลิเคชันของผู้ผลิต"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid ""
+"Initialize this device with its manufacturer application before importing "
+"it. Never enter its recovery seed into ElectrumSVP."
+msgstr ""
+"เริ่มต้นอุปกรณ์นี้ด้วยแอปพลิเคชันของผู้ผลิตก่อนที่จะนำเข้า "
+"อย่าใส่เมล็ดพันธุ์การกู้คืนลงใน ElectrumSVP"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Input"
+msgstr "ป้อนข้อมูล"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Input selection is currently available for Ledger accounts only."
+msgstr "ขณะนี้การเลือกอินพุตใช้ได้กับบัญชี Ledger เท่านั้น"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Input/output count exceeds this model’s verification budget."
+msgstr "จำนวนอินพุต/เอาต์พุตเกินงบประมาณการตรวจสอบของโมเดลนี้"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid "Install the dependencies and reopen the wallet to sign."
+msgstr "ติดตั้งการอ้างอิงและเปิดกระเป๋าเงินอีกครั้งเพื่อลงนาม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Install the optional {} dependencies."
+msgstr "ติดตั้งการพึ่งพา {0} เสริม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger connection is closed. Reconnect and try again."
+msgstr "การเชื่อมต่อ Ledger ถูกปิด เชื่อมต่อใหม่และลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid ""
+"Ledger did not respond. Finish or reject the request on the device, "
+"reconnect it, close other wallet applications and retry."
+msgstr ""
+"Ledger ไม่ตอบสนอง เสร็จสิ้นหรือปฏิเสธคำขอบนอุปกรณ์ เชื่อมต่อใหม่ "
+"ปิดแอปพลิเคชันกระเป๋าเงินอื่น ๆ แล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger is busy with another request. Finish it and try again."
+msgstr "Ledger กำลังยุ่งอยู่กับคำขออื่น เสร็จสิ้นแล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Ledger is locked. Enter your PIN on the device and retry."
+msgstr "Ledger ถูกล็อค ป้อน PIN ของคุณบนอุปกรณ์แล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger may display only a message hash. Compare it with this SHA-256 of the "
+"exact UTF-8 message, including spaces and newlines. The device has not "
+"displayed the message text."
+msgstr ""
+"Ledger อาจแสดงเฉพาะแฮชข้อความ เปรียบเทียบกับ SHA-256 ของข้อความ UTF-8 "
+"ที่แน่นอน รวมถึงการเว้นวรรคและการขึ้นบรรทัดใหม่ อุปกรณ์ไม่แสดงข้อความ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "Ledger returned an incomplete response."
+msgstr "Ledger ส่งคืนการตอบกลับที่ไม่สมบูรณ์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Ledger signing options"
+msgstr "ตัวเลือกการลงนาม Ledger"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Locked"
+msgstr "ล็อคแล้ว"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Matches a hardware key in the current account. The complete account public "
+"key was checked. It will be checked again before use."
+msgstr ""
+"จับคู่คีย์ฮาร์ดแวร์ในบัญชีปัจจุบัน ตรวจสอบรหัสสาธารณะของบัญชีที่สมบูรณ์แล้ว "
+"จะมีการตรวจสอบอีกครั้งก่อนใช้งาน"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"No devices detected. Connect a hardware wallet; this list updates "
+"automatically."
+msgstr ""
+"ไม่พบอุปกรณ์ เชื่อมต่อกระเป๋าเงินฮาร์ดแวร์ รายการนี้อัปเดตโดยอัตโนมัติ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "No hardware account is selected. Connection status is available below."
+msgstr "ไม่ได้เลือกบัญชีฮาร์ดแวร์ สถานะการเชื่อมต่อมีอยู่ด้านล่าง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware_status.py
+msgid "No hardware devices detected"
+msgstr "ไม่พบอุปกรณ์ฮาร์ดแวร์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Not detected"
+msgstr "ตรวจไม่พบ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Only checked inputs will receive new signatures. Existing signatures will be"
+" kept. Ledger still reviews the whole transaction: each new signature uses "
+"SIGHASH_ALL | FORKID (0x41), committing to all inputs and outputs. Save the "
+"incomplete transaction as JSON to pass it to another signer."
+msgstr ""
+"เฉพาะอินพุตที่เลือกเท่านั้นที่จะได้รับลายเซ็นใหม่ "
+"ลายเซ็นที่มีอยู่จะถูกเก็บไว้ Ledger ยังคงตรวจสอบธุรกรรมทั้งหมด: "
+"ลายเซ็นใหม่แต่ละรายการจะใช้ SIGHASH_ALL | FORKID (0x41) "
+"โดยยอมรับอินพุตและเอาต์พุตทั้งหมด บันทึกธุรกรรมที่ไม่สมบูรณ์เป็น JSON "
+"เพื่อส่งต่อไปยังผู้ลงนามรายอื่น"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Open Bitcoin Cash to sign"
+msgstr "เปิด Bitcoin Cash เพื่อลงนาม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Open the Bitcoin Cash app on your Ledger (currently: {})."
+msgstr "เปิดแอป Bitcoin Cash บน Ledger ของคุณ (ปัจจุบัน: {0})"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"Opening Bitcoin Cash on the selected Ledger. Confirm on the device if "
+"requested."
+msgstr "การเปิด Bitcoin Cash บน Ledger ที่เลือก ยืนยันบนอุปกรณ์หากมีการร้องขอ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid ""
+"Optional previous-transaction verification is implemented for Ledger only."
+msgstr "การตรวจสอบธุรกรรมก่อนหน้าแบบเลือกได้จะใช้กับ Ledger เท่านั้น"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Outpoint"
+msgstr "จุดออก"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Preparing the current transaction ({} inputs) on your Ledger..."
+msgstr "กำลังเตรียมธุรกรรมปัจจุบัน (อินพุต {0}) บน Ledger ของคุณ..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction amount does not match the requested input."
+msgstr "จำนวนธุรกรรมก่อนหน้าไม่ตรงกับข้อมูลที่ร้องขอ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction does not match the requested input."
+msgstr "ธุรกรรมก่อนหน้าไม่ตรงกับอินพุตที่ร้องขอ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "Previous transaction script does not match the requested input."
+msgstr "สคริปต์ธุรกรรมก่อนหน้าไม่ตรงกับอินพุตที่ร้องขอ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid ""
+"Previous transactions exceed this model’s byte, script or communication "
+"budget."
+msgstr "ธุรกรรมก่อนหน้านี้เกินงบประมาณไบต์ สคริปต์ หรือการสื่อสารของโมเดลนี้"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"Previous-transaction verification was switched off for this signing "
+"operation."
+msgstr "การยืนยันธุรกรรมก่อนหน้านี้ถูกปิดสำหรับการลงนามนี้"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh"
+msgstr "รีเฟรช"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Refresh to read connection status. This does not sign anything."
+msgstr "รีเฟรชเพื่ออ่านสถานะการเชื่อมต่อ นี่ไม่ได้เซ็นอะไรเลย"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Review the transaction on your Ledger. Input amounts are unverified."
+msgstr "ตรวจสอบธุรกรรมใน Ledger ของคุณ จำนวนอินพุตไม่ได้รับการยืนยัน"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"Review the transaction on your Ledger. Input amounts were checked against "
+"previous transactions; chain status and coinbase maturity are checked by the"
+" wallet."
+msgstr ""
+"ตรวจสอบธุรกรรมใน Ledger ของคุณ จำนวนอินพุตได้รับการตรวจสอบกับธุรกรรมก่อนหน้า"
+" สถานะของห่วงโซ่และการครบกำหนดของฐานเหรียญจะถูกตรวจสอบโดยกระเป๋าเงิน"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Select"
+msgstr "เลือก"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a detected device."
+msgstr "เลือกอุปกรณ์ที่ตรวจพบ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Select a device of the same brand as this hardware account."
+msgstr "เลือกอุปกรณ์ยี่ห้อเดียวกันกับบัญชีฮาร์ดแวร์นี้"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid "Select an address in the Keys tab and choose Sign/verify message."
+msgstr "เลือกที่อยู่ในแท็บคีย์แล้วเลือกลงชื่อ/ยืนยันข้อความ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/wallet.py
+msgid "Select at least one valid input to sign."
+msgstr "เลือกอินพุตที่ถูกต้องอย่างน้อยหนึ่งรายการเพื่อลงนาม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "Selecting individual inputs is implemented for Ledger only."
+msgstr "การเลือกอินพุตแต่ละรายการจะนำไปใช้กับ Ledger เท่านั้น"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/keys_view.py
+msgid "Show address on device"
+msgstr "แสดงที่อยู่บนอุปกรณ์"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/transaction_dialog.py
+msgid "Sign selected inputs…"
+msgstr "ลงชื่ออินพุตที่เลือก..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Signing input {} of {} on your Ledger..."
+msgstr "กำลังลงนามอินพุต {0} ของ {1} บน Ledger ของคุณ..."
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid ""
+"Signing message...\n"
+"Message hash: {}"
+msgstr ""
+"กำลังลงนามข้อความ...\n"
+"แฮชข้อความ: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"The Ledger app rejected this message. Check the derivation path and try a "
+"shorter message supported by your app version."
+msgstr ""
+"แอป Ledger ปฏิเสธข้อความนี้ "
+"ตรวจสอบเส้นทางที่มาและลองใช้ข้อความที่สั้นลงซึ่งเวอร์ชันแอปของคุณรองรับ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"The address displayed by the Ledger does not match this wallet. Check the "
+"selected device and account."
+msgstr ""
+"ที่อยู่ที่แสดงโดย Ledger ไม่ตรงกับกระเป๋าสตางค์นี้ "
+"ตรวจสอบอุปกรณ์และบัญชีที่เลือก"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/device.py
+msgid ""
+"The connected device does not match this wallet. Select the correct device "
+"and passphrase, then retry."
+msgstr ""
+"อุปกรณ์ที่เชื่อมต่อไม่ตรงกับกระเป๋าเงินนี้ เลือกอุปกรณ์และรหัสผ่านที่ถูกต้อง"
+" จากนั้นลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+#, python-brace-format
+msgid ""
+"The default {} matches traditional BTC/BSV accounts. BCH accounts commonly "
+"use m/44'/145'/0'. Keep the original path when checking an existing balance."
+msgstr ""
+"{0} เริ่มต้นจะตรงกับบัญชี BTC/BSV แบบดั้งเดิม บัญชี BCH มักใช้ m/44'/145'/0'"
+" คงเส้นทางเดิมไว้เมื่อตรวจสอบยอดคงเหลือที่มีอยู่"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"The device cannot verify input amounts against previous transactions. It may"
+" show \"unverified inputs\". Continue with this reduced verification?"
+msgstr ""
+"อุปกรณ์ไม่สามารถตรวจสอบจำนวนอินพุตกับธุรกรรมก่อนหน้าได้ มันอาจจะแสดง "
+"\"unverified inputs\". ดำเนินการต่อด้วยการยืนยันที่ลดลงนี้หรือไม่"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid ""
+"The selected Ledger did not reconnect with the expected app. Unlock it, "
+"close other wallet applications and select it again."
+msgstr ""
+"Ledger ที่เลือกไม่ได้เชื่อมต่อกับแอปที่คาดไว้อีกครั้ง ปลดล็อค "
+"ปิดแอปพลิเคชั่นกระเป๋าเงินอื่น ๆ แล้วเลือกอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/session.py
+msgid "The selected Ledger is locked. Enter the PIN on that device and retry."
+msgstr "Ledger ที่เลือกถูกล็อค ป้อน PIN บนอุปกรณ์นั้นแล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device cannot provide this account key. Check the derivation "
+"path and passphrase, or select another device."
+msgstr ""
+"อุปกรณ์ที่เลือกไม่สามารถให้รหัสบัญชีนี้ได้ "
+"ตรวจสอบเส้นทางที่มาและข้อความรหัสผ่าน หรือเลือกอุปกรณ์อื่น"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid "The selected device is not ready. Unlock it and retry."
+msgstr "อุปกรณ์ที่เลือกไม่พร้อม ปลดล็อคแล้วลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid ""
+"The selected device is not ready. Unlock it on its own screen, close other "
+"wallet applications, then choose Try again. Ledger can request opening "
+"Bitcoin Cash; confirm on the device if asked. To select a different device, "
+"go back."
+msgstr ""
+"อุปกรณ์ที่เลือกไม่พร้อม ปลดล็อคบนหน้าจอของตัวเอง "
+"ปิดแอปพลิเคชั่นกระเป๋าเงินอื่น จากนั้นเลือกลองอีกครั้ง Ledger สามารถขอเปิด "
+"Bitcoin Cash ได้ ยืนยันบนอุปกรณ์หากถูกถาม หากต้องการเลือกอุปกรณ์อื่น "
+"ให้ย้อนกลับ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "The selected device is unavailable. Refresh and retry."
+msgstr "อุปกรณ์ที่เลือกไม่พร้อมใช้งาน รีเฟรชและลองอีกครั้ง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/device.py
+msgid ""
+"The selected device uses a different hardware adapter. Select a compatible "
+"device and retry."
+msgstr ""
+"อุปกรณ์ที่เลือกใช้อะแดปเตอร์ฮาร์ดแวร์อื่น "
+"เลือกอุปกรณ์ที่ใช้งานร่วมกันได้และลองอีกครั้ง"
+
+# ElectrumSVP hardware flow. Machine translation; native-language review
+# welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "This USB interface does not support Ledger wallet communication."
+msgstr "อินเทอร์เฟซ USB นี้ไม่รองรับการสื่อสารกระเป๋าเงิน Ledger"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/transport.py
+msgid "This adapter requires a Ledger Nano USB device."
+msgstr "อะแด็ปเตอร์นี้ต้องการอุปกรณ์ Ledger Nano USB"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid "This adapter supports BSV mainnet only."
+msgstr "อะแด็ปเตอร์นี้รองรับเมนเน็ต BSV เท่านั้น"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/input_verification.py
+msgid "This app version is outside the trusted-input route."
+msgstr "แอปเวอร์ชันนี้อยู่นอกเส้นทางอินพุตที่เชื่อถือได้"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+msgid ""
+"This device does not match the current account. Check the selected device, "
+"account path and passphrase."
+msgstr ""
+"อุปกรณ์นี้ไม่ตรงกับบัญชีปัจจุบัน ตรวจสอบอุปกรณ์ เส้นทางบัญชี "
+"และรหัสผ่านที่เลือก"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"To add an account, choose Add account → Connect hardware wallet. For an "
+"existing account, use its Keys tab to display an address or sign a message."
+msgstr ""
+"หากต้องการเพิ่มบัญชี ให้เลือกเพิ่มบัญชี → เชื่อมต่อกระเป๋าเงินฮาร์ดแวร์ "
+"สำหรับบัญชีที่มีอยู่ ให้ใช้แท็บคีย์เพื่อแสดงที่อยู่หรือเซ็นข้อความ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/main_window.py
+msgid ""
+"To sign, select an address in the Keys tab and choose Sign/verify message. "
+"You can verify any address here."
+msgstr ""
+"หากต้องการลงนาม ให้เลือกที่อยู่ในแท็บคีย์ และเลือกลงชื่อ/ยืนยันข้อความ "
+"คุณสามารถตรวจสอบที่อยู่ได้ที่นี่"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware_accounts.py
+msgid "Try again"
+msgstr "ลองอีกครั้ง"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hw_wallet/plugin.py
+msgid ""
+"USB device found. Import or select its account to verify wallet pairing. "
+"Firmware and signing readiness have not been checked."
+msgstr ""
+"พบอุปกรณ์ USB นำเข้าหรือเลือกบัญชีเพื่อตรวจสอบการจับคู่กระเป๋าเงิน "
+"ยังไม่ได้ตรวจสอบความพร้อมของเฟิร์มแวร์และการลงนาม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Unavailable"
+msgstr "ไม่พร้อมใช้งาน"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/hardware.py
+#, python-brace-format
+msgid "Unknown hardware wallet: {}"
+msgstr "กระเป๋าเงินฮาร์ดแวร์ที่ไม่รู้จัก: {0}"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Unlock the selected device on its own screen. Confirm any app-opening "
+"request. Then the account public key will be checked."
+msgstr ""
+"ปลดล็อคอุปกรณ์ที่เลือกบนหน้าจอของตัวเอง ยืนยันคำขอเปิดแอป "
+"จากนั้นรหัสสาธารณะของบัญชีจะถูกตรวจสอบ"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid ""
+"Unlock this device before signing. The wallet can request opening Bitcoin "
+"Cash on the selected device; confirm there if asked."
+msgstr ""
+"ปลดล็อกอุปกรณ์นี้ก่อนลงนาม กระเป๋าเงินสามารถขอเปิด Bitcoin Cash "
+"บนอุปกรณ์ที่เลือกได้ ยืนยันที่นั่นหากถูกถาม"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/account_wizard.py
+msgid ""
+"Use an initialized Ledger, Trezor, KeepKey or BitBox01. Keep the recovery "
+"seed on your device. Ledger requires the Bitcoin Cash app. These adapters "
+"are experimental; check the tested-version list before use."
+msgstr ""
+"ใช้ Ledger, Trezor, KeepKey หรือ BitBox01 ที่กำหนดค่าเริ่มต้น "
+"เก็บเมล็ดพันธุ์การกู้คืนไว้ในอุปกรณ์ของคุณ Ledger ต้องใช้แอป Bitcoin Cash "
+"อะแดปเตอร์เหล่านี้เป็นรุ่นทดลอง ตรวจสอบรายการเวอร์ชันที่ทดสอบก่อนใช้งาน"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify previous transactions on the device (recommended)"
+msgstr "ตรวจสอบธุรกรรมก่อนหน้าบนอุปกรณ์ (แนะนำ)"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+#, python-brace-format
+msgid "Verifying input {} of {} on your Ledger..."
+msgstr "กำลังตรวจสอบอินพุต {0} ของ {1} บน Ledger ของคุณ..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/devices/ledger/ledger.py
+msgid "Verifying previous transactions on your Ledger..."
+msgstr "กำลังตรวจสอบธุรกรรมก่อนหน้าบน Ledger ของคุณ..."
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"When disabled, complete previous transactions are not sent. The device may "
+"show “unverified inputs” and cannot independently verify the fee. The "
+"current transaction’s inputs and outputs are still sent, and every requested"
+" input still needs its own signature. This may therefore remain slow."
+msgstr ""
+"เมื่อปิดใช้งาน ธุรกรรมก่อนหน้านี้ที่เสร็จสมบูรณ์จะไม่ถูกส่งไป อุปกรณ์อาจแสดง"
+" \"unverified inputs\" และไม่สามารถตรวจสอบค่าธรรมเนียมได้อย่างอิสระ "
+"อินพุตและเอาต์พุตของธุรกรรมปัจจุบันยังคงถูกส่ง "
+"และทุกอินพุตที่ร้องขอยังคงต้องมีลายเซ็นของตัวเอง "
+"การดำเนินการนี้อาจยังคงช้าอยู่"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"When enabled, available complete previous transactions are sent to the "
+"device to verify input amounts. Large transactions may take several minutes."
+" If data is missing or exceeds the device model’s work budget, you will be "
+"asked before continuing with reduced verification."
+msgstr ""
+"เมื่อเปิดใช้งาน "
+"ธุรกรรมก่อนหน้านี้ที่สมบูรณ์ที่มีอยู่จะถูกส่งไปยังอุปกรณ์เพื่อตรวจสอบจำนวนอินพุต"
+" การทำธุรกรรมขนาดใหญ่อาจใช้เวลาหลายนาที "
+"หากข้อมูลขาดหายไปหรือเกินงบประมาณการทำงานของรุ่นอุปกรณ์ "
+"ระบบจะถามคุณก่อนดำเนินการลดการตรวจสอบต่อไป"
+
+# ElectrumSVP hardware flow: machine translation; review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "{} inputs · {} outputs"
+msgstr "อินพุต {0} · เอาต์พุต {1}"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid ""
+"Cancellation requested. Finish or reject the current request on your Ledger;"
+" signing will stop before the next device operation."
+msgstr ""
+"ส่งคำขอยกเลิกแล้ว โปรดดำเนินการให้เสร็จหรือปฏิเสธคำขอปัจจุบันบน Ledger "
+"การลงนามจะหยุดก่อนการทำงานครั้งถัดไปของอุปกรณ์"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Complete"
+msgstr "เสร็จสิ้น"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Follow the instructions on your Ledger."
+msgstr "ทำตามคำแนะนำบน Ledger"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "In progress"
+msgstr "กำลังดำเนินการ"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+#, python-brace-format
+msgid "Inputs: {} · Outputs: {}"
+msgstr "อินพุต: {} · เอาต์พุต: {}"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Keep your Ledger connected throughout signing."
+msgstr "เชื่อมต่อ Ledger ไว้ตลอดการลงนาม"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger checks previous transactions before signing. Large transactions may "
+"take several minutes."
+msgstr ""
+"Ledger จะตรวจสอบธุรกรรมก่อนหน้าก่อนลงนาม ธุรกรรมขนาดใหญ่อาจใช้เวลาหลายนาที"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid ""
+"Ledger may show “unverified inputs” and cannot verify the fee. Signing many "
+"inputs may still be slow."
+msgstr ""
+"Ledger อาจแสดง “unverified inputs” และไม่สามารถตรวจสอบค่าธรรมเนียมได้ "
+"การลงนามอินพุตจำนวนมากอาจยังช้าอยู่"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Prepare transaction"
+msgstr "เตรียมธุรกรรม"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Review on device"
+msgstr "ตรวจสอบบนอุปกรณ์"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Sign inputs"
+msgstr "ลงนามอินพุต"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signatures verified."
+msgstr "ตรวจสอบลายเซ็นแล้ว"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Signing cancelled."
+msgstr "ยกเลิกการลงนามแล้ว"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Skipped"
+msgstr "ข้ามแล้ว"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Stopped"
+msgstr "หยุดแล้ว"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Transaction signing"
+msgstr "การลงนามธุรกรรม"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/hardware.py
+msgid "Verify input amounts (recommended)"
+msgstr "ตรวจสอบจำนวนเงินอินพุต (แนะนำ)"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify previous transactions"
+msgstr "ตรวจสอบธุรกรรมก่อนหน้า"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Verify signatures"
+msgstr "ตรวจสอบลายเซ็น"
+
+# ElectrumSVP interface. Machine translation; native-language review welcome.
+#: electrumsv/gui/qt/ledger_progress.py
+msgid "Waiting"
+msgstr "กำลังรอ"

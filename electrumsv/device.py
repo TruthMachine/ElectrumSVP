@@ -74,9 +74,14 @@ class DeviceMgr:
     Confusingly, the HID ID (serial number) reported by the HID system doesn't match the
     device ID reported by the device itself.  We use the HID IDs.
     '''
-    all_devices = ['digitalbitbox', 'keepkey', 'ledger', 'trezor']
+    from .devices.hardware import BACKENDS, device_operation
+    all_devices = tuple(BACKENDS)
 
     def __init__(self):
+        from .devices.hardware import HardwareWallets
+        self.hardware = HardwareWallets(self)
+        self._operation_lock = self.hardware._operation_lock
+        self.discovery_errors = {}
         self.plugins = {}
         # Keyed by xpub.  The value is the device id
         # has been paired, and None otherwise.
@@ -89,31 +94,21 @@ class DeviceMgr:
         self.hid_lock = threading.RLock()
 
     @classmethod
-    def _module(cls, device_kind: str):
-        if device_kind == 'trezor':
-            import electrumsv.devices.trezor as module1
-            return module1
-        elif device_kind == 'keepkey':
-            import electrumsv.devices.keepkey as module2
-            return module2
-        elif device_kind == 'ledger':
-            import electrumsv.devices.ledger as module3
-            return module3
-        elif device_kind == 'digitalbitbox':
-            import electrumsv.devices.digitalbitbox as module4
-            return module4
-        else:
-            raise DeviceError(f'unsupported device kind: {device_kind}')
-
-    @classmethod
     def _plugin_class(cls, device_kind):
-        return cls._module(device_kind).plugin_class(app_state.gui_kind)
+        try:
+            backend = cls.BACKENDS[device_kind]
+        except KeyError:
+            raise DeviceError(f'unsupported device kind: {device_kind}') from None
+        return backend.plugin_class(app_state.gui_kind)
 
+    @device_operation
     def _create_client(self, device, handler, plugin):
         # Get from cache first
         client = self.client_lookup(device.id_)
         if client:
-            return client
+            if client.has_usable_connection_with_device():
+                return client
+            self.unpair_id(device.id_)
         client = plugin.create_client(device, handler)
         if client:
             logger.debug("Registering %s", client)
@@ -121,22 +116,30 @@ class DeviceMgr:
                 self.clients[client] = (device.path, device.id_)
         return client
 
-    def _client_by_xpub(self, plugin, xpub, handler, devices):
+    def _client_by_xpub(self, plugin, xpub, derivation, handler, devices):
         _id = self.xpub_id(xpub)
+        if _id is None:
+            return None
         client = self.client_lookup(_id)
-        if client:
-            # An unpaired client might have another wallet's handler
-            # from a prior scan.  Replace to fix dialog parenting.
+        if client is None:
+            for device in devices:
+                if device.id_ == _id:
+                    client = self._create_client(device, handler, plugin)
+                    break
+        if client is not None:
             client.handler = handler
-            return client
-
-        for device in devices:
-            if device.id_ == _id:
-                return self._create_client(device, handler, plugin)
+            # USB identity and a live connection do not prove wallet identity.
+            # Recheck the complete account key, including after app/passphrase changes.
+            key = client.get_master_public_key(derivation)
+            if key is not None and key.to_extended_key_string() == xpub:
+                return client
+            self.unpair_id(_id)
+            raise DeviceUnpairableError(_('The connected device does not match this wallet. '
+                'Select the correct device and passphrase, then retry.'))
 
     def _force_pair_xpub(self, plugin, handler, info, xpub, derivation, devices):
         # The wallet has not been previously paired, so let the user
-        # choose an unpaired device and compare its first address.
+        # choose a device and compare its complete account public key.
         client = self.client_lookup(info.device.id_)
         if client and client.is_pairable():
             # See comment above for same code
@@ -144,9 +147,8 @@ class DeviceMgr:
             # This will trigger a PIN/passphrase entry request
             try:
                 client_mpk = client.get_master_public_key(derivation)
-            except (UserCancelled, RuntimeError):
-                # Bad / cancelled PIN / passphrase
-                client_mpk = None
+            except UserCancelled:
+                raise
             if client_mpk is not None and client_mpk.to_extended_key_string() == xpub:
                 self.pair_xpub(xpub, info.device.id_)
                 return client
@@ -161,21 +163,33 @@ class DeviceMgr:
 
     def timeout_clients(self):
         '''Handle device timeouts.'''
-        with self.lock:
-            clients = list(self.clients.keys())
-        cutoff = time.time() - app_state.config.get_session_timeout()
-        for client in clients:
-            client.timeout(cutoff)
+        if not self._operation_lock.acquire(False):
+            return
+        try:
+            with self.lock:
+                clients = list(self.clients.keys())
+            cutoff = time.time() - app_state.config.get_session_timeout()
+            for client in clients:
+                client.timeout(cutoff)
+        finally:
+            self._operation_lock.release()
 
     def get_plugin(self, device_kind: str):
         # There need only be one instance per device kind.
-        if device_kind not in self.plugins:
-            self.plugins[device_kind] = self._plugin_class(device_kind)(device_kind)
-            logger.debug("loaded %s", device_kind)
-        return self.plugins[device_kind]
+        with self.lock:
+            if device_kind not in self.plugins:
+                self.plugins[device_kind] = self._plugin_class(device_kind)(device_kind)
+                logger.debug("loaded %s", device_kind)
+            return self.plugins[device_kind]
 
     def create_keystore(self, data: Dict[str, Any], row: 'KeyInstanceRow') -> 'KeyStore':
-        plugin = self.get_plugin(data['hw_type'])
+        from .keystore import UnavailableHardware_KeyStore
+        self.hardware.backend(data['hw_type'])  # Unknown types are still errors.
+        try:
+            plugin = self.hardware.plugin(data['hw_type'])
+        except Exception as exc:
+            message = str(exc) + '\n' + _('Install the dependencies and reopen the wallet to sign.')
+            return UnavailableHardware_KeyStore(data, row, message)
         return plugin.create_keystore(data, row)
 
     def supported_devices(self):
@@ -208,10 +222,9 @@ class DeviceMgr:
             self._close_client(_id)
 
     def unpair_id(self, id_):
-        xpub = self.xpub_by_id(id_)
-        if xpub:
-            self.unpair_xpub(xpub)
-        else:
+        with self.lock:
+            for xpub in [key for key, value in self.xpub_ids.items() if value == id_]:
+                del self.xpub_ids[xpub]
             self._close_client(id_)
 
     def _close_client(self, id_):
@@ -239,16 +252,35 @@ class DeviceMgr:
         self.scan_devices()
         return self.client_lookup(id_)
 
+    @device_operation
     def client_for_keystore(self, plugin, keystore, force_pair):
         logger.debug("getting client for keystore")
         if not keystore.plugin.libraries_available:
-            raise RuntimeError(keystore.plugin.missing_message())
+            raise RuntimeError(keystore.plugin.get_library_not_available_message())
         handler = keystore.handler
         handler.update_status(False)
         devices = self.scan_devices()
         xpub = keystore.xpub
         derivation = keystore.get_derivation()
-        client = self._client_by_xpub(plugin, xpub, handler, devices)
+        selected = self.hardware.selected_device
+        if selected is not None:
+            if selected.kind != plugin.name:
+                raise DeviceUnpairableError(_('The selected device uses a different hardware '
+                    'adapter. Select a compatible device and retry.'))
+            device = next((device for device in devices if device.id_ == selected.device.id_), None)
+            if device is None:
+                raise DeviceUnpairableError(_('The selected device is unavailable. Refresh and retry.'))
+            client = self._create_client(device, handler, plugin)
+            if client is None:
+                raise DeviceUnpairableError(_('The selected device is unavailable. Refresh and retry.'))
+            client.handler = handler
+            key = client.get_master_public_key(derivation)
+            if key is None or key.to_extended_key_string() != xpub:
+                raise DeviceUnpairableError(_('The selected device cannot provide this account key. '
+                    'Check the derivation path and passphrase, or select another device.'))
+            self.pair_xpub(xpub, device.id_)
+        else:
+            client = self._client_by_xpub(plugin, xpub, derivation, handler, devices)
         if client is None and force_pair:
             info = self.select_device(plugin, handler, keystore, devices)
             client = self._force_pair_xpub(plugin, handler, info, xpub, derivation, devices)
@@ -256,21 +288,21 @@ class DeviceMgr:
             handler.update_status(True)
         return client
 
-    def unpaired_device_infos(self, handler, plugin, devices=None):
-        '''Returns a list of DeviceInfo objects: one for each connected,
-        unpaired device accepted by the hardware.'''
+    def device_infos(self, handler, plugin, devices=None):
+        '''List connected devices, including those paired with another account.'''
         if not plugin.libraries_available:
             raise RuntimeError(plugin.get_library_not_available_message())
         if devices is None:
             devices = self.scan_devices()
-        devices = [dev for dev in devices if not self.xpub_by_id(dev.id_)]
         infos = []
+        self.discovery_errors.pop(plugin.name, None)
         for device in devices:
             if device.product_key not in plugin.DEVICE_IDS:
                 continue
             try:
                 client = self._create_client(device, handler, plugin)
             except Exception as e:
+                self.discovery_errors[plugin.name] = str(e)
                 logger.debug('failed to create client for %s at %s: %r',
                              plugin.name, device.path, e)
                 continue
@@ -285,7 +317,7 @@ class DeviceMgr:
         DeviceInfo for the device.
         '''
         while True:
-            infos = self.unpaired_device_infos(handler, plugin, devices)
+            infos = self.device_infos(handler, plugin, devices)
             if infos:
                 break
             msg = _('Please insert your {}.  Verify the cable is connected and that no other '
@@ -322,6 +354,20 @@ class DeviceMgr:
         with self.hid_lock:
             hid_list = hid.enumerate(0, 0)
 
+        def identity(d):
+            vendor, product = d['vendor_id'], d['product_id']
+            # Ledger app-specific product IDs vary within the model family.
+            family = (product >> 12 or product) if vendor == 0x2c97 else product
+            return '{}:{}:{}:{}:{}'.format(vendor, family, d.get('serial_number') or '',
+                d.get('interface_number', -1), d['usage_page'])
+
+        # Some Ledgers report the same serial across models, and same-model units
+        # may also share it. A path disambiguates collisions, never list order.
+        identity_counts = {}
+        for entry in hid_list:
+            key = identity(entry)
+            identity_counts[key] = identity_counts.get(key, 0) + 1
+
         devices = []
         for d in hid_list:
             product_id = d['product_id']
@@ -333,20 +379,19 @@ class DeviceMgr:
             # Older versions of hid don't provide interface_number
             interface_number = d.get('interface_number', -1)
             path = d['path']
-            serial_number = d['serial_number']
             usage_page = d['usage_page']
-
-            if len(serial_number) == 0:
-                serial_number = str(path)
-            serial_number += str(interface_number) + str(usage_page)
+            transport_id = identity(d)
+            if not d.get('serial_number') or identity_counts[transport_id] > 1:
+                transport_id += ':' + str(path)
             devices.append(Device(path=path,
                                     interface_number=interface_number,
-                                    id_=serial_number,
+                                    id_=transport_id,
                                     product_key=product_key,
                                     usage_page=usage_page,
                                     transport_ui_string='hid'))
         return devices
 
+    @device_operation
     def scan_devices(self):
         logger.debug("scanning devices...")
 
@@ -363,13 +408,13 @@ class DeviceMgr:
         pairs = [(dev.path, dev.id_) for dev in devices]
         disconnected_ids = []
         with self.lock:
-            connected = {}
             for client, pair in self.clients.items():
-                if pair in pairs and client.has_usable_connection_with_device():
-                    connected[client] = pair
-                else:
+                try:
+                    usable = pair in pairs and client.has_usable_connection_with_device()
+                except Exception:
+                    usable = False
+                if not usable:
                     disconnected_ids.append(pair[1])
-            self.clients = connected
 
         # Unpair disconnected devices
         for id_ in disconnected_ids:
