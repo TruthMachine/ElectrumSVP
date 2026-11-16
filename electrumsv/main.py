@@ -49,40 +49,8 @@ from electrumsv.storage import WalletStorage
 from electrumsv.util import json_encode, json_decode, setup_thread_excepthook
 from electrumsv.wallet import Wallet
 
-import shutil
-from pathlib import Path
-
-dest = Path.home() / ".electrum-sv" / "headers"
-dest.parent.mkdir(parents=True, exist_ok=True)
-
-# Determine user config folder per OS
-if sys.platform.startswith("win"):
-    dest = Path(os.environ.get("APPDATA", Path.home() / "AppData/Roaming")) / "ElectrumSV" / "headers"
-elif sys.platform == "darwin":  # macOS
-    dest = Path.home() / ".electrum-sv" / "headers"
-else:  # Linux / Unix
-    dest = Path.home() / ".electrum-sv" / "headers"
-
-# Ensure parent dir exists
-dest.parent.mkdir(parents=True, exist_ok=True)
-
-if not dest.exists():
-    if sys.platform.startswith("win") or sys.platform == "darwin":
-        # Source relative to the app bundle / source tree
-        src = Path(__file__).parent / "resources" / "headersloaded" / "headers"
-    else:  # Linux
-        if os.environ.get("APPIMAGE"):
-            src = Path("/usr/share/headersloaded/headers")
-        else:
-            src = Path(__file__).parent / "resources" / "headersloaded" / "headers"
-
-    if src.exists():
-        shutil.copy2(src, dest)
-        print(f"[preloaded headers] Copied to {dest}")
-    else:
-        print(f"[preloaded headers] WARNING: source headers not found at {src}")
-
-
+# AppStateProxy.read_headers initializes headers after the profile is selected.
+# Importing the entry point (including --help) must not write to the default profile.
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
