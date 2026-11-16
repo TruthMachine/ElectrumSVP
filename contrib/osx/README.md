@@ -1,6 +1,10 @@
 Building Mac OS binaries
 ========================
 
+For a current personal Universal (Apple Silicon + Intel) build, see
+[LOCAL-BUILD.md](LOCAL-BUILD.md). The release procedure below is the inherited
+Python 3.9 workflow and has not been revalidated by the hardware integration.
+
 This guide explains how to build ElectrumSV binaries for macOS systems.
 We build our binaries on Big Sur (10.15) as this is the current release
 of MacOS and we do not have the manpower or resources to commit to
