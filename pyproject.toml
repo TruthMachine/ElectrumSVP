@@ -17,7 +17,14 @@ namespaces = false
 readme = { file = [ "README.rst" ] }
 version = { attr = "electrumsv.version.PACKAGE_VERSION" }
 dependencies = { file = [ "contrib/requirements/requirements.txt", "contrib/requirements/requirements-electrumsv.txt" ] }
-optional-dependencies = { "hardware" = { file = [ "contrib/requirements/requirements-hw.txt" ] } }
+
+[tool.setuptools.dynamic.optional-dependencies]
+hardware = { file = ["contrib/requirements/requirements-hw.txt"] }
+# Older supported setuptools requires identifier keys; pip normalizes '_' and '-'.
+hardware_ledger = { file = ["contrib/requirements/requirements-hw-ledger.txt"] }
+hardware_trezor = { file = ["contrib/requirements/requirements-hw-trezor.txt"] }
+hardware_keepkey = { file = ["contrib/requirements/requirements-hw-keepkey.txt"] }
+hardware_bitbox01 = { file = ["contrib/requirements/requirements-hw-bitbox01.txt"] }
 
 [project]
 name = "ElectrumSV"

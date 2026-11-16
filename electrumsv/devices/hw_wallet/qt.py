@@ -109,8 +109,13 @@ class QtHandlerBase(QObject):
         self.status_signal.emit(paired)
 
     def _update_status(self, paired):
-        icon = self.icon_paired if paired else self.icon_unpaired
-        self.action.setIcon(read_QIcon(icon))
+        if not hasattr(self, "action"):
+            return
+        # The toolbar represents detected devices and the current account.
+        # One keystore handler cannot set a global readiness icon on its own.
+        monitor = getattr(self.win, "_hardware_monitor", None)
+        if monitor is not None:
+            monitor.refresh()
 
     def query_choice(self, msg: str, labels: Iterable[str]) -> Optional[int]:
         self.done.clear()
@@ -241,14 +246,8 @@ class QtPluginBase(object):
         keystore.handler = handler # type: ignore
         keystore.plugin = self # type: ignore
 
-        action_label = _('Unnamed')
-        if keystore.label and keystore.label.strip():
-            action_label = keystore.label.strip()
-        action = QAction(read_QIcon(self.icon_unpaired), action_label, window)
-        action.triggered.connect(partial(self.show_settings_wrapped, weakref.proxy(window),
-            keystore))
-        action.setToolTip(_("Hardware Wallet"))
-        window.add_toolbar_action(action)
+        from electrumsv.gui.qt.hardware_status import hardware_toolbar_action
+        action = hardware_toolbar_action(window)
 
         handler.action = action
         handler.icon_unpaired = self.icon_unpaired

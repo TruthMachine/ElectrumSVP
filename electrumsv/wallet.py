@@ -1629,9 +1629,16 @@ class AbstractAccount:
         raise NotImplementedError
 
     def sign_transaction(self, tx: Transaction, password: str,
-            tx_context: Optional[TransactionContext]=None) -> None:
+            tx_context: Optional[TransactionContext]=None, *, input_indexes=None,
+            verify_inputs=True) -> None:
         if self.is_watching_only():
             return
+        if input_indexes is not None and any(getattr(k, 'hw_type', None) != 'ledger'
+                for k in self.get_keystores()):
+            raise ValueError(_('Input selection is currently available for Ledger accounts only.'))
+        if input_indexes is not None and (not input_indexes or any(type(i) is not int or
+                not 0 <= i < len(tx.inputs) for i in input_indexes)):
+            raise ValueError(_('Select at least one valid input to sign.'))
 
         if tx_context is None:
             tx_context = TransactionContext()
@@ -1643,8 +1650,15 @@ class AbstractAccount:
         # sign
         for k in self.get_keystores():
             try:
-                if k.can_sign(tx):
-                    k.sign_transaction(tx, password, tx_context)
+                if k.can_sign(tx) and (input_indexes is None or any(
+                        k.is_signature_candidate(key) for i in input_indexes
+                        for key in tx.inputs[i].unused_x_pubkeys())):
+                    if isinstance(k, Hardware_KeyStore):
+                        app_state.device_manager.hardware.sign_transaction(k, tx, password,
+                            tx_context, input_indexes=input_indexes,
+                            verify_inputs=verify_inputs if k.hw_type == 'ledger' else True)
+                    else:
+                        k.sign_transaction(tx, password, tx_context)
             except UserCancelled:
                 continue
 
@@ -1670,6 +1684,8 @@ class AbstractAccount:
         # context for the next party.
         if self.requires_input_transactions():
             self.obtain_previous_transactions(tx, tx_context)
+        app_state.device_manager.hardware.add_available_parents(self.get_keystores(), tx,
+            tx_context, self.get_transaction)
 
         # Annotate the outputs to the account's own keys for hardware wallets.
         # - Digitalbitbox makes use of all available output annotations.
@@ -1920,6 +1936,9 @@ class AbstractAccount:
     def sign_message(self, keyinstance_id, message, password: str):
         derivation_path = self._keypath[keyinstance_id]
         keystore = cast(SignableKeystoreTypes, self.get_keystore())
+        if isinstance(keystore, Hardware_KeyStore):
+            return app_state.device_manager.hardware.sign_message(keystore, derivation_path,
+                message, password)
         return keystore.sign_message(derivation_path, message, password)
 
     def decrypt_message(self, keyinstance_id: int, message, password: str):
@@ -3360,6 +3379,10 @@ class Wallet(TriggeredCallbacks):
     def create_gui_handler(self, window: 'ElectrumWindow', account: AbstractAccount) -> None:
         for keystore in account.get_keystores():
             if isinstance(keystore, Hardware_KeyStore):
+                if keystore.plugin is None:
+                    from .gui.qt.hardware import show_unavailable_hardware
+                    show_unavailable_hardware(window, keystore)
+                    continue
                 plugin = cast('QtPluginBase', keystore.plugin)
                 plugin.replace_gui_handler(window, keystore)
 

@@ -185,6 +185,11 @@ class TxDialog(QDialog, MessageBoxMixin):
 
         self.sign_button = b = QPushButton(_("Sign"))
         b.clicked.connect(self.sign)
+        self.partial_sign_button = QPushButton(_('Sign selected inputs…'))
+        self.partial_sign_button.clicked.connect(self.sign_selected)
+        stores = self._account.get_keystores() if self._account is not None else []
+        self.partial_sign_button.setVisible(bool(stores) and
+            all(getattr(store, 'hw_type', None) == 'ledger' for store in stores))
 
         self.broadcast_button = b = QPushButton(_("Broadcast"))
         b.clicked.connect(self.do_broadcast)
@@ -209,7 +214,7 @@ class TxDialog(QDialog, MessageBoxMixin):
         b.clicked.connect(self.cosigner_send)
 
         # Action buttons
-        self.buttons = [self.cosigner_button, self.sign_button, self.broadcast_button,
+        self.buttons = [self.cosigner_button, self.partial_sign_button, self.sign_button, self.broadcast_button,
                         self.cancel_button]
         # Transaction sharing buttons
         self.sharing_buttons = [self._copy_button, self.qr_button, self.save_button]
@@ -305,7 +310,13 @@ class TxDialog(QDialog, MessageBoxMixin):
         except Exception as e:
             self.show_message(str(e))
 
-    def sign(self) -> None:
+    def sign_selected(self) -> None:
+        from .hardware import SigningInputsDialog
+        dialog = SigningInputsDialog(self, self.tx, self._account.get_keystores())
+        if dialog.exec_():
+            self.sign(input_indexes=dialog.selected_indexes())
+
+    def sign(self, checked=False, *, input_indexes=None) -> None:
         def sign_done(success: bool) -> None:
             if success:
                 # If the signing was successful the hash will have changed.
@@ -322,10 +333,12 @@ class TxDialog(QDialog, MessageBoxMixin):
             self.tx.context.invoice_id = self._payment_request.get_id()
 
         self.sign_button.setDisabled(True)
+        self.partial_sign_button.setDisabled(True)
         self._main_window.push_top_level_window(self)
-        self._main_window.sign_tx(self.tx, sign_done, window=self, tx_context=self.tx.context)
-        if not self.tx.is_complete():
-            self.sign_button.setDisabled(False)
+        started = self._main_window.sign_tx(self.tx, sign_done, window=self,
+            tx_context=self.tx.context, input_indexes=input_indexes)
+        if not started:
+            sign_done(False)
 
     def _tx_to_text(self, prefer_readable: bool=False) -> str:
         assert not self.tx.is_complete(), "complete transactions are directly encoded from raw"
@@ -349,6 +362,7 @@ class TxDialog(QDialog, MessageBoxMixin):
 
         can_sign = not self.tx.is_complete() and self._account.can_sign(self.tx)
         self.sign_button.setEnabled(can_sign)
+        self.partial_sign_button.setEnabled(can_sign)
 
         self._tx_hash = tx_info.hash
         tx_id = hash_to_hex_str(tx_info.hash)

@@ -778,6 +778,29 @@ class Hardware_KeyStore(Xpub, KeyStore):
         raise NotImplementedError
 
 
+class UnavailableHardware_KeyStore(Hardware_KeyStore):
+    """Keep public wallet data usable when an optional vendor SDK cannot load."""
+    def __init__(self, data, row, message):
+        super().__init__(data, row)
+        self._vendor_data = dict(data)
+        self.device = self.hw_type
+        self.unavailable_message = message
+
+    def get_derivation(self):
+        return self.derivation
+
+    def to_derivation_data(self):
+        data = dict(self._vendor_data)
+        data.update(super().to_derivation_data())
+        return data
+
+    def sign_transaction(self, *args, **kwargs):
+        raise RuntimeError(self.unavailable_message)
+
+    def sign_message(self, *args, **kwargs):
+        raise RuntimeError(self.unavailable_message)
+
+
 MultisigChildKeyStoreTypes = Union[BIP32_KeyStore, Hardware_KeyStore, Old_KeyStore]
 
 class Multisig_KeyStore(DerivablePaths, KeyStore):

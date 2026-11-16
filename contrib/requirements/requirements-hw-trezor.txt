@@ -1,0 +1,4 @@
+# Compatibility pins; see requirements-hw.txt and docs/hardware-wallets.md.
+trezor==0.12.0
+hidapi==0.10.0
+libusb1==2.0.1

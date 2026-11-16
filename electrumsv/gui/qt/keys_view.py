@@ -1056,6 +1056,17 @@ class KeyView(QTableView):
 
 
 
+    def _show_hardware_address(self, key_id):
+        from .hardware import run_device_operation
+        from electrumsv.exceptions import UserCancelled
+        try:
+            run_device_operation(self._main_window, lambda:
+                app_state.device_manager.hardware.display_address(self._account, key_id))
+        except UserCancelled:
+            pass
+        except Exception as exc:
+            self._main_window.show_error(str(exc))
+
     def _event_create_menu(self, position):
         menu = QMenu()
 
@@ -1169,10 +1180,15 @@ class KeyView(QTableView):
                         _("Sign/verify message"),
                         lambda key_id=key_id: self._main_window.sign_verify_message(self._account, key_id)
                     )
-                    menu.addAction(
-                        _("Encrypt/decrypt message"),
-                        lambda key_id=key_id: self._main_window.encrypt_message(self._account, key_id)
-                    )
+                    if not any(hasattr(store, 'hw_type') for store in self._account.get_keystores()):
+                        menu.addAction(
+                            _("Encrypt/decrypt message"),
+                            lambda key_id=key_id: self._main_window.encrypt_message(self._account, key_id)
+                        )
+
+                if app_state.device_manager.hardware.can_display_address(self._account):
+                    menu.addAction(_('Show address on device'),
+                        lambda: self._show_hardware_address(key_id))
 
                 # ----------------------------
                 # BREAD VERIFY (UNCHANGED)
